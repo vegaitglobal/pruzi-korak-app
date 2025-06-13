@@ -1,4 +1,25 @@
 {
-  "appName": "Pruzi Korak",
-  "retry": "Retry"
+  "appName": "Pruži Korak",
+  "retry": "Pokušaj ponovo",
+  "email": "Email",
+  "email_hint": "Unesite vasu email adresu",
+  "password": "Lozinka",
+  "password_hint": "Unesite vasu lozinku"
+  "login_message": "Unesi svoju email adresu da se uloguješ u aplikaciju",
+  "log_in": "Uloguj se",
+  "login_error": "Uneta adresa nije pronađena. Pokušaj ponovo.",
+  "continue_to_app": "Nastavi u aplikaciju",
+  "distance_today": "Prepešačeno danas",
+  "distance_total": "Ukupno prepešačeno",
+  "participant_ranking": "Rangiranje učesnika",
+  "team_ranking": "Rangiranje timova",
+  "log_out": "Odjavi se",
+  "delete_profile": "Obriši profil",
+  "leaving_us_title": "Napuštaš nas?",
+  "leaving_us_message": "Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.",
+  "quit": "Odustani",
+  "permanently_delete_profile": "Trajno obrišite profil?",
+  "km": "km",
+  "congrats": "ČESTITAMO!",
+  "congrats_message": "Upravo ste prešli"
 }
