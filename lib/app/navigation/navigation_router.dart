@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/features/home/home_screen.dart';
+import 'package:pruzi_korak/features/login/login_screen.dart';
+import 'package:pruzi_korak/features/splash/splash_screen.dart';
 
 import 'app_routes.dart';
 import 'bottom_navigation_bar/app_bottom_navigation_page.dart';
@@ -12,14 +14,22 @@ GoRouter get router => _router;
 
 final _router = GoRouter(
   navigatorKey: parentNavigatorKey,
-  initialLocation: AppRoutes.home.path(),
+  initialLocation: AppRoutes.splash.path(),
   routes: [
     GoRoute(
       parentNavigatorKey: parentNavigatorKey,
-      path: AppRoutes.splashScreen.path(),
-      name: AppRoutes.splashScreen.name,
+      path: AppRoutes.splash.path(),
+      name: AppRoutes.splash.name,
       builder: (context, state) {
-        return const SizedBox();
+        return SplashScreen();
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: parentNavigatorKey,
+      path: AppRoutes.login.path(),
+      name: AppRoutes.login.name,
+      builder: (context, state) {
+        return LoginScreen();
       },
     ),
 

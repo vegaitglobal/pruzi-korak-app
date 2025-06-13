@@ -8,4 +8,15 @@ class AppGradients {
     end: Alignment.centerRight,
     colors: [AppColors.primary, AppColors.secondary],
   );
+
+  static final backgroundLinearGradient = LinearGradient(
+    begin: Alignment.bottomCenter,
+    end: Alignment.topCenter,
+    colors: [
+      AppColors.primary,
+      AppColors.primary,
+      AppColors.primaryVariant,
+    ],
+    stops: const [0.0, 0.3, 1.0],
+  );
 }

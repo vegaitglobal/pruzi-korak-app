@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
+import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
+import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
+import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
 
 import 'navigation/navigation_router.dart';
 
@@ -18,7 +22,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider<HomeBloc>(create: (context) => HomeBloc())],
+      providers: [
+        BlocProvider<SplashBloc>(
+          create: (context) => SplashBloc(getIt<AuthRepository>()),
+        ),
+        BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
+      ],
 
       // SessionListener will handle session expiration and logout, if not needed, we should remove it.
       child: SessionListener(
