@@ -4,7 +4,7 @@
   "email": "Email",
   "email_hint": "Unesite vasu email adresu",
   "password": "Lozinka",
-  "password_hint": "Unesite vasu lozinku"
+  "password_hint": "Unesite vasu lozinku",
   "login_message": "Unesi svoju email adresu da se uloguješ u aplikaciju",
   "log_in": "Uloguj se",
   "login_error": "Uneta adresa nije pronađena. Pokušaj ponovo.",
