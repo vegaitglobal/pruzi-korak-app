@@ -1,16 +1,18 @@
 # pruzi_korak
 
-Pruzi korak app
+Pruži Korak APP
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+- Rebuild project: dart run build_runner build --delete-conflicting-outputs
 
-A few resources to get you started if this is your first Flutter project:
+### iOS build instructions:
+- pod install on mac M1: arch -x86_64 pod install
+- build release: flutter build ios lib/main.dart
+- build debug: flutter build ios --debug lib/main_dev.dart
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### iOS create .ipa:
+- create .ipa for release: flutter build ipa --release lib/main.dart
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Android create bundle:
+- flutter build appbundle --release lib/main.dart
