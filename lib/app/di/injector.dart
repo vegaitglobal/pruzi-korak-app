@@ -10,7 +10,7 @@ import 'mapper_setup.dart';
 
 GetIt getIt = GetIt.instance;
 
-Future<void> initDependencyInjection() async {
+Future<void> configureDI() async {
   setupInitialLocator();
   setupJsonMappers();
 }

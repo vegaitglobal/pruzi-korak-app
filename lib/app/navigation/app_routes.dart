@@ -1,5 +1,5 @@
 enum AppRoutes {
-  splashScreen,
+  splash,
   login,
   home,
   statistic,
@@ -10,7 +10,7 @@ enum AppRoutes {
 
 extension AppRoutesExtension on AppRoutes {
   String path() => switch (this) {
-        AppRoutes.splashScreen => '/',
+        AppRoutes.splash => '/',
         AppRoutes.login => '/login',
         AppRoutes.home => '/home',
         AppRoutes.statistic => '/statistic',

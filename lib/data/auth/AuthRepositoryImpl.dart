@@ -1,3 +1,4 @@
+import 'package:pruzi_korak/core/exception/exception_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/auth/AuthRepository.dart';
@@ -17,6 +18,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
     if (tenantId == null) throw Exception('No tenantId found');
     return tenantId;
+  }
+
+  @override
+  Future<void> logout() {
+    // TODO: implement logout
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isLoggedIn() async {
+    return handleSupabaseExceptions(() async {
+      final session = _client.auth.currentSession;
+      if (session == null) return false;
+
+      // TODO: Check if we have a valid tenant ID
+
+      return true;
+    });
   }
 }
 
