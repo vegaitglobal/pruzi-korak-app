@@ -1,4 +1,6 @@
 {
   "appName": "Pruži Korak",
-  "retry": "Pokušaj ponovo"
+  "retry": "Pokušaj ponovo",
+  "stepsToday": "Prepešačeno\ndanas",
+  "stepsTotal": "Ukupno\nprepešačeno"
 }

@@ -1,4 +1,6 @@
 {
   "appName": "Pruzi Korak",
-  "retry": "Retry"
+  "retry": "Retry",
+  "stepsToday": "Prepešačeno danas",
+  "stepsTotal": "Ukupno\nprepešačeno"
 }

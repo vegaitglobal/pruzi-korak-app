@@ -20,7 +20,7 @@ class AppButton extends StatelessWidget {
       child: Text(
         text,
         style: AppTextStyles.labelMedium.copyWith(
-          color: AppColors.textPrimary.withOpacity(
+          color: AppColors.textButton.withOpacity(
             onPressed == null ? 0.5 : 1.0,
           ),
         ),
