@@ -26,5 +26,5 @@
   "stepsTotal": "Ukupno\nprepešačeno",
   "password_validation_error": "Neispravan format šifre",
   "email_validation_error": "Neispravan format email adrese",
-  "unexpected_error_occurred": "Došlo je do neočekicane greške!"
+  "unexpected_error_occurred": "Došlo je do neočekivane greške!"
 }
