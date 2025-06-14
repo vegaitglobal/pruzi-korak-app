@@ -4,6 +4,7 @@ import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
+import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_screen.dart';
 
 import 'app_routes.dart';
 import 'bottom_navigation_bar/app_bottom_navigation_page.dart';
@@ -53,10 +54,10 @@ final _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.statistic.path(),
-              name: AppRoutes.statistic.name,
+              path: AppRoutes.userLeaderboard.path(),
+              name: AppRoutes.userLeaderboard.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("Statistic")), state: state);
+                return getPage(child: UserLeaderboardScreen(), state: state);
               },
             ),
           ],
@@ -78,7 +79,10 @@ final _router = GoRouter(
               path: AppRoutes.aboutCompany.path(),
               name: AppRoutes.aboutCompany.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("About Company")), state: state);
+                return getPage(
+                  child: Center(child: const Text("About Company")),
+                  state: state,
+                );
               },
             ),
           ],
@@ -89,7 +93,10 @@ final _router = GoRouter(
               path: AppRoutes.about.path(),
               name: AppRoutes.about.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("About")), state: state);
+                return getPage(
+                  child: Center(child: const Text("About")),
+                  state: state,
+                );
               },
             ),
           ],

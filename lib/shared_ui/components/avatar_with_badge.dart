@@ -26,15 +26,15 @@ class AvatarWithBadge extends StatelessWidget {
     const double offsetSmall = 0;
 
     final double? top = badgePosition == BadgePosition.topLeft
-        ? (isLarge ? offsetLarge : offsetSmall)
+        ? (isLarge ? offsetLarge : offsetLarge)
         : null;
 
     final double? bottom = badgePosition == BadgePosition.bottomCenter
-        ? (isLarge ? offsetLarge : offsetSmall)
+        ? (isLarge ? offsetLarge : offsetLarge)
         : null;
 
     final double? left = badgePosition == BadgePosition.topLeft
-        ? (isLarge ? offsetLarge : offsetSmall)
+        ? (isLarge ? offsetLarge : offsetLarge)
         : null;
 
     return Stack(
