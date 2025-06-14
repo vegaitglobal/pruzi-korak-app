@@ -78,4 +78,19 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get congrats_message => 'Upravo ste prešli';
+
+  @override
+  String get stepsToday => 'Prepešačeno danas';
+
+  @override
+  String get stepsTotal => 'Ukupno\nprepešačeno';
+
+  @override
+  String get password_validation_error => 'Neispravan format šifre';
+
+  @override
+  String get email_validation_error => 'Neispravan format email adrese';
+
+  @override
+  String get unexpected_error_occurred => 'Došlo je do neočekicane greške!';
 }
