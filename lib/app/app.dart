@@ -29,7 +29,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<SplashBloc>(
           create: (context) => SplashBloc(getIt<AuthRepository>()),
         ),
-        BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(getIt<AuthRepository>()),
+        ),
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
       ],
