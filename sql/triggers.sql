@@ -1,0 +1,2 @@
+CREATE TRIGGER on_user_created AFTER INSERT ON public.users FOR EACH ROW EXECUTE FUNCTION notify_new_user ();
+CREATE TRIGGER on_user_deleted AFTER DELETE ON public.users FOR EACH ROW EXECUTE FUNCTION handle_user_deletion ()
