@@ -30,7 +30,6 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
-        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
       ],
 
