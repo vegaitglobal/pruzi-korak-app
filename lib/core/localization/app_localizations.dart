@@ -101,26 +101,140 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Pruzi Korak'**
+  /// **'Pruži korak'**
   String get appName;
 
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
+  /// **'Pokušaj ponovo'**
   String get retry;
 
-  /// No description provided for @stepsToday.
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Unesite vasu email adresu'**
+  String get email_hint;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Lozinka'**
+  String get password;
+
+  /// No description provided for @password_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Unesite vasu lozinku'**
+  String get password_hint;
+
+  /// No description provided for @login_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Unesi svoju email adresu da se uloguješ u aplikaciju'**
+  String get login_message;
+
+  /// No description provided for @log_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Uloguj se'**
+  String get log_in;
+
+  /// No description provided for @login_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Uneta adresa nije pronađena. Pokušaj ponovo.'**
+  String get login_error;
+
+  /// No description provided for @continue_to_app.
+  ///
+  /// In en, this message translates to:
+  /// **'Nastavi u aplikaciju'**
+  String get continue_to_app;
+
+  /// No description provided for @distance_today.
   ///
   /// In en, this message translates to:
   /// **'Prepešačeno danas'**
-  String get stepsToday;
+  String get distance_today;
 
-  /// No description provided for @stepsTotal.
+  /// No description provided for @distance_total.
   ///
   /// In en, this message translates to:
-  /// **'Ukupno\nprepešačeno'**
-  String get stepsTotal;
+  /// **'Ukupno prepešačeno'**
+  String get distance_total;
+
+  /// No description provided for @participant_ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'Rangiranje učesnika'**
+  String get participant_ranking;
+
+  /// No description provided for @team_ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'Rangiranje timova'**
+  String get team_ranking;
+
+  /// No description provided for @log_out.
+  ///
+  /// In en, this message translates to:
+  /// **'Odjavi se'**
+  String get log_out;
+
+  /// No description provided for @delete_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Obriši profil'**
+  String get delete_profile;
+
+  /// No description provided for @leaving_us_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Napuštaš nas?'**
+  String get leaving_us_title;
+
+  /// No description provided for @leaving_us_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.'**
+  String get leaving_us_message;
+
+  /// No description provided for @quit.
+  ///
+  /// In en, this message translates to:
+  /// **'Odustani'**
+  String get quit;
+
+  /// No description provided for @permanently_delete_profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Trajno obrišite profil?'**
+  String get permanently_delete_profile;
+
+  /// No description provided for @km.
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get km;
+
+  /// No description provided for @congrats.
+  ///
+  /// In en, this message translates to:
+  /// **'ČESTITAMO!'**
+  String get congrats;
+
+  /// No description provided for @congrats_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Upravo ste prešli'**
+  String get congrats_message;
 }
 
 class _AppLocalizationsDelegate

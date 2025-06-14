@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
+import 'package:pruzi_korak/features/organization_message/organization_message_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 
 import 'app_routes.dart';
@@ -30,6 +31,14 @@ final _router = GoRouter(
       name: AppRoutes.login.name,
       builder: (context, state) {
         return LoginScreen();
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: parentNavigatorKey,
+      path: AppRoutes.organizationMessage.path(),
+      name: AppRoutes.organizationMessage.name,
+      builder: (context, state) {
+        return const OrganizationMessageScreen();
       },
     ),
 
