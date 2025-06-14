@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
-import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
-import 'package:pruzi_korak/core/localization/app_localizations.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
+import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_icon.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 import 'package:pruzi_korak/shared_ui/util/url_launcher.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class AboutCompanyScreen extends StatelessWidget {
-  const AboutCompanyScreen({super.key});
+class AboutPruziKorakScreen extends StatelessWidget {
+  const AboutPruziKorakScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,38 +29,35 @@ class AboutCompanyScreen extends StatelessWidget {
         'iconPath': AppIcons.twitter,
         'url': 'https://twitter.com',
       },
+      {
+        'iconPath': AppIcons.email,
+        'url': 'mailto:a.mudric@vegaitglobal.com',
+      }
     ];
     return Scaffold(
       body: Center( // centers the entire content horizontally
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 50.0),
-                  child: Center(
-                    child: CachedImage(
-                      imageUrl:
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMQJIvdAWXjzmThRBeIyvFbxP4Bs6ekmuRog&s",
-                      height: 40.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+                Stack(
+                  children: [
+                    const CurvedHeaderBackground(height: 180),
+                    Positioned.fill(
+                      child: Center(
+                        child: Image.asset(
+                          AppIcons.splashLogo,
+                          height: 160,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                // Heading with font size 24px
-                Text(
-                  "Organization Message", // This could be replaced with a localized string
-                  style: AppTextStyles.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-                
-                const SizedBox(height: 16.0),
                 
                 // Long text with font size 12px
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 50.0),
+                    padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 16.0),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -73,31 +67,11 @@ class AboutCompanyScreen extends StatelessWidget {
                             style: AppTextStyles.bodySmall,
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: () async {
-                              const url = 'https://www.kroonstudio.com';
-                              if (await canLaunchUrl(Uri.parse(url))) {
-                                await launchUrl(Uri.parse(url),
-                                    mode: LaunchMode.externalApplication);
-                              }
-                            },
-                            child: Text(
-                              'www.kroonstudio.com',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                decoration: TextDecoration.underline,
-                                color: AppColors.primary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                
-                const SizedBox(height: 20.0),
 
                 // Row of clickable social‑media icons 20 px above nav
                 Row(
@@ -118,16 +92,16 @@ class AboutCompanyScreen extends StatelessWidget {
                         ),
                       ),
                       if (i != socialLinks.length - 1)
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 4),
                     ],
                   ],
                 ),
 
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 32.0),
               ],
             ),
           ),
         ),
-      ));
+      );
   }
 }
