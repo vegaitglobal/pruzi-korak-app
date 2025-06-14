@@ -8,7 +8,7 @@ import HealthKit
     let healthStore = HKHealthStore()
     let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
     var flutterChannel: FlutterMethodChannel?
-    let includeManualSteps = true
+    let includeManualSteps = false
 
     override func application(
         _ application: UIApplication,
@@ -17,7 +17,7 @@ import HealthKit
 
         let controller = window?.rootViewController as! FlutterViewController
         flutterChannel = FlutterMethodChannel(
-            name: "com.example.healthkit/callback",
+            name: "org.pruziKorak.healthkit/callback",
             binaryMessenger: controller.binaryMessenger
         )
 
@@ -97,7 +97,9 @@ import HealthKit
     }
 
     private func notifyFlutterAboutStepChange() {
-        flutterChannel?.invokeMethod("stepCountChanged", arguments: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.flutterChannel?.invokeMethod("stepCountChanged", arguments: nil)
+        }
     }
     
     func fetchStepsToday(completion: @escaping (Double) -> Void) {

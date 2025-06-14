@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
+import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
@@ -27,7 +28,7 @@ class _MyAppState extends State<MyApp> {
           create: (context) => SplashBloc(getIt<AuthRepository>()),
         ),
         BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
-        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
       ],
 
       // SessionListener will handle session expiration and logout, if not needed, we should remove it.
