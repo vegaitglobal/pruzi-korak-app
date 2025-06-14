@@ -18,12 +18,12 @@ class HomeUserSection extends StatelessWidget {
       children: [
         CardComponent(
           stepsCount: stepsModel.steps,
-          description: AppLocalizations.of(context)!.stepsToday,
+          description: AppLocalizations.of(context)!.distance_today,
           iconPath: AppIcons.icStep,
         ),
         CardComponent(
           stepsCount: stepsModel.totalSteps,
-          description: AppLocalizations.of(context)!.stepsTotal,
+          description: AppLocalizations.of(context)!.distance_total,
           iconPath: AppIcons.icPlusVariant,
         ),
       ],
@@ -53,7 +53,7 @@ class HomeTeamSection extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.stepsToday,
+                  AppLocalizations.of(context)!.distance_today,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -74,7 +74,7 @@ class HomeTeamSection extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  AppLocalizations.of(context)!.stepsTotal,
+                  AppLocalizations.of(context)!.distance_total,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),

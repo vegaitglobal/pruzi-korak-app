@@ -24,19 +24,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbq96YIIrnntPV81dxzOoheWk0sTyet_FYPw&s",
       );
 
-      final stepsToday = await healthRepository.getStepsToday();
-      final stepsSinceStart = await healthRepository.getStepsFromCampaignStart(campaignStart);
+      // TODO: Uncomment and implement the actual health data fetching logic
+      //final stepsToday = await healthRepository.getStepsToday();
+      //final stepsSinceStart = await healthRepository.getStepsFromCampaignStart(campaignStart);
 
-      final userStepsModel = StepsModel(
-        steps: stepsToday.toStringAsFixed(0),
-        totalSteps: stepsSinceStart.toStringAsFixed(0),
-      );
+      // final userStepsModel = StepsModel(
+      //   steps: stepsToday.toStringAsFixed(0),
+      //   totalSteps: stepsSinceStart.toStringAsFixed(0),
+      // );
 
       final teamStepsModel = StepsModel(steps: '20000', totalSteps: '50000');
 
       emit(HomeLoaded(
         userModel: userModel,
-        userStepsModel: userStepsModel,
+        userStepsModel: teamStepsModel,
         teamStepsModel: teamStepsModel,
       ));
     } catch (_) {

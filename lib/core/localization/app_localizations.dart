@@ -235,36 +235,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upravo ste prešli'**
   String get congrats_message;
-
-  /// No description provided for @stepsToday.
-  ///
-  /// In en, this message translates to:
-  /// **'Prepešačeno danas'**
-  String get stepsToday;
-
-  /// No description provided for @stepsTotal.
-  ///
-  /// In en, this message translates to:
-  /// **'Ukupno\nprepešačeno'**
-  String get stepsTotal;
-
-  /// No description provided for @password_validation_error.
-  ///
-  /// In en, this message translates to:
-  /// **'Neispravan format šifre'**
-  String get password_validation_error;
-
-  /// No description provided for @email_validation_error.
-  ///
-  /// In en, this message translates to:
-  /// **'Neispravan format email adrese'**
-  String get email_validation_error;
-
-  /// No description provided for @unexpected_error_occurred.
-  ///
-  /// In en, this message translates to:
-  /// **'Došlo je do neočekicane greške!'**
-  String get unexpected_error_occurred;
 }
 
 class _AppLocalizationsDelegate
