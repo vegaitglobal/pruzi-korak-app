@@ -22,7 +22,7 @@ class LoginSuccess extends LoginState {
 }
 
 class LoginFailure extends LoginState {
-  final Exception exception;
+  final Exception? exception;
 
   const LoginFailure(this.exception);
 

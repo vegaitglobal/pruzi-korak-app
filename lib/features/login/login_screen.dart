@@ -29,31 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (BuildContext context, LoginState state) {
         switch (state) {
-          case LoginInitial() || Loading():
+          case LoginInitial() || Loading() || LoginFailure():
             break;
 
           case LoginSuccess():
             context.go(AppRoutes.home.path());
-
-          case LoginFailure():
-            //TODO display toast?
-            break;
         }
       },
-      // buildWhen: (context, state) {
-      //   return state is LoginInitial || state is Loading;
-      // },
       builder: (BuildContext context, LoginState state) {
         return _content(state);
-        // switch (state) {
-        //   case LoginInitial():
-        //     return _content();
-        //   case Loading():
-        //     return AppLoader();
-        //   case LoginSuccess():
-        //   case LoginFailure():
-        //     return _content();
-        // }
       },
     );
   }
@@ -64,12 +48,19 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.backgroundPrimary,
       body: Padding(
         padding: const EdgeInsets.all(24),
-        child: _screenContainer([
-          _appLogoIcon(),
-          _componentSeparator(64),
-          _loginMessage(),
-          _loginForm(state),
-        ]),
+        child: switch (state) {
+          Loading() => AppLoader(),
+
+          LoginInitial() ||
+          LoginSuccess() ||
+          LoginFailure() => _screenContainer([
+            _appLogoIcon(),
+            _componentSeparator(64),
+            _loginMessage(),
+            _loginForm(state),
+            _unexpectedErrorMessage(state),
+          ]),
+        },
       ),
     );
   }
@@ -166,6 +157,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return _localizedStrings?.email_validation_error;
     } else {
       return null;
+    }
+  }
+
+  Widget _unexpectedErrorMessage(LoginState state) {
+    if (state is LoginFailure && state.exception == null) {
+      return Text(_localizedStrings!.unexpected_error_occurred);
+    } else {
+      return SizedBox.shrink();
     }
   }
 }

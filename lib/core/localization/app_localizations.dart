@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Pruži Korak'**
+  /// **'Pruži korak'**
   String get appName;
 
   /// No description provided for @retry.
@@ -259,6 +259,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Neispravan format email adrese'**
   String get email_validation_error;
+
+  /// No description provided for @unexpected_error_occurred.
+  ///
+  /// In en, this message translates to:
+  /// **'Došlo je do neočekicane greške!'**
+  String get unexpected_error_occurred;
 }
 
 class _AppLocalizationsDelegate

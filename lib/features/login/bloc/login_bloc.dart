@@ -2,37 +2,37 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 
+import '../../../core/utils/app_logger.dart';
+
 part 'login_event.dart';
 
 part 'login_state.dart';
+
+const String _EMAIL =
+    r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])'
+    r'|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
 
   LoginBloc(this._authRepository) : super(LoginInitial()) {
-    on<LoginUser>((event, emit) {
-      onLoginUserEvent(event, emit);
+    on<LoginUser>((event, emit) async {
+      emit(Loading());
+      var loginState = await onLoginUserEvent(event);
+      emit(loginState);
     });
   }
 
-  void onLoginUserEvent(LoginUser event, Emitter<LoginState> emitter) async {
-    emitter(Loading());
+  Future<LoginState> onLoginUserEvent(LoginUser event) async {
     try {
       _validateUserCredentialsInput(event);
-
-      final loginResponse = await _authRepository.login(
-        event.email,
-        event.password,
-      );
-
-      emitter(LoginSuccess());
+      var response = await _authRepository.login(event.email, event.password);
+      return LoginSuccess();
     } on LoginInputValidationException catch (e) {
-      // print(
-      //   "=====>>> error ${e} occurred while attempting login operation for"
-      //   " email ${event.email}"
-      //   " with password ${event.password}",
-      // );
-      emitter(LoginFailure(e));
+      return LoginFailure(e);
+    } on Exception catch (exception) {
+      AppLogger.logError("p", exception);
+      return LoginFailure(null);
     }
   }
 
@@ -46,7 +46,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  bool _isEmail(String email) => !RegExp(r'.+@.+').hasMatch(email);
+  bool _isEmail(String email) => !RegExp(_EMAIL).hasMatch(email);
 }
 
 class LoginInputValidationException implements Exception {}

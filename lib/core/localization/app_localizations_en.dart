@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Pruži Korak';
+  String get appName => 'Pruži korak';
 
   @override
   String get retry => 'Pokušaj ponovo';
@@ -90,4 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get email_validation_error => 'Neispravan format email adrese';
+
+  @override
+  String get unexpected_error_occurred => 'Došlo je do neočekicane greške!';
 }

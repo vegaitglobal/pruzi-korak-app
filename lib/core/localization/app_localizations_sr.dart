@@ -9,7 +9,7 @@ class AppLocalizationsSr extends AppLocalizations {
   AppLocalizationsSr([String locale = 'sr']) : super(locale);
 
   @override
-  String get appName => 'Pruži Korak';
+  String get appName => 'Pruži korak';
 
   @override
   String get retry => 'Pokušaj ponovo';
@@ -80,7 +80,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get congrats_message => 'Upravo ste prešli';
 
   @override
-  String get stepsToday => 'Prepešačeno\ndanas';
+  String get stepsToday => 'Prepešačeno danas';
 
   @override
   String get stepsTotal => 'Ukupno\nprepešačeno';
@@ -90,4 +90,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get email_validation_error => 'Neispravan format email adrese';
+
+  @override
+  String get unexpected_error_occurred => 'Došlo je do neočekicane greške!';
 }
