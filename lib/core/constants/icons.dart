@@ -12,4 +12,10 @@ class AppIcons {
   static const icStep = 'assets/icons/ic_step.svg';
   static const icPlusPrimary = 'assets/icons/ic_plus_primary.svg';
   static const icPlusVariant = 'assets/icons/ic_plus_variant.svg';
+  static const icSad = 'assets/icons/ic_sad.svg';
+  static const facebook = 'assets/icons/facebook.svg';
+  static const instagram = 'assets/icons/instagram.svg';
+  static const linkedin = 'assets/icons/linkedin.svg';
+  static const twitter = 'assets/icons/twitter.svg';
+  static const email = 'assets/icons/email.svg';
 }

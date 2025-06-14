@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
+import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
 import 'package:pruzi_korak/features/organization_message/organization_message_screen.dart';
+import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 
 import 'app_routes.dart';
@@ -38,7 +40,7 @@ final _router = GoRouter(
       path: AppRoutes.organizationMessage.path(),
       name: AppRoutes.organizationMessage.name,
       builder: (context, state) {
-        return const OrganizationMessageScreen();
+        return const CampaignMessageScreen();
       },
     ),
 
@@ -75,7 +77,7 @@ final _router = GoRouter(
               path: AppRoutes.profile.path(),
               name: AppRoutes.profile.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("Profile")), state: state);
+                return getPage(child: ProfileScreen(), state: state);
               },
             ),
           ],
@@ -86,7 +88,7 @@ final _router = GoRouter(
               path: AppRoutes.aboutCompany.path(),
               name: AppRoutes.aboutCompany.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("About Company")), state: state);
+                return getPage(child: Center(child: const AboutCompanyScreen()), state: state);
               },
             ),
           ],
