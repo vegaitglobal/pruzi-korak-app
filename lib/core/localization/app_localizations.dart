@@ -109,6 +109,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @stepsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepešačeno danas'**
+  String get stepsToday;
+
+  /// No description provided for @stepsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Ukupno\nprepešačeno'**
+  String get stepsTotal;
 }
 
 class _AppLocalizationsDelegate

@@ -13,4 +13,10 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get retry => 'Pokušaj ponovo';
+
+  @override
+  String get stepsToday => 'Prepešačeno\ndanas';
+
+  @override
+  String get stepsTotal => 'Ukupno\nprepešačeno';
 }
