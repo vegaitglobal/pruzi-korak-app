@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 class AppGradients {
-  static final primaryLabelGradient = LinearGradient(
+  static final primaryLinearGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: [AppColors.primary, AppColors.secondary],
+    colors: [AppColors.primaryVariant, AppColors.primary],
   );
 
   static final backgroundLinearGradient = LinearGradient(

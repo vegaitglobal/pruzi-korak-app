@@ -37,3 +37,31 @@ class UserAvatarImage extends StatelessWidget {
             ));
   }
 }
+
+// CachedImage wihtout this circle decoration
+class CachedImage extends StatelessWidget {
+  const CachedImage({
+    super.key,
+    required this.imageUrl,
+    this.token,
+    this.width,
+    this.height,
+  });
+
+  final String imageUrl;
+  final String? token;
+  final double? width;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      placeholder: (context, url) => CircularProgressIndicator(color: AppColors.primary),
+      errorWidget: (context, url, error) => Icon(Icons.error, color: AppColors.error),
+      httpHeaders: token != null ? {"Authorization": "Bearer $token"} : null,
+      width: width,
+      height: height,
+    );
+  }
+}

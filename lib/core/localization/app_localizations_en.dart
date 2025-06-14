@@ -78,4 +78,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get congrats_message => 'Upravo ste prešli';
+
+  @override
+  String get stepsToday => 'Prepešačeno danas';
+
+  @override
+  String get stepsTotal => 'Ukupno\nprepešačeno';
 }

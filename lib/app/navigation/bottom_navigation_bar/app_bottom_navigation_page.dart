@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/app/theme/gradients.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
 
 import 'bottom_bar_item.dart';
@@ -29,67 +30,87 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
           decoration: BoxDecoration(color: AppColors.backgroundPrimary),
           child: SafeArea(child: widget.child),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: activeIconColor,
-          unselectedItemColor: iconColor,
-          backgroundColor: AppColors.backgroundPrimary,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: widget.child.currentIndex,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          onTap: (index) {
-            widget.child.goBranch(
-              index,
-              initialLocation: index == widget.child.currentIndex,
-            );
-            setState(() {});
-          },
-          items: [
-            BottomNavigationBarItem(
-              icon: BottomBarIcon(iconPath: AppIcons.icHome, color: iconColor),
-              activeIcon: BottomBarIcon(
-                iconPath: AppIcons.icHome,
-                color: activeIconColor,
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              height: 2,
+              decoration: BoxDecoration(
+                gradient: AppGradients.primaryLinearGradient,
               ),
-              label: '',
             ),
-            BottomNavigationBarItem(
-              icon: BottomBarIcon(
-                iconPath: AppIcons.icStatistic,
-                color: iconColor,
-              ),
-              activeIcon: BottomBarIcon(
-                iconPath: AppIcons.icStatistic,
-                color: activeIconColor,
-              ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: BottomBarIcon(
-                iconPath: AppIcons.icProfile,
-                color: iconColor,
-              ),
-              activeIcon: BottomBarIcon(
-                iconPath: AppIcons.icProfile,
-                color: activeIconColor,
-              ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: BottomBarIcon(iconPath: AppIcons.icAbout, color: iconColor),
-              activeIcon: BottomBarIcon(
-                iconPath: AppIcons.icAbout,
-                color: activeIconColor,
-              ),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: BottomBarIcon(iconPath: AppIcons.icLogo, color: iconColor),
-              activeIcon: BottomBarIcon(
-                iconPath: AppIcons.icLogo,
-                color: activeIconColor,
-              ),
-              label: '',
+            BottomNavigationBar(
+              selectedItemColor: activeIconColor,
+              unselectedItemColor: iconColor,
+              backgroundColor: AppColors.backgroundPrimary,
+              type: BottomNavigationBarType.fixed,
+              currentIndex: widget.child.currentIndex,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              onTap: (index) {
+                widget.child.goBranch(
+                  index,
+                  initialLocation: index == widget.child.currentIndex,
+                );
+                setState(() {});
+              },
+              items: [
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
+                    iconPath: AppIcons.icHome,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icHome,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
+                    iconPath: AppIcons.icStatistic,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icStatistic,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
+                    iconPath: AppIcons.icProfile,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icProfile,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
+                    iconPath: AppIcons.icAbout,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icAbout,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
+                    iconPath: AppIcons.icLogo,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icLogo,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+              ],
             ),
           ],
         ),

@@ -21,5 +21,7 @@
   "permanently_delete_profile": "Trajno obrišite profil?",
   "km": "km",
   "congrats": "ČESTITAMO!",
-  "congrats_message": "Upravo ste prešli"
+  "congrats_message": "Upravo ste prešli",
+  "stepsToday": "Prepešačeno danas",
+  "stepsTotal": "Ukupno\nprepešačeno"
 }
