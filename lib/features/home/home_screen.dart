@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
@@ -21,6 +22,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
+
+  @override
+  void initState() {
+    super.initState();
+    _listenToHealthKitCallbacks();
+  }
+
+  void _listenToHealthKitCallbacks() {
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'stepCountChanged') {
+        if (mounted) {
+          context.read<HomeBloc>().add(const HomeLoadEvent());
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -40,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 HomeError() => ErrorComponent(
                   errorMessage: "Failed to load home data",
                   onRetry: () {
-                    context.read<HomeBloc>().add(HomeLoadEvent());
+                    context.read<HomeBloc>().add(const HomeLoadEvent());
                   },
                 ),
               };
