@@ -22,9 +22,9 @@ class LoginSuccess extends LoginState {
 }
 
 class LoginFailure extends LoginState {
-  final String errorMessage;
+  final Exception exception;
 
-  const LoginFailure(this.errorMessage);
+  const LoginFailure(this.exception);
 
   @override
   List<Object?> get props => [];

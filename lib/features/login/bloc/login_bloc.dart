@@ -16,29 +16,49 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   void onLoginUserEvent(LoginUser event, Emitter<LoginState> emitter) async {
-    if (event.password.isEmpty || event.email.isEmpty) {
-      throw Exception("invalidni argumenti");
-    }
-
     emitter(Loading());
-    print("=====>>> perform login");
     try {
-      final loginEventResults = await _authRepository.login(
+      _validateUserCredentialsInput(event);
+
+      final loginResponse = await _authRepository.login(
         event.email,
         event.password,
       );
-      print("=====>>> on success $loginEventResults");
+
       emitter(LoginSuccess());
-    } on Exception catch (e) {
-      print(
-        "=====>>> error ${e} occurred while attempting login operation for"
-        " email ${event.email}"
-        " with password ${event.password}",
-      );
-      emitter(LoginFailure(_getErrorFromException(e)));
+    } on LoginInputValidationException catch (e) {
+      // print(
+      //   "=====>>> error ${e} occurred while attempting login operation for"
+      //   " email ${event.email}"
+      //   " with password ${event.password}",
+      // );
+      emitter(LoginFailure(e));
     }
   }
 
-  //TODO parse exception into error string
-  String _getErrorFromException(Exception e) => "Desila se greska";
+  void _validateUserCredentialsInput(LoginUser event) {
+    if (event.email.isEmpty || _isEmail(event.email)) {
+      throw InvalidEmailException(event.email);
+    }
+
+    if (event.password.isEmpty) {
+      throw InvalidPasswordException(event.password);
+    }
+  }
+
+  bool _isEmail(String email) => !RegExp(r'.+@.+').hasMatch(email);
+}
+
+class LoginInputValidationException implements Exception {}
+
+class InvalidPasswordException implements LoginInputValidationException {
+  final String password;
+
+  const InvalidPasswordException(this.password);
+}
+
+class InvalidEmailException implements LoginInputValidationException {
+  final String email;
+
+  const InvalidEmailException(this.email);
 }

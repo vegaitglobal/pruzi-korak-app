@@ -40,24 +40,25 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
         }
       },
-      buildWhen: (context, state) {
-        return state is LoginInitial || state is Loading;
-      },
+      // buildWhen: (context, state) {
+      //   return state is LoginInitial || state is Loading;
+      // },
       builder: (BuildContext context, LoginState state) {
-        switch (state) {
-          case LoginInitial():
-            return _content();
-          case Loading():
-            return AppLoader();
-          case LoginSuccess():
-          case LoginFailure():
-            return _content();
-        }
+        return _content(state);
+        // switch (state) {
+        //   case LoginInitial():
+        //     return _content();
+        //   case Loading():
+        //     return AppLoader();
+        //   case LoginSuccess():
+        //   case LoginFailure():
+        //     return _content();
+        // }
       },
     );
   }
 
-  Widget _content() {
+  Widget _content(LoginState state) {
     return Scaffold(
       appBar: null,
       backgroundColor: AppColors.backgroundPrimary,
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _appLogoIcon(),
           _componentSeparator(64),
           _loginMessage(),
-          _loginForm(),
+          _loginForm(state),
         ]),
       ),
     );
@@ -85,41 +86,47 @@ class _LoginScreenState extends State<LoginScreen> {
   SvgPicture _appLogoIcon() =>
       SvgPicture.asset("assets/icons/app_logo.svg", width: 64);
 
-  Column _loginForm() => Column(
+  Column _loginForm(LoginState state) => Column(
     children: [
-      _emailInputTextField(),
+      _emailInputTextField(_getEmailErrorMessageOnInvalidInput(state)),
       _componentSeparator(22),
-      _passwordInputField(),
+      _passwordInputField(_getPasswordErrorMessageOnInvalidInput(state)),
       _componentSeparator(22),
       _loginButton(),
     ],
   );
 
-  TextField _emailInputTextField() => TextField(
+  TextField _emailInputTextField(String? errorMessage) => TextField(
     controller: _emailInputFieldController,
     keyboardType: TextInputType.emailAddress,
     decoration: _textInputDecoration(
       _localizedStrings?.email,
       _localizedStrings?.email_hint,
+      errorMessage,
     ),
   );
 
-  TextField _passwordInputField() => TextField(
+  TextField _passwordInputField(String? errorMessage) => TextField(
     controller: _passwordInputFieldController,
     keyboardType: TextInputType.visiblePassword,
     decoration: _textInputDecoration(
       _localizedStrings?.password,
       _localizedStrings?.password_hint,
+      errorMessage,
     ),
   );
 
-  InputDecoration _textInputDecoration(String? labelText, String? hintText) =>
-      InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        focusedBorder: _textFieldUnderlineDecor(),
-        enabledBorder: _textFieldUnderlineDecor(),
-      );
+  InputDecoration _textInputDecoration(
+    String? labelText,
+    String? hintText,
+    String? errorMessage,
+  ) => InputDecoration(
+    errorText: errorMessage,
+    labelText: labelText,
+    hintText: hintText,
+    focusedBorder: _textFieldUnderlineDecor(),
+    enabledBorder: _textFieldUnderlineDecor(),
+  );
 
   UnderlineInputBorder _textFieldUnderlineDecor() => UnderlineInputBorder(
     borderSide: BorderSide(color: AppColors.primaryVariant),
@@ -145,6 +152,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     },
   );
+
+  String? _getPasswordErrorMessageOnInvalidInput(LoginState state) {
+    if (state is LoginFailure && state.exception is InvalidPasswordException) {
+      return _localizedStrings?.password_validation_error;
+    } else {
+      return null;
+    }
+  }
+
+  String? _getEmailErrorMessageOnInvalidInput(LoginState state) {
+    if (state is LoginFailure && state.exception is InvalidEmailException) {
+      return _localizedStrings?.email_validation_error;
+    } else {
+      return null;
+    }
+  }
 }
 
 extension on BuildContext {

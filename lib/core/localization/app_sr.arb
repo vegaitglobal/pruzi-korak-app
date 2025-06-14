@@ -2,7 +2,7 @@
   "appName": "Pruži Korak",
   "retry": "Pokušaj ponovo",
   "stepsToday": "Prepešačeno\ndanas",
-  "stepsTotal": "Ukupno\nprepešačeno"
+  "stepsTotal": "Ukupno\nprepešačeno",
   "retry": "Pokušaj ponovo",
   "email": "Email",
   "email_hint": "Unesite vasu email adresu",
@@ -24,5 +24,7 @@
   "permanently_delete_profile": "Trajno obrišite profil?",
   "km": "km",
   "congrats": "ČESTITAMO!",
-  "congrats_message": "Upravo ste prešli"
+  "congrats_message": "Upravo ste prešli",
+  "password_validation_error": "Neispravan format šifre",
+  "email_validation_error": "Neispravan format email adrese"
 }

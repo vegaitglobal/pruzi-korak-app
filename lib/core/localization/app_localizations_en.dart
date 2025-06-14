@@ -84,4 +84,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepsTotal => 'Ukupno\nprepešačeno';
+
+  @override
+  String get password_validation_error => 'Neispravan format šifre';
+
+  @override
+  String get email_validation_error => 'Neispravan format email adrese';
 }

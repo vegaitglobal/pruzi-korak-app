@@ -23,5 +23,7 @@
   "congrats": "ČESTITAMO!",
   "congrats_message": "Upravo ste prešli",
   "stepsToday": "Prepešačeno danas",
-  "stepsTotal": "Ukupno\nprepešačeno"
+  "stepsTotal": "Ukupno\nprepešačeno",
+  "password_validation_error": "Neispravan format šifre",
+  "email_validation_error": "Neispravan format email adrese"
 }
