@@ -22,7 +22,7 @@ GoRouter get router => _router;
 
 final _router = GoRouter(
   navigatorKey: parentNavigatorKey,
-  initialLocation: AppRoutes.home.path(), // TODO: Change to splash after testing
+  initialLocation: AppRoutes.splash.path(),
   routes: [
     GoRoute(
       parentNavigatorKey: parentNavigatorKey,

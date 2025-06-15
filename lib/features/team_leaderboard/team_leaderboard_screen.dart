@@ -81,6 +81,12 @@ class UserLeaderboardSection extends StatelessWidget {
               itemBuilder: (context, index) {
                 final item = TeamLeaderboardListItem(
                   leaderboardModel: leaderboardList[index],
+                  onItemClick: (teamId) {
+                    context.pushNamed(
+                      AppRoutes.teamLeaderboardDetails.name,
+                      pathParameters: {'id': teamId},
+                    );
+                  },
                 );
                 final hasDivider = index < leaderboardList.length - 1;
                 return Column(
