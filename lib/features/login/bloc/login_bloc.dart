@@ -31,7 +31,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } on LoginInputValidationException catch (e) {
       return LoginFailure(e);
     } on Exception catch (exception) {
-      AppLogger.logError("p", exception);
       return LoginFailure(null);
     }
   }
