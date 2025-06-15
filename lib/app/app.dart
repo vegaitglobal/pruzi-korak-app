@@ -10,6 +10,7 @@ import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
+import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
 
 import 'navigation/navigation_router.dart';
@@ -33,6 +34,8 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
         BlocProvider<UserLeaderboardBloc>(create: (context) => UserLeaderboardBloc()),
+        BlocProvider<TeamLeaderboardBloc>(create: (context) => TeamLeaderboardBloc()),
+
       ],
 
       // SessionListener will handle session expiration and logout, if not needed, we should remove it.

@@ -13,4 +13,5 @@ class AppIcons {
   static const icPlusPrimary = 'assets/icons/ic_plus_primary.svg';
   static const icPlusVariant = 'assets/icons/ic_plus_variant.svg';
   static const icSad = 'assets/icons/ic_sad.svg';
+  static const icTeamLeaderboard = 'assets/icons/ic_team_leaderboard.svg';
 }

@@ -4,6 +4,7 @@ import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
+import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_screen.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_screen.dart';
 
 import 'app_routes.dart';
@@ -58,6 +59,17 @@ final _router = GoRouter(
               name: AppRoutes.userLeaderboard.name,
               pageBuilder: (context, state) {
                 return getPage(child: UserLeaderboardScreen(), state: state);
+              },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.teamLeaderboard.path(),
+              name: AppRoutes.teamLeaderboard.name,
+              pageBuilder: (context, state) {
+                return getPage(child: TeamLeaderboardScreen(), state: state);
               },
             ),
           ],
