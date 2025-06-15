@@ -102,27 +102,24 @@ class AboutOrganizationScreen extends StatelessWidget {
                 
                 const SizedBox(height: 20.0),
 
-                // Row of clickable social‑media icons 20 px above nav
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                // Wrap of clickable social‑media icons with uniform spacing
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: [
-                    for (var i = 0; i < socialLinks.length; i++) ...[
+                    for (final link in socialLinks)
                       SizedBox(
-                        width: 70,
-                        height: 70,
+                        width: 56,
+                        height: 56,
                         child: ClickableIcon(
                           appSvgIcon: AppSvgIcon(
-                            iconPath: socialLinks[i]['iconPath'] as String,
-                            size: 60,   // fills the 70×70 box comfortably
+                            iconPath: link['iconPath'] as String,
+                            size: 44, // fills the 56×56 box with 6‑px padding
                           ),
-                          onPressed: () {
-                            launchURL(socialLinks[i]['url'] as String);
-                          },
+                          onPressed: () => launchURL(link['url'] as String),
                         ),
                       ),
-                      if (i != socialLinks.length - 1)
-                        const SizedBox(width: 4),
-                    ],
                   ],
                 ),
 
