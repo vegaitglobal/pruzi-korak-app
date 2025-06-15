@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pruzi_korak/app/di/injector.dart';
+import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
+import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/about_pruzi_korak_screen.dart';
+import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
 import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
-import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
-import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 import 'package:pruzi_korak/features/splash_organization/splash_organization_screen.dart';
@@ -37,7 +40,7 @@ final _router = GoRouter(
       path: AppRoutes.splashOrganization.path(),
       name: AppRoutes.splashOrganization.name,
       builder: (context, state) {
-        return SplashOrganizationScreen();
+        return const SplashOrganizationScreen();
       },
     ),
     GoRoute(

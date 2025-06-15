@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
 
           case LoginSuccess():
-            context.go(AppRoutes.home.path());
+            context.go(AppRoutes.splashOrganization.path());
         }
       },
       builder: (BuildContext context, LoginState state) {
