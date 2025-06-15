@@ -9,9 +9,6 @@ import '../../domain/auth/AuthRepository.dart';
 const String _device_validation_endpoint = "validate_and_register_device";
 const String _device_id_key = "device_id";
 const String _user_id_key = "input_user_id";
-const String _email_key = "input_email";
-const String _pass_key = "input_passcode";
-const String _device_key = "device_id";
 
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _client;
@@ -89,9 +86,4 @@ class AuthRepositoryImpl implements AuthRepository {
 sealed class AuthExceptions implements Exception {}
 
 class UnsupportedPlatformException implements AuthExceptions {}
-
-class IllegalUserAgent implements AuthExceptions {}
-
 class UnsupportedDeviceIdentifierState implements AuthExceptions {}
-
-class IllegalArgumentException implements AuthExceptions {}
