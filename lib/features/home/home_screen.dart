@@ -3,14 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
-import 'package:pruzi_korak/core/constants/icons.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/home/home_section.dart';
 import 'package:pruzi_korak/features/home/user_section.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header.dart';
-import 'package:pruzi_korak/shared_ui/components/card_component.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 

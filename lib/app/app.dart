@@ -12,6 +12,7 @@ import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
+import 'package:pruzi_korak/app/theme/colors.dart';
 
 import 'navigation/navigation_router.dart';
 
@@ -30,7 +31,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<SplashBloc>(
           create: (context) => SplashBloc(getIt<AuthRepository>()),
         ),
-        BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(getIt<AuthRepository>()),
+        ),
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
         BlocProvider<UserLeaderboardBloc>(create: (context) => UserLeaderboardBloc()),
@@ -42,14 +45,18 @@ class _MyAppState extends State<MyApp> {
       child: SessionListener(
         router: router,
         child: MaterialApp.router(
-          title: 'Pruži Korak',
+          title: 'Pruži korak',
           supportedLocales: const [Locale('sr', 'Latn')],
+
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+          theme: ThemeData(
+            scaffoldBackgroundColor: AppColors.backgroundPrimary,
+          ),
           routerConfig: router,
         ),
       ),
