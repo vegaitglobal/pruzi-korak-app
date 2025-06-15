@@ -13,6 +13,7 @@ import 'package:pruzi_korak/shared_ui/components/buttons.dart';
 import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
+import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
@@ -30,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLogoutPressed) {
+        if (state is ProfileLoggedOut) {
           context.go(AppRoutes.login.path());
         } else if (state is ProfileDeleted) {
           context.go(AppRoutes.login.path());
@@ -94,6 +95,9 @@ class ProfileLoadedSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial =
+    userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -105,7 +109,7 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                userModel.fullName,
+                "${userModel.fistName} ${userModel.lastName}",
                 style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
               ),
               const SizedBox(height: 16),
@@ -115,7 +119,7 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: UserAvatarImage(imageUrl: userModel.imageUrl, size: 124),
+                child: InitialsAvatar(initial: initial, size: 124),
               ),
             ],
           ),
