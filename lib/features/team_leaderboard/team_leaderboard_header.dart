@@ -66,7 +66,7 @@ class TeamLeaderboardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-        leaderboardModel.name.isNotEmpty ? leaderboardModel.name[0] : '?';
+        leaderboardModel.teamName.isNotEmpty ? leaderboardModel.teamName[0] : '?';
     return Transform.translate(
       offset: Offset(0, verticalOffset),
       child: Column(
@@ -82,7 +82,7 @@ class TeamLeaderboardItem extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            leaderboardModel.name,
+            leaderboardModel.teamName,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class TeamLeaderboardItem extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "${leaderboardModel.steps} ${AppLocalizations.of(context)!.km}",
+            "${leaderboardModel.distance} ${AppLocalizations.of(context)!.km}",
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,

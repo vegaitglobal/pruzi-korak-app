@@ -14,7 +14,7 @@ class TeamLeaderboardListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-        leaderboardModel.name.isNotEmpty ? leaderboardModel.name[0] : '?';
+        leaderboardModel.teamName.isNotEmpty ? leaderboardModel.teamName[0] : '?';
 
     return InkWell(
       onTap: () => onItemClick(leaderboardModel.id),
@@ -32,7 +32,7 @@ class TeamLeaderboardListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                leaderboardModel.name,
+                leaderboardModel.teamName,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
@@ -48,7 +48,7 @@ class TeamLeaderboardListItem extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            leaderboardModel.steps,
+            leaderboardModel.distance,
             style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
         ],

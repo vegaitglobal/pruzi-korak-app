@@ -5,6 +5,7 @@ import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
 import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
+import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 
 
 class UserLeaderboardHeader extends StatelessWidget {
@@ -53,6 +54,9 @@ class LeaderboardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial =
+    leaderboardModel.firstName.isNotEmpty ? leaderboardModel.firstName[0] : '?';
+
     return Transform.translate(
       offset: Offset(0, verticalOffset),
       child: Column(
@@ -61,14 +65,12 @@ class LeaderboardItem extends StatelessWidget {
             badgePosition: BadgePosition.bottomCenter,
             badgeSize: BadgeSize.large,
             badgeValue: leaderboardModel.rank,
-            child: UserAvatarImage(
-              imageUrl: leaderboardModel.imageUrl ?? "",
-              size: imageSize,
-            ),
+            child: InitialsAvatar(initial: initial, size: imageSize),
+
           ),
           const SizedBox(height: 16),
           Text(
-            leaderboardModel.name,
+            '${leaderboardModel.firstName}\n${leaderboardModel.lastName}',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -78,7 +80,7 @@ class LeaderboardItem extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "${leaderboardModel.steps} ${AppLocalizations.of(context)!.km}",
+            "${leaderboardModel.distance} ${AppLocalizations.of(context)!.km}",
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,

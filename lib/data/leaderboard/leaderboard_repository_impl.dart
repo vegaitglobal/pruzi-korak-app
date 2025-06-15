@@ -1,0 +1,95 @@
+import 'package:pruzi_korak/core/supabase/tenant_supabase_client.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
+import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
+import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'leaderboard_repository.dart';
+
+class LeaderboardRepositoryImpl implements LeaderboardRepository {
+  final SupabaseClient _client;
+
+  LeaderboardRepositoryImpl(this._client);
+
+  @override
+  Future<({TopThreeLeaderboardModel topThree, List<LeaderboardModel> list})>
+  getUsersLeaderboard() async {
+    try {
+      final response = await _client.rpc(
+        'get_team_users_with_distance',
+        params: {'input_team_id': "dc81c171-8b42-4b89-9694-b621aa78c43b"},
+      );
+
+      AppLogger.logInfo("getUsersLeaderboard response: ${response}");
+
+      final rawList = response.data as List;
+
+      rawList.sort((a, b) {
+        final aDistance = double.tryParse(a['total_distance'].toString()) ?? 0;
+        final bDistance = double.tryParse(b['total_distance'].toString()) ?? 0;
+        return bDistance.compareTo(aDistance);
+      });
+
+      final List<LeaderboardModel> leaderboard =
+          rawList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final json = entry.value as Map<String, dynamic>;
+            final rank = (index + 1).toString();
+            return LeaderboardModel.fromJson(json, rank: rank);
+          }).toList();
+
+      final topThree = TopThreeLeaderboardModel.fromList(leaderboard);
+      AppLogger.logInfo("Top three leaderboard: $topThree");
+      final others =
+          leaderboard.length > 3
+              ? leaderboard.sublist(3)
+              : <LeaderboardModel>[];
+
+      return (topThree: topThree, list: others);
+    } catch (e) {
+      AppLogger.logError("Failed to fetch leaderboard: $e");
+      throw Exception('Failed to fetch leaderboard: $e');
+    }
+  }
+
+  @override
+  Future<({List<LeaderboardModel> list, TopThreeLeaderboardModel topThree})>
+  getTeamLeaderboard() async {
+    try {
+      final response = await _client.rpc(
+        'get_team_users_with_distance',
+        params: {'input_team_id': "dc81c171-8b42-4b89-9694-b621aa78c43b"},
+      );
+
+      AppLogger.logInfo("getUsersLeaderboard response: ${response}");
+
+      final rawList = response.data as List;
+
+      rawList.sort((a, b) {
+        final aDistance = double.tryParse(a['total_distance'].toString()) ?? 0;
+        final bDistance = double.tryParse(b['total_distance'].toString()) ?? 0;
+        return bDistance.compareTo(aDistance);
+      });
+
+      final List<LeaderboardModel> leaderboard =
+          rawList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final json = entry.value as Map<String, dynamic>;
+            final rank = (index + 1).toString();
+            return LeaderboardModel.fromJson(json, rank: rank);
+          }).toList();
+
+      final topThree = TopThreeLeaderboardModel.fromList(leaderboard);
+      AppLogger.logInfo("Top three leaderboard: $topThree");
+      final others =
+          leaderboard.length > 3
+              ? leaderboard.sublist(3)
+              : <LeaderboardModel>[];
+
+      return (topThree: topThree, list: others);
+    } catch (e) {
+      AppLogger.logError("Failed to fetch leaderboard: $e");
+      throw Exception('Failed to fetch leaderboard: $e');
+    }
+  }
+}

@@ -6,7 +6,7 @@ class TenantSupabaseClient {
   final SupabaseClient client;
   final String tenantId;
 
-  final _tenantIdKey = 'tenant_id';
+  final _tenantIdKey = 'organization_id';
 
   TenantSupabaseClient({required this.client, required this.tenantId});
 
