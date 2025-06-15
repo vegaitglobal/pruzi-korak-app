@@ -17,14 +17,8 @@ Future<void> configureDI() async {
 
 void setupInitialLocator() {
   getIt.registerSingleton<SessionStream>(SessionStream());
-
-  getIt.registerSingleton<SupabaseClient>(
-    SupabaseClient(AppConstants.SUPABASE_URL, AppConstants.SUPABASE_KEY),
-  );
-
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(getIt<SupabaseClient>()),
-  );
+  getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
+  getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(getIt<SupabaseClient>()),);
 }
 
 Future<void> setupTenantScopedServices(String tenantId) async {
@@ -34,12 +28,10 @@ Future<void> setupTenantScopedServices(String tenantId) async {
   );
 
   getIt.registerSingleton<TenantSupabaseClient>(supabaseService);
-  //getIt.registerLazySingleton(() => UserRepository(getIt()));
 }
 
 void resetTenantScopedServices() {
   if (getIt.isRegistered<TenantSupabaseClient>()) {
     getIt.unregister<TenantSupabaseClient>();
   }
-  //if (getIt.isRegistered<UserRepository>()) getIt.unregister<UserRepository>();
 }

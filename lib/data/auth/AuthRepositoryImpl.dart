@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pruzi_korak/core/exception/exception_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -23,14 +21,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<bool> isLoggedIn() async {
-    return handleSupabaseExceptions(() async {
-      final session = _client.auth.currentSession;
-      if (session == null) return false;
-
-      // TODO: Check if we have a valid tenant ID
-
-      return true;
-    });
+    final session = _client.auth.currentSession;
+    if (session == null) return false;
+    return true;
   }
 
   Future<String?> _getDeviceIdentifier() async {
