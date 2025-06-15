@@ -8,6 +8,8 @@ import 'package:pruzi_korak/features/about_organization/about_organization_scree
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 import 'package:pruzi_korak/features/splash_organization/splash_organization_screen.dart';
+import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_screen.dart';
+import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_screen.dart';
 
 import 'app_routes.dart';
 import 'bottom_navigation_bar/app_bottom_navigation_page.dart';
@@ -73,10 +75,21 @@ final _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.statistic.path(),
-              name: AppRoutes.statistic.name,
+              path: AppRoutes.userLeaderboard.path(),
+              name: AppRoutes.userLeaderboard.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("Statistic")), state: state);
+                return getPage(child: UserLeaderboardScreen(), state: state);
+              },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.teamLeaderboard.path(),
+              name: AppRoutes.teamLeaderboard.name,
+              pageBuilder: (context, state) {
+                return getPage(child: TeamLeaderboardScreen(), state: state);
               },
             ),
           ],

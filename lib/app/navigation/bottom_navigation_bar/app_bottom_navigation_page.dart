@@ -79,6 +79,17 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
                 ),
                 BottomNavigationBarItem(
                   icon: BottomBarIcon(
+                    iconPath: AppIcons.icTeamLeaderboard,
+                    color: iconColor,
+                  ),
+                  activeIcon: BottomBarIcon(
+                    iconPath: AppIcons.icTeamLeaderboard,
+                    color: activeIconColor,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: BottomBarIcon(
                     iconPath: AppIcons.icProfile,
                     color: iconColor,
                   ),

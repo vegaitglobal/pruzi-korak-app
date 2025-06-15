@@ -18,4 +18,5 @@ class AppIcons {
   static const linkedin = 'assets/icons/linkedin.svg';
   static const twitter = 'assets/icons/twitter.svg';
   static const email = 'assets/icons/email.svg';
+  static const icTeamLeaderboard = 'assets/icons/ic_team_leaderboard.svg';
 }
