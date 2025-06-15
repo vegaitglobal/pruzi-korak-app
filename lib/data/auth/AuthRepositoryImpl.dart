@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:pruzi_korak/core/exception/exception_handler.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
@@ -23,9 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _client.auth.signOut();
       await _localStorage.clearUserData();
-      AppLogger.logInfo('User logged out successfully');
     } catch (e) {
-      AppLogger.logError('Error during logout: $e');
       throw Exception('Failed to log out: $e');
     }
   }
