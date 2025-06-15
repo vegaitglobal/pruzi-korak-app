@@ -10,6 +10,7 @@ class AppIcons {
   static const icProfile = 'assets/icons/ic_profile.svg';
   static const icStatistic = 'assets/icons/ic_statistic.svg';
   static const icStep = 'assets/icons/ic_step.svg';
+  static const icStepLarge = 'assets/icons/ic_step_large.svg';
   static const icPlusPrimary = 'assets/icons/ic_plus_primary.svg';
   static const icPlusVariant = 'assets/icons/ic_plus_variant.svg';
   static const icSad = 'assets/icons/ic_sad.svg';

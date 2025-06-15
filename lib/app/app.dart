@@ -11,6 +11,7 @@ import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
+import 'package:pruzi_korak/features/team_leaderboard/details/bloc/team_details_bloc.dart';
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 
@@ -38,6 +39,8 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
         BlocProvider<UserLeaderboardBloc>(create: (context) => UserLeaderboardBloc()),
         BlocProvider<TeamLeaderboardBloc>(create: (context) => TeamLeaderboardBloc()),
+        BlocProvider<TeamDetailsBloc>(create: (context) => TeamDetailsBloc()),
+
 
       ],
 
