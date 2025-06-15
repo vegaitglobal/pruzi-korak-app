@@ -1,5 +1,10 @@
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 abstract class AuthRepository {
-  Future<Map<String, dynamic>> login(String email, String password);
+  Future<User?> login(String email, String password);
+
   Future<void> logout();
+
   Future<bool> isLoggedIn();
 }

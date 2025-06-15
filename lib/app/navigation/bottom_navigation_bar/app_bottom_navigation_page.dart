@@ -56,24 +56,36 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
               },
               items: [
                 BottomNavigationBarItem(
-                  icon: BottomBarIcon(
-                    iconPath: AppIcons.icHome,
-                    color: iconColor,
+                  icon: Semantics(
+                    identifier: "bottom_bar_item_home_inactive",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icHome,
+                      color: iconColor,
+                    ),
                   ),
-                  activeIcon: BottomBarIcon(
-                    iconPath: AppIcons.icHome,
-                    color: activeIconColor,
+                  activeIcon: Semantics(
+                    identifier: "bottom_bar_item_home_active",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icHome,
+                      color: activeIconColor,
+                    ),
                   ),
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: BottomBarIcon(
-                    iconPath: AppIcons.icStatistic,
-                    color: iconColor,
+                  icon: Semantics(
+                    identifier: "bottom_bar_item_statistics_inactive",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icStatistic,
+                      color: iconColor,
+                    ),
                   ),
-                  activeIcon: BottomBarIcon(
-                    iconPath: AppIcons.icStatistic,
-                    color: activeIconColor,
+                  activeIcon: Semantics(
+                    identifier: "bottom_bar_item_statistics_active",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icStatistic,
+                      color: activeIconColor,
+                    ),
                   ),
                   label: '',
                 ),
@@ -89,35 +101,53 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: BottomBarIcon(
-                    iconPath: AppIcons.icProfile,
-                    color: iconColor,
+                  icon: Semantics(
+                    identifier: "bottom_bar_item_profile_inactive",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icProfile,
+                      color: iconColor,
+                    ),
                   ),
-                  activeIcon: BottomBarIcon(
-                    iconPath: AppIcons.icProfile,
-                    color: activeIconColor,
-                  ),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: BottomBarIcon(
-                    iconPath: AppIcons.icAbout,
-                    color: iconColor,
-                  ),
-                  activeIcon: BottomBarIcon(
-                    iconPath: AppIcons.icAbout,
-                    color: activeIconColor,
+                  activeIcon: Semantics(
+                    identifier: "bottom_bar_item_profile_active",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icProfile,
+                      color: activeIconColor,
+                    ),
                   ),
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: BottomBarIcon(
-                    iconPath: AppIcons.icLogo,
-                    color: iconColor,
+                  icon: Semantics(
+                    identifier: "bottom_bar_item_about_inactive",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icAbout,
+                      color: iconColor,
+                    ),
                   ),
-                  activeIcon: BottomBarIcon(
-                    iconPath: AppIcons.icLogo,
-                    color: activeIconColor,
+                  activeIcon: Semantics(
+                    identifier: "bottom_bar_item_about_active",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icAbout,
+                      color: activeIconColor,
+                    ),
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Semantics(
+                    identifier: "bottom_bar_item_logo_inactive",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icLogo,
+                      color: iconColor,
+                    ),
+                  ),
+                  activeIcon: Semantics(
+                    identifier: "bottom_bar_item_logo_active",
+                    child: BottomBarIcon(
+                      iconPath: AppIcons.icLogo,
+                      color: activeIconColor,
+                    ),
                   ),
                   label: '',
                 ),

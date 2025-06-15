@@ -26,12 +26,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<LoginState> onLoginUserEvent(LoginUser event) async {
     try {
       _validateUserCredentialsInput(event);
-      var response = await _authRepository.login(event.email, event.password);
+      await _authRepository.login(event.email, event.password);
       return LoginSuccess();
     } on LoginInputValidationException catch (e) {
       return LoginFailure(e);
-    } on Exception catch (exception) {
-      AppLogger.logError("p", exception);
+    } on Exception catch (_) {
       return LoginFailure(null);
     }
   }
