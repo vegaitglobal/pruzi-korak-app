@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/core/exception/exception_handler.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
+import 'package:pruzi_korak/data/local/local_storage.dart';
+import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -12,13 +15,20 @@ const String _user_id_key = "input_user_id";
 
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _client;
+  final AppLocalStorage _localStorage;
 
-  AuthRepositoryImpl(this._client);
+  AuthRepositoryImpl(this._client, this._localStorage);
 
   @override
-  Future<void> logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
+  Future<void> logout() async{
+    try {
+      await _client.auth.signOut();
+      await _localStorage.clearUserData();
+      AppLogger.logInfo('User logged out successfully');
+    } catch (e) {
+      AppLogger.logError('Error during logout: $e');
+      throw Exception('Failed to log out: $e');
+    }
   }
 
   @override
@@ -63,6 +73,8 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
       );
       var isDeviceValid = await _isDeviceValid(response.user!.id);
+      fetchAndSaveUser();
+
       if (isDeviceValid) return response.user;
     } on Exception catch (e) {
       rethrow;
@@ -81,9 +93,24 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
   }
+
+  Future<void> fetchAndSaveUser() async {
+    try {
+      final response = await _client.rpc('get_my_data');
+      AppLogger.logInfo('Response from get_my_data: $response');
+
+      final user = UserModel.fromJson((response as List).first as Map<String, dynamic>);
+      AppLogger.logInfo('User data fetched: ${user.toJson()}');
+
+      await _localStorage.saveUser(user);
+    } catch (e) {
+      throw Exception('Failed to fetch home data: $e');
+    }
+  }
 }
 
 sealed class AuthExceptions implements Exception {}
 
 class UnsupportedPlatformException implements AuthExceptions {}
+
 class UnsupportedDeviceIdentifierState implements AuthExceptions {}

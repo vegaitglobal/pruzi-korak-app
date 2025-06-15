@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLogoutPressed) {
+        if (state is ProfileLoggedOut) {
           context.go(AppRoutes.login.path());
         } else if (state is ProfileDeleted) {
           context.go(AppRoutes.login.path());
@@ -96,7 +96,7 @@ class ProfileLoadedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-    userModel.fullName.isNotEmpty ? userModel.fullName[0] : '?';
+    userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
 
     return Stack(
       clipBehavior: Clip.none,
@@ -109,7 +109,7 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                userModel.fullName,
+                "${userModel.fistName} ${userModel.lastName}",
                 style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
               ),
               const SizedBox(height: 16),
@@ -119,7 +119,7 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: InitialsAvatar(initial: initial, size: 42),
+                child: InitialsAvatar(initial: initial, size: 124),
               ),
             ],
           ),

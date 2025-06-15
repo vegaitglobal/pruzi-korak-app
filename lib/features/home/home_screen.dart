@@ -94,7 +94,7 @@ class HomeSection extends StatelessWidget {
         AppHeader(),
         Spacer(flex: 1),
         UserSection(
-          fullName: userModel.fullName,
+          fullName: '${userModel.fistName} ${userModel.lastName}',
           badgeValue: badgeValue,
         ),
         SizedBox(height: 16),
