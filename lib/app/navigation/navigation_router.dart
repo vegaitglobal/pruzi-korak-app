@@ -8,6 +8,7 @@ import 'package:pruzi_korak/features/about_organization/about_organization_scree
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 import 'package:pruzi_korak/features/splash_organization/splash_organization_screen.dart';
+import 'package:pruzi_korak/features/team_leaderboard/details/team_details_screen.dart';
 import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_screen.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_screen.dart';
 
@@ -21,7 +22,7 @@ GoRouter get router => _router;
 
 final _router = GoRouter(
   navigatorKey: parentNavigatorKey,
-  initialLocation: AppRoutes.splash.path(),
+  initialLocation: AppRoutes.home.path(), // TODO: Change to splash after testing
   routes: [
     GoRoute(
       parentNavigatorKey: parentNavigatorKey,
@@ -91,6 +92,19 @@ final _router = GoRouter(
               pageBuilder: (context, state) {
                 return getPage(child: TeamLeaderboardScreen(), state: state);
               },
+              routes: [
+                GoRoute(
+                    parentNavigatorKey: parentNavigatorKey,
+                    path: AppRoutes.teamLeaderboardDetails.path(),
+                    name: AppRoutes.teamLeaderboardDetails.name,
+                    pageBuilder: (context, state) {
+                      final id = state.pathParameters['id'] ?? '';
+                      return getPage(
+                        child: TeamDetailsScreen(id: id),
+                        state: state,
+                      );
+                    }),
+              ]
             ),
           ],
         ),

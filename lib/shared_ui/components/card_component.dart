@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/app/theme/gradients.dart';
+import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
 class CardComponent extends StatelessWidget {
@@ -96,7 +97,7 @@ class StepsCircleComponent extends StatelessWidget {
             const SizedBox(height: 4),
             Text(text, style: AppTextStyles.labelMedium.copyWith(color: color)),
             const SizedBox(height: 4),
-            Text("km", style: AppTextStyles.bodySmall.copyWith(color: color)),
+            Text(AppLocalizations.of(context)!.km, style: AppTextStyles.bodySmall.copyWith(color: color)),
           ],
         ),
       ),

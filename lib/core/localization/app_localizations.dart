@@ -263,7 +263,7 @@ abstract class AppLocalizations {
   /// No description provided for @unexpected_error_occurred.
   ///
   /// In en, this message translates to:
-  /// **'Došlo je do neočekicane greške!'**
+  /// **'Došlo je do neočekivane greške!'**
   String get unexpected_error_occurred;
 }
 
