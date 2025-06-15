@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
-import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
-import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_header.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_list_item.dart'
     show UserLeaderboardListItem;

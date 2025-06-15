@@ -4,17 +4,17 @@ import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
-
 
 class TeamLeaderboardHeader extends StatelessWidget {
   const TeamLeaderboardHeader({
     super.key,
     required this.topThreeLeaderboardModel,
+    required this.onItemClick,
   });
 
   final TopThreeLeaderboardModel topThreeLeaderboardModel;
+  final Function(String) onItemClick;
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +26,24 @@ class TeamLeaderboardHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        TeamLeaderboardItem(leaderboardModel: second, imageSize: 84),
+        TeamLeaderboardItem(
+          leaderboardModel: second,
+          imageSize: 84,
+          onItemClick: onItemClick,
+        ),
         const SizedBox(width: 24),
         TeamLeaderboardItem(
           leaderboardModel: first,
           verticalOffset: -20,
           imageSize: 100,
+          onItemClick: onItemClick,
         ),
         const SizedBox(width: 24),
-        TeamLeaderboardItem(leaderboardModel: third, imageSize: 84),
+        TeamLeaderboardItem(
+          leaderboardModel: third,
+          imageSize: 84,
+          onItemClick: onItemClick,
+        ),
       ],
     );
   }
@@ -46,28 +55,29 @@ class TeamLeaderboardItem extends StatelessWidget {
     required this.leaderboardModel,
     required this.imageSize,
     this.verticalOffset = 0,
+    required this.onItemClick,
   });
 
   final LeaderboardModel leaderboardModel;
   final double verticalOffset;
   final double imageSize;
+  final Function(String) onItemClick;
 
   @override
   Widget build(BuildContext context) {
-    final initial = leaderboardModel.name.isNotEmpty
-        ? leaderboardModel.name[0]
-        : '?';
+    final initial =
+        leaderboardModel.name.isNotEmpty ? leaderboardModel.name[0] : '?';
     return Transform.translate(
       offset: Offset(0, verticalOffset),
       child: Column(
         children: [
-          AvatarWithBadge(
-            badgePosition: BadgePosition.bottomCenter,
-            badgeSize: BadgeSize.large,
-            badgeValue: leaderboardModel.rank,
-            child: InitialsAvatar(
-              initial:initial,
-              size: imageSize,
+          InkWell(
+            onTap: () => onItemClick(leaderboardModel.id),
+            child: AvatarWithBadge(
+              badgePosition: BadgePosition.bottomCenter,
+              badgeSize: BadgeSize.large,
+              badgeValue: leaderboardModel.rank,
+              child: InitialsAvatar(initial: initial, size: imageSize),
             ),
           ),
           const SizedBox(height: 16),
