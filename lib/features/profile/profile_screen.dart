@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLogoutPressed) {
+        if (state is ProfileLoggedOut) {
           context.go(AppRoutes.login.path());
         } else if (state is ProfileDeleted) {
           context.go(AppRoutes.login.path());
@@ -119,7 +119,7 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: InitialsAvatar(initial: initial, size: 42),
+                child: InitialsAvatar(initial: initial, size: 124),
               ),
             ],
           ),

@@ -48,7 +48,11 @@ class _MyAppState extends State<MyApp> {
               ),
         ),
         BlocProvider<ProfileBloc>(
-          create: (context) => ProfileBloc(getIt<AppLocalStorage>()),
+          create:
+              (context) => ProfileBloc(
+                getIt<AppLocalStorage>(),
+                getIt<AuthRepository>(),
+              ),
         ),
         BlocProvider<UserLeaderboardBloc>(
           create:

@@ -4,4 +4,6 @@ abstract class AppLocalStorage {
   Future<void> saveUser(UserModel userModel);
 
   Future<UserModel?> getUser();
+
+  Future<void> clearUserData();
 }

@@ -24,7 +24,8 @@ class AppLocalStorageImpl implements AppLocalStorage {
     return UserModel.fromJson(jsonDecode(userJson));
   }
 
-  Future<void> clearUser() async {
+  @override
+  Future<void> clearUserData() async {
     await _prefs.remove(_userKey);
   }
 }

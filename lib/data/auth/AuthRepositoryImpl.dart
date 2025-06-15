@@ -21,8 +21,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async{
-    // TODO: implement logout
-    throw UnimplementedError();
+    try {
+      await _client.auth.signOut();
+      await _localStorage.clearUserData();
+      AppLogger.logInfo('User logged out successfully');
+    } catch (e) {
+      AppLogger.logError('Error during logout: $e');
+      throw Exception('Failed to log out: $e');
+    }
   }
 
   @override
