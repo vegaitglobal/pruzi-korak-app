@@ -8,6 +8,8 @@ import 'package:pruzi_korak/data/home/home_repository_impl.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository_impl.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/data/organization/OrganizationRepositoryImpl.dart';
+import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'mapper_setup.dart';
@@ -29,6 +31,10 @@ void setupInitialLocator() {
 
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(getIt<SupabaseClient>()),
+  );
+
+  getIt.registerLazySingleton<OrganizationRepository>(
+    () => OrganizationRepositoryImpl(getIt<SupabaseClient>()),
   );
 }
 
