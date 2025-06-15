@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
-import 'package:pruzi_korak/domain/user/user_model.dart';
+import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
 import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 
 class UserLeaderboardListItem extends StatelessWidget {
-  const UserLeaderboardListItem({
-    super.key,
-    required this.userModel,
-    required this.badgeValue,
-    required this.distanceNum,
-  });
+  const UserLeaderboardListItem({super.key, required this.leaderboardModel});
 
-  final UserModel userModel;
-  final String badgeValue;
-  final String distanceNum;
+  final LeaderboardModel leaderboardModel;
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +16,15 @@ class UserLeaderboardListItem extends StatelessWidget {
         AvatarWithBadge(
           badgePosition: BadgePosition.topLeft,
           badgeSize: BadgeSize.small,
-          badgeValue: badgeValue,
-          child: UserAvatarImage(imageUrl: userModel.imageUrl, size: 42),
+          badgeValue: leaderboardModel.rank,
+          child: UserAvatarImage(imageUrl: leaderboardModel.imageUrl ?? "", size: 42),
         ),
         const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              userModel.fullName,
+              leaderboardModel.name,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
@@ -47,7 +40,7 @@ class UserLeaderboardListItem extends StatelessWidget {
         ),
         const Spacer(),
         Text(
-          distanceNum,
+          leaderboardModel.steps,
           style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],

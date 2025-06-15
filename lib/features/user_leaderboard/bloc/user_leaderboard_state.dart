@@ -2,27 +2,33 @@ part of 'user_leaderboard_bloc.dart';
 
 sealed class UserLeaderboardState extends Equatable {
   const UserLeaderboardState();
-}
 
-final class UserLeaderboardLoading extends UserLeaderboardState {
   @override
   List<Object> get props => [];
 }
 
-final class UserLeaderboardLoaded extends UserLeaderboardState {
-  final List<StepsModel> stepsList;
+final class UserLeaderboardLoading extends UserLeaderboardState {
+  const UserLeaderboardLoading();
+}
 
-  const UserLeaderboardLoaded({required this.stepsList});
+final class UserLeaderboardLoaded extends UserLeaderboardState {
+  final TopThreeLeaderboardModel topThreeLeaderboardModel;
+  final List<LeaderboardModel> leaderboardList;
+
+  const UserLeaderboardLoaded({
+    required this.topThreeLeaderboardModel,
+    required this.leaderboardList,
+  });
 
   @override
-  List<Object> get props => [stepsList];
+  List<Object> get props => [topThreeLeaderboardModel, leaderboardList];
 }
 
 final class UserLeaderboardError extends UserLeaderboardState {
-  final String errorMessage;
+  const UserLeaderboardError();
+}
 
-  const UserLeaderboardError({required this.errorMessage});
-
+final class UserLeaderboardEmpty extends UserLeaderboardState {
   @override
-  List<Object> get props => [errorMessage];
+  List<Object> get props => [];
 }
