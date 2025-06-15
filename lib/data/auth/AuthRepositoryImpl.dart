@@ -65,10 +65,11 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
         email: email,
       );
-
       var isDeviceValid = await _isDeviceValid(response.user!.id);
-    } on Exception catch (e) {}
-    return null;
+      if (isDeviceValid) return response.user;
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 
   Future<bool> _isDeviceValid(String userId) async {
