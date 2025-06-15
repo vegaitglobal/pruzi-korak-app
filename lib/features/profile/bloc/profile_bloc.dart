@@ -16,7 +16,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       final userModel = UserModel(
         id: '123',
         fullName: 'Nemanja Pajic',
-        imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbq96YIIrnntPV81dxzOoheWk0sTyet_FYPw&s',
       );
       emit(ProfileLoaded(userModel: userModel));
     });
