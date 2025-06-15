@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
@@ -29,9 +30,9 @@ class _TeamLeaderboardScreenState extends State<TeamLeaderboardScreen> {
             topThreeLeaderboardModel: state.topThreeLeaderboardModel,
             leaderboardList: state.leaderboardList,
           ),
-          TeamLeaderboardEmpty() => Center(child: Text("No data available")),
+          TeamLeaderboardEmpty() => Center(child: Text(AppLocalizations.of(context)!.unexpected_error_occurred)),
           TeamLeaderboardError() => ErrorComponent(
-            errorMessage: "Error loading leaderboard",
+            errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
             onRetry: () {
               context.read<TeamLeaderboardBloc>().add(LoadTeamLeaderboard());
             },

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
@@ -55,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   teamStepsModel: state.teamStepsModel,
                 ),
                 HomeError() => ErrorComponent(
-                  errorMessage: "Failed to load home data",
+                  errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
                   onRetry: () {
                     context.read<HomeBloc>().add(const HomeLoadEvent());
                   },
@@ -83,6 +84,9 @@ class HomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: replace with real dynamic data
+    const String badgeValue = '5';
+    const String teamName = 'Rounders';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -92,13 +96,13 @@ class HomeSection extends StatelessWidget {
         UserSection(
           imageUrl: userModel.imageUrl,
           fullName: userModel.fullName,
-          badgeValue: "5", // TODO: user real data
+          badgeValue: badgeValue,
         ),
         SizedBox(height: 16),
         HomeUserSection(stepsModel: userStepsModel),
         SizedBox(height: 32),
         Text(
-          "Rounders",
+          teamName,
           style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
         ),
         SizedBox(height: 32),

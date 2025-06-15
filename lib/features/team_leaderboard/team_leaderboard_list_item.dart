@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 
 class TeamLeaderboardListItem extends StatelessWidget {
@@ -14,6 +13,8 @@ class TeamLeaderboardListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final initial =
         leaderboardModel.name.isNotEmpty ? leaderboardModel.name[0] : '?';
+
+    const String teamName = 'Roadrunners';
 
     return Row(
       children: [
@@ -38,7 +39,7 @@ class TeamLeaderboardListItem extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Roadrunners', // Replace with actual steps count
+              teamName,
               style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
             ),
           ],

@@ -5,6 +5,7 @@ import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
+import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
@@ -51,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         } else {
           return ErrorComponent(
-            errorMessage: 'Greška pri učitavanju profila',
+            errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
             onRetry: () {
               context.read<ProfileBloc>().add(ProfileLoad());
             },
@@ -67,11 +68,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder:
           (context) => ConfirmActionDialog(
             icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
-            title: 'Napustate nas?',
-            description:
-                'Da li ste sigurni da želite da obrišete svoj profil? Sve informacije i vaš učinak će biti izbrisani.',
-            cancelText: 'Odustani',
-            confirmText: 'Obriši Profil',
+            title: AppLocalizations.of(context)!.leaving_us_title,
+            description: AppLocalizations.of(context)!.leaving_us_message,
+            cancelText: AppLocalizations.of(context)!.quit,
+            confirmText: AppLocalizations.of(context)!.delete_profile,
             onCancel: () => Navigator.of(context).pop(),
             onConfirm:
                 () => context.read<ProfileBloc>().add(ProfileDeleteAccount()),
@@ -127,13 +127,13 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               AppButtonWithIcon(
-                text: 'Odjavi se',
+                text: AppLocalizations.of(context)!.log_out,
                 iconPath: AppIcons.icLogout,
                 onPressed: onLogout,
               ),
               const SizedBox(height: 24),
               ClickableText(
-                text: 'Obriši nalog',
+                text: AppLocalizations.of(context)!.delete_profile,
                 textColor: AppColors.error,
                 fontSize: 14,
                 onPressed: onDeleteAccount,
