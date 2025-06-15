@@ -8,6 +8,7 @@ import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
+import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/bloc/about_pruzi_korak_bloc.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
@@ -51,6 +52,10 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<AboutPruziKorakBloc>(
           create:
               (context) => AboutPruziKorakBloc(getIt<OrganizationRepository>()),
+        ),
+        BlocProvider<AboutOrganizationBloc>(
+          create:
+              (context) => AboutOrganizationBloc(getIt<OrganizationRepository>()),
         ),
       ],
 

@@ -6,6 +6,9 @@ abstract class OrganizationRepository {
 
   /// Convenience helper for the Pruži korak organization (fixed UUID)
   Future<OrganizationData> fetchPruziKorak();
+
+  /// Fetch organization for the current user session
+  Future<OrganizationData> fetchBySession();
 }
 
 /// Simple DTOs -------------------------------------------------------------
@@ -42,12 +45,19 @@ class SocialLink {
     if (lower.contains('linkedin')) return 'assets/icons/linkedin.svg';
     if (lower.contains('twitter')) return 'assets/icons/twitter.svg';
     if (lower.contains('email')) return 'assets/icons/email.svg';
-    return 'assets/icons/link.svg';
+    return '';
   }
 }
 
 class OrganizationData {
-  OrganizationData({required this.description, required this.socialLinks});
+  OrganizationData({
+    required this.description,
+    required this.socialLinks,
+    required this.logoUrl,
+    required this.heading,
+    this.website_url1 = '',
+    this.website_url2 = '',
+  });
 
   factory OrganizationData.fromJson(Map<String, dynamic> json) {
     // -------------------------------------------------------------------
@@ -56,16 +66,32 @@ class OrganizationData {
     final String description = json['message'] as String? ?? '';
 
     // -------------------------------------------------------------------
-    // 2. Social media links – backend vraća listu (najčešće 1 map)
+    // 2. Website URL, Logo URL, and Heading
+    // -------------------------------------------------------------------
+
+    final String logoUrl = json['media_url'] as String? ?? '';
+    final String heading = json['name'] as String? ?? 'Poruka kompanije';
+
+    // -------------------------------------------------------------------
+    // 3. Social media links – backend vraća listu (najčešće 1 map)
     //    sa ključevima facebook_url, instagram_url, linkedin_url ...
     // -------------------------------------------------------------------
     final List<SocialLink> links = [];
 
-    if (json['social_media'] is List &&
-        (json['social_media'] as List).isNotEmpty) {
-      final Map<String, dynamic> sm =
-          (json['social_media'] as List).first as Map<String, dynamic>;
+    final dynamic smSource = json['social_media'];
+    Map<String, dynamic>? sm;
+    if (smSource is List && smSource.isNotEmpty) {
+      sm = smSource.first as Map<String, dynamic>;
+    } else if (smSource is Map<String, dynamic>) {
+      sm = smSource;
+    }
 
+    String website_url1 = '';
+    String website_url2 = '';
+
+    if (sm != null) {
+      website_url1 = sm['website_url1'] as String? ?? '';
+      website_url2 = sm['website_url2'] as String? ?? '';
       void maybeAdd(String key, String? url) {
         if (url == null || url.isEmpty) return;
 
@@ -78,10 +104,7 @@ class OrganizationData {
         }
 
         links.add(
-          SocialLink(
-            iconPath: SocialLink._iconFromKey(key),
-            url: effectiveUrl,
-          ),
+          SocialLink(iconPath: SocialLink._iconFromKey(key), url: effectiveUrl),
         );
       }
 
@@ -89,12 +112,25 @@ class OrganizationData {
       maybeAdd('instagram_url', sm['instagram_url'] as String?);
       maybeAdd('linkedin_url', sm['linkedin_url'] as String?);
       maybeAdd('twitter_url', sm['twitter_url'] as String?);
+      //maybeAdd('website_url1', sm['website_url1'] as String?);
+      //maybeAdd('website_url2', sm['website_url2'] as String?);
       maybeAdd('email', sm['email'] as String?);
     }
 
-    return OrganizationData(description: description, socialLinks: links);
+    return OrganizationData(
+      description: description,
+      socialLinks: links,
+      logoUrl: logoUrl,
+      heading: heading,
+      website_url1: website_url1,
+      website_url2: website_url2,
+    );
   }
 
   final String description;
   final List<SocialLink> socialLinks;
+  final String logoUrl;
+  final String heading;
+  final String website_url1;
+  final String website_url2;
 }

@@ -22,5 +22,14 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
-  Future<OrganizationData> fetchPruziKorak() => fetchById(_pruziKorakId);
+  Future<OrganizationData> fetchPruziKorak() async {
+    final json = await _client.rpc('get_pruzi_korak_organization_with_socials');
+    return OrganizationData.fromJson(json);
+  }
+
+  @override
+  Future<OrganizationData> fetchBySession() async {
+    final json = await _client.rpc('get_my_organization_with_socials');
+    return OrganizationData.fromJson(json);
+  }
 }
