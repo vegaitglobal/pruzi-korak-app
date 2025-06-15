@@ -19,7 +19,7 @@ GoRouter get router => _router;
 
 final _router = GoRouter(
   navigatorKey: parentNavigatorKey,
-  initialLocation: AppRoutes.splash.path(),
+  initialLocation: AppRoutes.home.path(),
   routes: [
     GoRoute(
       parentNavigatorKey: parentNavigatorKey,

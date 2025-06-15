@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
-import 'package:pruzi_korak/data/health_data/health_repository';
+import 'package:pruzi_korak/data/health_data/health_repository.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';

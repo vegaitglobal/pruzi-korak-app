@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "910633772133",
+    "project_id": "pruzi-korak-747c1",
+    "storage_bucket": "pruzi-korak-747c1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910633772133:android:b80992e45a990d913e928c",
+        "android_client_info": {
+          "package_name": "org.pruzikorak.pruziKorak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910633772133-69gcq1r7si3j7aqad3cv7hnnddv1go24.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pruzikorak.pruziKorak",
+            "certificate_hash": "774c3d41335fe020b6be5f69e88f7ff54ccc01d5"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYUlVgMlzE22kuempfL12hBctBqHbQsks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

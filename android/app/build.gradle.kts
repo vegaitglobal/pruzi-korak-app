@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "org.pruzikorak.pruzi_korak"
+    namespace = "org.pruzikorak.pruziKorak"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "29.0.13599879"
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "org.pruzikorak.pruzi_korak"
+        applicationId = "org.pruzikorak.pruziKorak"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 26
@@ -41,4 +41,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
+    implementation("com.google.android.gms:play-services-fitness:21.1.0")
 }
