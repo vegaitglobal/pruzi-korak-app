@@ -58,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _componentSeparator(64),
             _loginMessage(),
             _loginForm(state),
+            _componentSeparator(64),
             _unexpectedErrorMessage(state),
           ]),
         },
@@ -162,7 +163,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _unexpectedErrorMessage(LoginState state) {
     if (state is LoginFailure && state.exception == null) {
-      return Text(_localizedStrings!.unexpected_error_occurred);
+      return Text(
+        _localizedStrings!.unexpected_error_occurred,
+        style: TextStyle(color: AppColors.error),
+      );
     } else {
       return SizedBox.shrink();
     }
