@@ -92,5 +92,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get email_validation_error => 'Neispravan format email adrese';
 
   @override
-  String get unexpected_error_occurred => 'Došlo je do neočekicane greške!';
+  String get unexpected_error_occurred => 'Došlo je do neočekivane greške!';
 }

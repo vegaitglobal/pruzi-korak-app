@@ -9,7 +9,8 @@ enum AppRoutes {
   about,
   organizationMessage,
   splashOrganization, 
-  motivationalMessage
+  motivationalMessage,
+  congratsMessage
 }
 
 extension AppRoutesExtension on AppRoutes {
@@ -24,6 +25,7 @@ extension AppRoutesExtension on AppRoutes {
         AppRoutes.about => '/about',
         AppRoutes.organizationMessage => '/organization-message',
         AppRoutes.splashOrganization => '/splash-organization',
-        AppRoutes.motivationalMessage => '/motivational-message'
+        AppRoutes.motivationalMessage => '/motivational-message',
+        AppRoutes.congratsMessage => '/congrats-message'
       };
 }
