@@ -16,13 +16,11 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
   getUsersLeaderboard() async {
     try {
       final response = await _client.rpc(
-        'get_team_users_with_distance',
-        params: {'input_team_id': "dc81c171-8b42-4b89-9694-b621aa78c43b"},
-      );
+        'get_my_team_users_with_distance');
 
       AppLogger.logInfo("getUsersLeaderboard response: ${response}");
 
-      final rawList = response.data as List;
+      final rawList = response as List;
 
       rawList.sort((a, b) {
         final aDistance = double.tryParse(a['total_distance'].toString()) ?? 0;
@@ -57,13 +55,11 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
   getTeamLeaderboard() async {
     try {
       final response = await _client.rpc(
-        'get_team_users_with_distance',
-        params: {'input_team_id': "dc81c171-8b42-4b89-9694-b621aa78c43b"},
-      );
+        'get_my_team_users_with_distance');
 
-      AppLogger.logInfo("getUsersLeaderboard response: ${response}");
+      AppLogger.logInfo("getTeamLeaderboard response: ${response}");
 
-      final rawList = response.data as List;
+      final rawList = response as List;
 
       rawList.sort((a, b) {
         final aDistance = double.tryParse(a['total_distance'].toString()) ?? 0;

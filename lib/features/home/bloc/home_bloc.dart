@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
+import 'package:pruzi_korak/domain/user/team_user_stats.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
 part 'home_event.dart';
@@ -33,12 +34,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //   totalSteps: stepsSinceStart.toStringAsFixed(0),
       // );
 
-      final teamStepsModel = StepsModel(steps: '20000', totalSteps: '50000');
+      final teamStepsModel = TeamUserStats(
+        userToday: "1000",
+        userTotal: "5000",
+        teamToday: "20000",
+        teamTotal: "100000",
+      );
+
+      final userStepsModel = StepsModel(
+        steps: teamStepsModel.userToday,
+        totalSteps: teamStepsModel.userTotal,
+      );
+
+      final team = StepsModel(
+        steps: teamStepsModel.teamToday,
+        totalSteps: teamStepsModel.teamTotal,
+      );
 
       emit(HomeLoaded(
         userModel: userModel,
-        userStepsModel: teamStepsModel,
-        teamStepsModel: teamStepsModel,
+        userStepsModel: userStepsModel,
+        teamStepsModel: team,
       ));
     } catch (_) {
       emit(const HomeError());
