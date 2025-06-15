@@ -94,7 +94,6 @@ class HomeSection extends StatelessWidget {
         AppHeader(),
         Spacer(flex: 1),
         UserSection(
-          imageUrl: userModel.imageUrl,
           fullName: userModel.fullName,
           badgeValue: badgeValue,
         ),

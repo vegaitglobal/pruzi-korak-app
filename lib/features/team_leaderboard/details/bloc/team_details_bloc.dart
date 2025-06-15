@@ -13,7 +13,7 @@ class TeamDetailsBloc extends Bloc<TeamDetailsEvent, TeamDetailsState> {
 
       final totalDistance = leaderboardList.fold<int>(
         0,
-        (sum, item) => sum + int.parse(item.steps),
+        (sum, item) => sum + int.parse(item.distance),
       );
       emit(
         TeamDetailsLoaded(
@@ -26,46 +26,25 @@ class TeamDetailsBloc extends Bloc<TeamDetailsEvent, TeamDetailsState> {
 
   final leaderboardList = [
     LeaderboardModel(
-      id: '4',
-      name: 'User 4',
-      steps: '4000',
-      rank: '4',
-      imageUrl: AppConstants.TEST_IMAGE,
-    ),
-    LeaderboardModel(
-      id: '5',
-      name: 'User 5',
-      steps: '5000',
-      rank: '5',
-      imageUrl: AppConstants.TEST_IMAGE,
-    ),
-    LeaderboardModel(
-      id: '6',
-      name: 'User 6',
-      steps: '6000',
-      rank: '6',
-      imageUrl: AppConstants.TEST_IMAGE,
-    ),
-    LeaderboardModel(
       id: '7',
-      name: 'User 7',
-      steps: '7000',
+      teamName: 'User 7',
+      distance: '7000',
       rank: '7',
-      imageUrl: AppConstants.TEST_IMAGE,
+      imageUrl: AppConstants.TEST_IMAGE, firstName: '', lastName: '',
     ),
     LeaderboardModel(
       id: '8',
-      name: 'User 8',
-      steps: '8000',
+      teamName: 'User 8',
+      distance: '8000',
       rank: '8',
-      imageUrl: AppConstants.TEST_IMAGE,
+      imageUrl: AppConstants.TEST_IMAGE, firstName: '', lastName: '',
     ),
     LeaderboardModel(
       id: '9',
-      name: 'User 9',
-      steps: '9000',
+      teamName: 'User 9',
+      distance: '9000',
       rank: '9',
-      imageUrl: AppConstants.TEST_IMAGE,
+      imageUrl: AppConstants.TEST_IMAGE, firstName: '', lastName: '',
     ),
   ];
 }

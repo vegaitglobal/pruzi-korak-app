@@ -3,6 +3,10 @@ import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/core/session/session_stream.dart';
 import 'package:pruzi_korak/core/supabase/tenant_supabase_client.dart';
 import 'package:pruzi_korak/data/auth/AuthRepositoryImpl.dart';
+import 'package:pruzi_korak/data/home/home_repository.dart';
+import 'package:pruzi_korak/data/home/home_repository_impl.dart';
+import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
+import 'package:pruzi_korak/data/leaderboard/leaderboard_repository_impl.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/data/organization/OrganizationRepositoryImpl.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
@@ -15,6 +19,7 @@ GetIt getIt = GetIt.instance;
 Future<void> configureDI() async {
   setupInitialLocator();
   setupJsonMappers();
+  setRepositories();
 }
 
 void setupInitialLocator() {
@@ -48,4 +53,13 @@ void resetTenantScopedServices() {
     getIt.unregister<TenantSupabaseClient>();
   }
   //if (getIt.isRegistered<UserRepository>()) getIt.unregister<UserRepository>();
+}
+
+void setRepositories() {
+  getIt.registerLazySingleton<HomeRepository>(
+        () => HomeRepositoryImpl(getIt<SupabaseClient>()),
+  );
+  getIt.registerLazySingleton<LeaderboardRepository>(
+    () => LeaderboardRepositoryImpl(getIt<SupabaseClient>()),
+  );
 }
