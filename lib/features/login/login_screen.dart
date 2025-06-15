@@ -69,9 +69,18 @@ class _LoginScreenState extends State<LoginScreen> {
   SizedBox _screenContainer(List<Widget> components) => SizedBox(
     width: double.infinity,
     height: double.infinity,
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: components,
+    child: SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        child: IntrinsicHeight(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: components,
+          ),
+        ),
+      ),
     ),
   );
 
