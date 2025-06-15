@@ -5,8 +5,13 @@ import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
 import 'package:pruzi_korak/data/health_data/health_repository';
+import 'package:pruzi_korak/data/home/home_repository.dart';
+import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
+import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
+import 'package:pruzi_korak/features/about_pruzi_korak/bloc/about_pruzi_korak_bloc.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
@@ -35,13 +40,33 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(getIt<AuthRepository>()),
         ),
-        BlocProvider<HomeBloc>(create: (context) => HomeBloc(healthRepository: HealthRepository())),
-        BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
-        BlocProvider<UserLeaderboardBloc>(create: (context) => UserLeaderboardBloc()),
-        BlocProvider<TeamLeaderboardBloc>(create: (context) => TeamLeaderboardBloc()),
+        BlocProvider<HomeBloc>(
+          create:
+              (context) => HomeBloc(
+                getIt<HomeRepository>(),
+                healthRepository: HealthRepository(),
+              ),
+        ),
+        BlocProvider<ProfileBloc>(
+          create:
+              (context) => ProfileBloc(
+                getIt<AppLocalStorage>(),
+                getIt<AuthRepository>(),
+              ),
+        ),
+        BlocProvider<UserLeaderboardBloc>(
+          create:
+              (context) => UserLeaderboardBloc(getIt<LeaderboardRepository>()),
+        ),
+        BlocProvider<TeamLeaderboardBloc>(
+          create:
+              (context) => TeamLeaderboardBloc(getIt<LeaderboardRepository>()),
+        ),
         BlocProvider<TeamDetailsBloc>(create: (context) => TeamDetailsBloc()),
-
-
+        BlocProvider<AboutPruziKorakBloc>(
+          create:
+              (context) => AboutPruziKorakBloc(getIt<OrganizationRepository>()),
+        ),
       ],
 
       // SessionListener will handle session expiration and logout, if not needed, we should remove it.
