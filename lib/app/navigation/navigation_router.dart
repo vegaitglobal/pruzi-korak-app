@@ -7,6 +7,7 @@ import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.da
 import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
+import 'package:pruzi_korak/features/splash_organization/splash_organization_screen.dart';
 
 import 'app_routes.dart';
 import 'bottom_navigation_bar/app_bottom_navigation_page.dart';
@@ -26,6 +27,14 @@ final _router = GoRouter(
       name: AppRoutes.splash.name,
       builder: (context, state) {
         return SplashScreen();
+      },
+    ),
+    GoRoute(
+      parentNavigatorKey: parentNavigatorKey,
+      path: AppRoutes.splashOrganization.path(),
+      name: AppRoutes.splashOrganization.name,
+      builder: (context, state) {
+        return SplashOrganizationScreen();
       },
     ),
     GoRoute(
