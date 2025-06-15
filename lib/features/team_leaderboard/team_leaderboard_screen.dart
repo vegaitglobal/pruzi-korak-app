@@ -4,9 +4,8 @@ import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
-import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_header.dart';
-import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_list_item.dart'
-    show UserLeaderboardListItem;
+import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_header.dart';
+import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_list_item.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/infinite_scroll_view.dart';
@@ -63,14 +62,14 @@ class UserLeaderboardSection extends StatelessWidget {
         children: [
           AppHeader(),
           const SizedBox(height: 16.0),
-          UserLeaderboardHeader(
+          TeamLeaderboardHeader(
             topThreeLeaderboardModel: topThreeLeaderboardModel,
           ),
           const SizedBox(height: 16.0),
           Expanded(
             child: InfiniteScrollView(
               itemBuilder: (context, index) {
-                final item = UserLeaderboardListItem(
+                final item = TeamLeaderboardListItem(
                   leaderboardModel: leaderboardList[index],
                 );
                 final hasDivider = index < leaderboardList.length - 1;

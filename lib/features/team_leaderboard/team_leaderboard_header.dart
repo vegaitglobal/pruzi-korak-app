@@ -70,7 +70,7 @@ class TeamLeaderboardItem extends StatelessWidget {
               size: imageSize,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(height: 16),
           Text(
             leaderboardModel.name,
             textAlign: TextAlign.center,

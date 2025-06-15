@@ -22,19 +22,19 @@ class AvatarWithBadge extends StatelessWidget {
     final double badgePadding = badgeSize == BadgeSize.large ? 10 : 6;
     final double fontSize = badgeSize == BadgeSize.large ? 14 : 12;
 
-    const double offsetLarge = -4;
-    const double offsetSmall = 0;
+    const double offsetLeft = -4;
+    const double offsetBottom = -12;
 
     final double? top = badgePosition == BadgePosition.topLeft
-        ? (isLarge ? offsetLarge : offsetLarge)
+        ? offsetLeft
         : null;
 
     final double? bottom = badgePosition == BadgePosition.bottomCenter
-        ? (isLarge ? offsetLarge : offsetLarge)
+        ? offsetBottom
         : null;
 
     final double? left = badgePosition == BadgePosition.topLeft
-        ? (isLarge ? offsetLarge : offsetLarge)
+        ? offsetLeft
         : null;
 
     return Stack(
