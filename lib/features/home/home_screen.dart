@@ -27,7 +27,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this as WidgetsBindingObserver);
     _listenToHealthKitCallbacks();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this as WidgetsBindingObserver);
+    super.dispose();
+  }
+
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      context.read<HomeBloc>().add(const HomeLoadEvent());
+    }
   }
 
   void _listenToHealthKitCallbacks() {
