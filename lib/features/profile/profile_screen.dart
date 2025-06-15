@@ -96,7 +96,7 @@ class ProfileLoadedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-    userModel.fullName.isNotEmpty ? userModel.fullName[0] : '?';
+    userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
 
     return Stack(
       clipBehavior: Clip.none,
@@ -109,7 +109,7 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                userModel.fullName,
+                "${userModel.fistName} ${userModel.lastName}",
                 style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
               ),
               const SizedBox(height: 16),
