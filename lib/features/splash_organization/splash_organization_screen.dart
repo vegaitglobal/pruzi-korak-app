@@ -21,11 +21,11 @@ class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Navigate to home screen after 2 seconds
+
+    // Navigate to campaign message screen after 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.go(AppRoutes.home.path());
+        context.go(AppRoutes.organizationMessage.path());
       }
     });
   }
@@ -34,12 +34,12 @@ class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
   Widget build(BuildContext context) {
     // Get organization data from the bloc if available
     final state = context.watch<AboutOrganizationBloc>().state;
-    
+
     // Use organization logo if available, otherwise use default
     final String partnerLogoUrl = state is AboutOrganizationLoaded
         ? state.organization.logoUrl
         : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMQJIvdAWXjzmThRBeIyvFbxP4Bs6ekmuRog&s";
-    
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Stack(
@@ -54,7 +54,7 @@ class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
               size: const Size(double.infinity, 150),
             ),
           ),
-          
+
           // Bottom wave
           Positioned(
             bottom: 0,
@@ -65,7 +65,7 @@ class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
               size: const Size(double.infinity, 150),
             ),
           ),
-          
+
           // Main content with logos
           Center(
             child: Column(
@@ -77,9 +77,9 @@ class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
                   size: 150,
                   color: AppColors.primary,
                 ),
-                
+
                 const SizedBox(height: 60), // raised bottom logo by 40 px
-                
+
                 // Second logo - Partner Logo (dynamically loaded)
                 CachedImage(
                   imageUrl: partnerLogoUrl,

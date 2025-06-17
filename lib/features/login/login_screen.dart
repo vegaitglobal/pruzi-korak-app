@@ -22,6 +22,25 @@ class _LoginScreenState extends State<LoginScreen> {
       TextEditingController();
   final TextEditingController _passwordInputFieldController =
       TextEditingController();
+  bool _isFormEmpty = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailInputFieldController.addListener(_updateFormEmptyState);
+    _passwordInputFieldController.addListener(_updateFormEmptyState);
+  }
+
+  void _updateFormEmptyState() {
+    final isEmpty =
+        _emailInputFieldController.text.isNotEmpty &&
+        _passwordInputFieldController.text.isNotEmpty;
+    if (_isFormEmpty != isEmpty) {
+      setState(() {
+        _isFormEmpty = isEmpty;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,14 +163,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   AppButton _loginButton() => AppButton(
     text: _localizedStrings!.log_in,
-    onPressed: () {
-      context.dispatchEvent(
-        LoginUser(
-          _emailInputFieldController.text,
-          _passwordInputFieldController.text,
-        ),
-      );
-    },
+    onPressed:
+        _isFormEmpty
+            ? () {
+              context.dispatchEvent(
+                LoginUser(
+                  _emailInputFieldController.text,
+                  _passwordInputFieldController.text,
+                ),
+              );
+            }
+            : null,
   );
 
   String? _getPasswordErrorMessageOnInvalidInput(LoginState state) {
