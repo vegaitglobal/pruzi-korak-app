@@ -73,9 +73,9 @@ final _router = GoRouter(
       path: AppRoutes.congratsMessage.path(),
       name: AppRoutes.congratsMessage.name,
       builder: (context, state) {
-        final params = state.pathParameters['distanceKm'] ?? '';
-        final distanceKm = double.tryParse(params) ?? 0.0;
-        return CongratsMessageScreen(distanceKm: distanceKm);
+        final params = state.pathParameters['distance'] ?? '';
+        final distance = double.tryParse(params) ?? 0.0;
+        return CongratsMessageScreen(distanceKm: distance);
       },
     ),
 

@@ -265,6 +265,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Došlo je do neočekivane greške!'**
   String get unexpected_error_occurred;
+
+  /// No description provided for @motivation_notification_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your day with motivation'**
+  String get motivation_notification_title;
+
+  /// No description provided for @motivation_notification_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily dose of inspiration has arrived. Tap to read.'**
+  String get motivation_notification_body;
 }
 
 class _AppLocalizationsDelegate

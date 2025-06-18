@@ -8,6 +8,7 @@ import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
+import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
@@ -32,6 +33,28 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _isNotificationScheduled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isNotificationScheduled) {
+        _isNotificationScheduled = true;
+
+        final localizations = AppLocalizations.of(navigatorKey.currentContext!);
+        if (localizations != null) {
+          getIt<LocalNotificationService>().scheduleDailyNotification(
+            hour: 21,
+            minute: 49,
+            title: localizations.motivation_notification_title,
+            body: localizations.motivation_notification_body,
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -71,7 +94,8 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<AboutOrganizationBloc>(
           create:
-              (context) => AboutOrganizationBloc(getIt<OrganizationRepository>()),
+              (context) =>
+                  AboutOrganizationBloc(getIt<OrganizationRepository>()),
         ),
         BlocProvider<MotivationalMessageBloc>(
           create: (context) => getIt<MotivationalMessageBloc>(),

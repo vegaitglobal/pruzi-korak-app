@@ -46,5 +46,7 @@
   "congrats_message": "Upravo ste prešli",
   "password_validation_error": "Neispravan format šifre",
   "email_validation_error": "Neispravan format email adrese",
-  "unexpected_error_occurred": "Došlo je do neočekivane greške!"
+  "unexpected_error_occurred": "Došlo je do neočekivane greške!",
+  "motivation_notification_title": "Počni dan sa motivacijom",
+  "motivation_notification_body": "Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš."
 }

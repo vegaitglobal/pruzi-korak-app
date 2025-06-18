@@ -6,27 +6,8 @@ import 'local_notification_service.dart';
 class LocalNotificationServiceImpl implements LocalNotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
 
-  static const AndroidNotificationDetails _dailyAndroidDetails =
-      AndroidNotificationDetails(
-        'daily_channel_id',
-        'Daily Notifications',
-        channelDescription: 'Dnevne lokalne notifikacije',
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-
-  static const AndroidNotificationDetails _instantAndroidDetails =
-      AndroidNotificationDetails(
-        'instant_channel_id',
-        'Instant Notifications',
-        channelDescription: 'Ručne notifikacije odmah',
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-
   LocalNotificationServiceImpl(this._plugin);
 
-  /// Initializes the notification service.
   @override
   Future<void> init({
     required Function(String? payload) onNotificationTap,
@@ -61,17 +42,11 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
       },
     );
 
-    final iosPlugin =
-        _plugin
-            .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin
-            >();
-    if (iosPlugin != null) {
-      await iosPlugin.requestPermissions(alert: true, badge: true, sound: true);
-    }
+    await _plugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  /// Schedules a daily notification at the specified [hour] and [minute].
   @override
   Future<void> scheduleDailyNotification({
     required int hour,
@@ -83,48 +58,39 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   }) async {
     final scheduledDate = _nextInstanceOfTime(hour, minute);
 
-    const notificationDetails = NotificationDetails(
-      android: _dailyAndroidDetails,
-    );
-
     await _plugin.zonedSchedule(
       notificationId,
       title,
       body,
       scheduledDate,
-      notificationDetails,
+      _buildDailyNotificationDetails(),
       androidScheduleMode: AndroidScheduleMode.exact,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: payload,
     );
   }
 
-  /// Shows a notification immediately.
   @override
   Future<void> showNow({
     required String title,
     required String body,
     String? payload,
   }) async {
-    const notificationDetails = NotificationDetails(
-      android: _instantAndroidDetails,
-    );
-
     await _plugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
       body,
-      notificationDetails,
+      _buildInstantNotificationDetails(),
       payload: payload,
     );
   }
 
-  /// Cancels all scheduled notifications.
   @override
   Future<void> cancelAll() async {
     await _plugin.cancelAll();
   }
 
+  /// Returns the next TZDateTime instance of the given [hour] and [minute].
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
@@ -139,5 +105,29 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
       scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;
+  }
+
+  /// Builds details for scheduled daily notifications.
+  NotificationDetails _buildDailyNotificationDetails() {
+    const androidDetails = AndroidNotificationDetails(
+      'daily_channel_id',
+      'Daily Notifications',
+      channelDescription: 'Dnevne lokalne notifikacije',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    return const NotificationDetails(android: androidDetails);
+  }
+
+  /// Builds details for instant notifications.
+  NotificationDetails _buildInstantNotificationDetails() {
+    const androidDetails = AndroidNotificationDetails(
+      'instant_channel_id',
+      'Instant Notifications',
+      channelDescription: 'Ručne notifikacije odmah',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    return const NotificationDetails(android: androidDetails);
   }
 }

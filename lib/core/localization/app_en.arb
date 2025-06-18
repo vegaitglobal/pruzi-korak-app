@@ -26,5 +26,7 @@
   "stepsTotal": "Ukupno\nprepešačeno",
   "password_validation_error": "Neispravan format šifre",
   "email_validation_error": "Neispravan format email adrese",
-  "unexpected_error_occurred": "Došlo je do neočekivane greške!"
+  "unexpected_error_occurred": "Došlo je do neočekivane greške!",
+  "motivation_notification_title": "Start your day with motivation",
+  "motivation_notification_body": "Your daily dose of inspiration has arrived. Tap to read."
 }

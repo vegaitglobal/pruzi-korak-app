@@ -66,7 +66,7 @@ class CongratsMessageScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           // "Upravo ste prešli 25 km"
                           Text(
-                            '${loc.congrats_message} ${distanceKm.toStringAsFixed(0)} ${loc.km}',
+                            '${loc.congrats_message} ${distanceKm.toString()} ${loc.km}',
                             textAlign: TextAlign.center,
                             style: AppTextStyles.titleMedium.copyWith(
                               fontSize: 22,

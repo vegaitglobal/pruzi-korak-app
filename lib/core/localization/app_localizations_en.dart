@@ -93,4 +93,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unexpected_error_occurred => 'Došlo je do neočekivane greške!';
+
+  @override
+  String get motivation_notification_title => 'Start your day with motivation';
+
+  @override
+  String get motivation_notification_body =>
+      'Your daily dose of inspiration has arrived. Tap to read.';
 }
