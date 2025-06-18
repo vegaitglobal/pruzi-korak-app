@@ -23,11 +23,9 @@ class MotivationalMessageScreen extends StatelessWidget {
               padding: EdgeInsets.all(16),
               child: AppHeader(),
             ),
-
-            // ───── CENTRAL FLAG-BLOCK ────────────────────────────────
             Expanded(
               child: ClipPath(
-                clipper: _FlagWaveClipper(), // talasasti rubovi
+                clipper: _FlagWaveClipper(),
                 child: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -78,9 +76,7 @@ class MotivationalMessageScreen extends StatelessWidget {
   }
 }
 
-// ───────────────────────────────────────────────────────────────────────
-// ClipPath za gornji + donji plitki talas (isti oblik kao na motivacionoj strani)
-// ───────────────────────────────────────────────────────────────────────
+
 class _FlagWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

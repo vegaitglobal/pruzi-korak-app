@@ -10,10 +10,9 @@ import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
 class CongratsMessageScreen extends StatelessWidget {
-  const CongratsMessageScreen({super.key});
+  const CongratsMessageScreen({super.key, required this.distanceKm});
 
-  /// Dynamic value passed from the caller (e.g. 25.0)
-  final double distanceKm = 25;
+  final double distanceKm;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +23,7 @@ class CongratsMessageScreen extends StatelessWidget {
         child: Column(
           children: [
             // ───────────────── HEADER ────────────────────────────────
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: AppHeader(),
-            ),
+            const Padding(padding: EdgeInsets.all(16), child: AppHeader()),
 
             // ───── CENTRAL FLAG-BLOCK ────────────────────────────────
             Expanded(
@@ -112,17 +108,22 @@ class CongratsMessageScreen extends StatelessWidget {
 class _FlagWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path()
-      ..lineTo(0, size.height * 0.10); // viši početak – izraženija zastava
+    final path =
+        Path()
+          ..lineTo(0, size.height * 0.10); // viši početak – izraženija zastava
 
     // gornji talas (0 → 50 %) sa većom amplitudom
     path.quadraticBezierTo(
-      size.width * 0.25, size.height * 0.03,
-      size.width * 0.5,  size.height * 0.08,
+      size.width * 0.25,
+      size.height * 0.03,
+      size.width * 0.5,
+      size.height * 0.08,
     );
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.13,
-      size.width,        size.height * 0.05,
+      size.width * 0.75,
+      size.height * 0.13,
+      size.width,
+      size.height * 0.05,
     );
 
     // desni rub
@@ -130,12 +131,16 @@ class _FlagWaveClipper extends CustomClipper<Path> {
 
     // donji talas (50 % → 0) – ogledalo gornjeg
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.93,
-      size.width * 0.5,  size.height * 0.88,
+      size.width * 0.75,
+      size.height * 0.93,
+      size.width * 0.5,
+      size.height * 0.88,
     );
     path.quadraticBezierTo(
-      size.width * 0.25, size.height * 0.83,
-      0,                 size.height * 0.90,
+      size.width * 0.25,
+      size.height * 0.83,
+      0,
+      size.height * 0.90,
     );
 
     path.close();
@@ -152,17 +157,21 @@ class _FlagWaveClipper extends CustomClipper<Path> {
 class _WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path()
-      ..lineTo(0, size.height * 0.10); // niži početak (tanja amplituda)
+    final path =
+        Path()..lineTo(0, size.height * 0.10); // niži početak (tanja amplituda)
 
     // gornji talas (0 → 50 %)
     path.quadraticBezierTo(
-      size.width * 0.25, size.height * 0.03,
-      size.width * 0.5,  size.height * 0.08,
+      size.width * 0.25,
+      size.height * 0.03,
+      size.width * 0.5,
+      size.height * 0.08,
     );
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.13,
-      size.width,        size.height * 0.05,
+      size.width * 0.75,
+      size.height * 0.13,
+      size.width,
+      size.height * 0.05,
     );
 
     // desni rub на dnu
@@ -170,12 +179,16 @@ class _WaveClipper extends CustomClipper<Path> {
 
     // donji talas (50 % → 0)
     path.quadraticBezierTo(
-      size.width * 0.75, size.height * 0.93,
-      size.width * 0.5,  size.height * 0.88,
+      size.width * 0.75,
+      size.height * 0.93,
+      size.width * 0.5,
+      size.height * 0.88,
     );
     path.quadraticBezierTo(
-      size.width * 0.25, size.height * 0.83,
-      0,                 size.height * 0.90,
+      size.width * 0.25,
+      size.height * 0.83,
+      0,
+      size.height * 0.90,
     );
 
     path.close();

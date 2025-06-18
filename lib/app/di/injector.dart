@@ -11,7 +11,7 @@ import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/local/local_storage_impl.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
-import 'package:pruzi_korak/data/organization/OrganizationRepositoryImpl.dart';
+import 'package:pruzi_korak/data/organization/organization_repository_impl.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
