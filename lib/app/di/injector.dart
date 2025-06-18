@@ -1,5 +1,5 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
-import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/core/session/session_stream.dart';
 import 'package:pruzi_korak/core/supabase/tenant_supabase_client.dart';
 import 'package:pruzi_korak/data/auth/AuthRepositoryImpl.dart';
@@ -9,6 +9,7 @@ import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository_impl.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/local/local_storage_impl.dart';
+import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/data/organization/OrganizationRepositoryImpl.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
@@ -20,7 +21,9 @@ import 'mapper_setup.dart';
 GetIt getIt = GetIt.instance;
 
 Future<void> configureDI() async {
-  _initSharedPref();
+  await _initSharedPref();
+  await setupNotification();
+
   setupInitialLocator();
   setupJsonMappers();
   setRepositories();
@@ -29,11 +32,13 @@ Future<void> configureDI() async {
 void setupInitialLocator() {
   getIt.registerSingleton<SessionStream>(SessionStream());
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppLocalStorage>()),
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppLocalStorage>()),
   );
 
   getIt.registerLazySingleton<OrganizationRepository>(
-    () => OrganizationRepositoryImpl(getIt<SupabaseClient>()),);
+    () => OrganizationRepositoryImpl(getIt<SupabaseClient>()),
+  );
 }
 
 Future<void> setupTenantScopedServices(String tenantId) async {
@@ -53,11 +58,16 @@ void resetTenantScopedServices() {
 
 void setRepositories() {
   getIt.registerLazySingleton<HomeRepository>(
-        () => HomeRepositoryImpl(getIt<SupabaseClient>() , getIt<AppLocalStorage>()),
+    () => HomeRepositoryImpl(getIt<SupabaseClient>(), getIt<AppLocalStorage>()),
   );
   getIt.registerLazySingleton<LeaderboardRepository>(
     () => LeaderboardRepositoryImpl(getIt<SupabaseClient>()),
   );
+}
+
+Future<void> setupNotification() async {
+  getIt.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
+  getIt.registerLazySingleton(() => LocalNotificationService(getIt()));
 }
 
 Future<void> _initSharedPref() async {
@@ -68,4 +78,3 @@ Future<void> _initSharedPref() async {
     () => AppLocalStorageImpl(getIt<SharedPreferences>()),
   );
 }
-
