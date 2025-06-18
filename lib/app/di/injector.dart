@@ -10,6 +10,7 @@ import 'package:pruzi_korak/data/leaderboard/leaderboard_repository_impl.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/local/local_storage_impl.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
+import 'package:pruzi_korak/data/notification/local_notification_service_impl.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/data/organization/organization_repository_impl.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
@@ -67,7 +68,9 @@ void setRepositories() {
 
 Future<void> setupNotification() async {
   getIt.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
-  getIt.registerLazySingleton(() => LocalNotificationService(getIt()));
+  getIt.registerLazySingleton<LocalNotificationService>(
+    () => LocalNotificationServiceImpl(getIt()),
+  );
 }
 
 Future<void> _initSharedPref() async {
