@@ -19,6 +19,7 @@ import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/details/bloc/team_details_bloc.dart';
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
+import 'package:pruzi_korak/features/motivational_message/motivational_message_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 
 import 'navigation/navigation_router.dart';
@@ -71,6 +72,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<AboutOrganizationBloc>(
           create:
               (context) => AboutOrganizationBloc(getIt<OrganizationRepository>()),
+        ),
+        BlocProvider<MotivationalMessageBloc>(
+          create: (context) => getIt<MotivationalMessageBloc>(),
         ),
       ],
 
