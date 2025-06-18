@@ -22,6 +22,7 @@ import 'package:pruzi_korak/features/team_leaderboard/details/bloc/team_details_
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/motivational_message/motivational_message_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/app/app_config.dart';
 
 import 'navigation/navigation_router.dart';
 
@@ -45,8 +46,8 @@ class _MyAppState extends State<MyApp> {
         final localizations = AppLocalizations.of(navigatorKey.currentContext!);
         if (localizations != null) {
           getIt<LocalNotificationService>().scheduleDailyNotification(
-            hour: 21,
-            minute: 49,
+            hour: AppConfig.motivationNotificationHour,
+            minute: AppConfig.motivationNotificationMinute,
             title: localizations.motivation_notification_title,
             body: localizations.motivation_notification_body,
           );
