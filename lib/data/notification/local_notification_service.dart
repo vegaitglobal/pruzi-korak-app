@@ -1,4 +1,8 @@
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 abstract class LocalNotificationService {
+  FlutterLocalNotificationsPlugin get plugin;
+
   Future<void> init({required Function(String? payload) onNotificationTap});
 
   Future<void> scheduleDailyNotification({

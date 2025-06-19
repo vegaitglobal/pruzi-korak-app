@@ -9,6 +9,9 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   LocalNotificationServiceImpl(this._plugin);
 
   @override
+  FlutterLocalNotificationsPlugin get plugin => _plugin;
+
+  @override
   Future<void> init({
     required Function(String? payload) onNotificationTap,
   }) async {
