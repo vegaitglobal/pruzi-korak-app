@@ -6,6 +6,7 @@ import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
@@ -61,40 +62,6 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  void _handleLoginEvent(LoginEvent event) {
-    if (event == LoginEvent.loginSuccess) {
-      _scheduleNotificationsIfLoggedIn();
-    }
-  }
-
-  void _scheduleNotificationsIfLoggedIn() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_isNotificationScheduled) {
-        getIt<AuthRepository>().isLoggedIn().then((isLoggedIn) {
-          if (isLoggedIn) {
-            _scheduleNotificationsIfNeeded();
-          }
-        });
-      }
-    });
-  }
-
-  void _scheduleNotificationsIfNeeded() {
-    if (_isNotificationScheduled) return;
-
-    _isNotificationScheduled = true;
-    final context = navigatorKey.currentContext;
-    if (context != null) {
-      final localizations = AppLocalizations.of(context);
-      if (localizations != null) {
-        getIt<LocalNotificationHandler>().scheduleMotivationalNotification(
-          title: localizations.motivation_notification_title,
-          body: localizations.motivation_notification_body,
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -121,7 +88,6 @@ class _MyAppState extends State<MyApp> {
               (context) => ProfileBloc(
                 getIt<AppLocalStorage>(),
                 getIt<AuthRepository>(),
-                getIt<LocalNotificationHandler>(),
               ),
         ),
         BlocProvider<UserLeaderboardBloc>(
@@ -167,5 +133,48 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  // MARK: Notification handling
+
+  void _handleLoginEvent(LoginEvent event) {
+    if (event == LoginEvent.loginSuccess) {
+      AppLogger.logDebug('Login successful, scheduling notifications');
+      _scheduleNotificationsIfLoggedIn();
+    } else if (event == LoginEvent.logout) {
+      AppLogger.logDebug('User logged out, resetting notification state');
+      setState(() {
+        _isNotificationScheduled = false;
+      });
+      getIt<LocalNotificationHandler>().cancelAllNotifications();
+    }
+  }
+
+  void _scheduleNotificationsIfLoggedIn() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isNotificationScheduled) {
+        getIt<AuthRepository>().isLoggedIn().then((isLoggedIn) {
+          if (isLoggedIn) {
+            _scheduleNotificationsIfNeeded();
+          }
+        });
+      }
+    });
+  }
+
+  void _scheduleNotificationsIfNeeded() {
+    if (_isNotificationScheduled) return;
+
+    _isNotificationScheduled = true;
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      final localizations = AppLocalizations.of(context);
+      if (localizations != null) {
+        getIt<LocalNotificationHandler>().scheduleMotivationalNotification(
+          title: localizations.motivation_notification_title,
+          body: localizations.motivation_notification_body,
+        );
+      }
+    }
   }
 }

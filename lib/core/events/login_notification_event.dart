@@ -3,7 +3,8 @@ import 'dart:async';
 /// This class handles notification events related to login actions.
 /// It uses a simple stream to allow communication between Login feature and app-level components.
 class LoginNotificationEvent {
-  final StreamController<LoginEvent> _controller = StreamController<LoginEvent>.broadcast();
+  final StreamController<LoginEvent> _controller =
+      StreamController<LoginEvent>.broadcast();
 
   /// Stream that emits login events
   Stream<LoginEvent> get stream => _controller.stream;
@@ -13,6 +14,11 @@ class LoginNotificationEvent {
     _controller.add(LoginEvent.loginSuccess);
   }
 
+  /// Notifies listeners that a logout occurred and notification state should be reset
+  void notifyLogout() {
+    _controller.add(LoginEvent.logout);
+  }
+
   /// Dispose of the stream controller when no longer needed
   void dispose() {
     _controller.close();
@@ -20,6 +26,4 @@ class LoginNotificationEvent {
 }
 
 /// Login events that can be dispatched
-enum LoginEvent {
-  loginSuccess,
-}
+enum LoginEvent { loginSuccess, logout }
