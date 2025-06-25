@@ -28,6 +28,6 @@ extension AppRoutesExtension on AppRoutes {
         AppRoutes.organizationMessage => '/organization-message',
         AppRoutes.splashOrganization => '/splash-organization',
         AppRoutes.motivationalMessage => '/motivational-message',
-        AppRoutes.congratsMessage => '/congrats-message'
+        AppRoutes.congratsMessage => '/congrats-message/:distance'
       };
 }

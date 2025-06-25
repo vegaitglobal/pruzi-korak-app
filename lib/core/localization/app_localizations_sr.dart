@@ -93,4 +93,11 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get unexpected_error_occurred => 'Došlo je do neočekivane greške!';
+
+  @override
+  String get motivation_notification_title => 'Počni dan sa motivacijom';
+
+  @override
+  String get motivation_notification_body =>
+      'Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš.';
 }
