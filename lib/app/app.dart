@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pruzi_korak/app/di/injector.dart';
+import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/core/session/session_listener.dart';
 import 'package:pruzi_korak/data/health_data/health_repository';
@@ -14,7 +16,8 @@ import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/bloc/about_pruzi_korak_bloc.dart';
-import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
+import 'package:pruzi_korak/features/login/bloc/login_bloc.dart'
+    hide LoginEvent;
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/splash/bloc/splash_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
@@ -34,27 +37,62 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isNotificationScheduled = false;
+  late StreamSubscription _loginSubscription;
+  late LoginNotificationEvent _loginNotificationEvent;
 
   @override
   void initState() {
     super.initState();
+
+    _loginNotificationEvent = getIt<LoginNotificationEvent>();
+
+    // Listen for login events to schedule notifications
+    _loginSubscription = _loginNotificationEvent.stream.listen(
+      _handleLoginEvent,
+    );
+
+    // Check for already logged in user to schedule notifications
+    _scheduleNotificationsIfLoggedIn();
+  }
+
+  @override
+  void dispose() {
+    _loginSubscription.cancel();
+    super.dispose();
+  }
+
+  void _handleLoginEvent(LoginEvent event) {
+    if (event == LoginEvent.loginSuccess) {
+      _scheduleNotificationsIfLoggedIn();
+    }
+  }
+
+  void _scheduleNotificationsIfLoggedIn() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_isNotificationScheduled) {
-        _isNotificationScheduled = true;
-        final localizations = AppLocalizations.of(navigatorKey.currentContext!);
-        if (localizations != null) {
-          getIt<AuthRepository>().isLoggedIn().then((isLoggedIn) {
-            if (isLoggedIn) {
-              getIt<LocalNotificationHandler>()
-                  .scheduleMotivationalNotification(
-                    title: localizations.motivation_notification_title,
-                    body: localizations.motivation_notification_body,
-                  );
-            }
-          });
-        }
+        getIt<AuthRepository>().isLoggedIn().then((isLoggedIn) {
+          if (isLoggedIn) {
+            _scheduleNotificationsIfNeeded();
+          }
+        });
       }
     });
+  }
+
+  void _scheduleNotificationsIfNeeded() {
+    if (_isNotificationScheduled) return;
+
+    _isNotificationScheduled = true;
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      final localizations = AppLocalizations.of(context);
+      if (localizations != null) {
+        getIt<LocalNotificationHandler>().scheduleMotivationalNotification(
+          title: localizations.motivation_notification_title,
+          body: localizations.motivation_notification_body,
+        );
+      }
+    }
   }
 
   @override
@@ -65,7 +103,11 @@ class _MyAppState extends State<MyApp> {
           create: (context) => SplashBloc(getIt<AuthRepository>()),
         ),
         BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(getIt<AuthRepository>()),
+          create:
+              (context) => LoginBloc(
+                getIt<AuthRepository>(),
+                getIt<LoginNotificationEvent>(),
+              ),
         ),
         BlocProvider<HomeBloc>(
           create:

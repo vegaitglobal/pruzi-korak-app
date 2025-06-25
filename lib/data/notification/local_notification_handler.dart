@@ -52,9 +52,6 @@ class LocalNotificationHandler {
   void _handleNotificationTap(String? payload) async {
     if (payload == null) return;
 
-    // Add a small delay to ensure the app is fully initialized
-    await Future.delayed(const Duration(milliseconds: 300));
-
     final isLoggedIn = await _authRepository.isLoggedIn();
     if (!isLoggedIn) {
       router.go(AppRoutes.login.path());

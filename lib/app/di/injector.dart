@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/session/session_stream.dart';
 import 'package:pruzi_korak/core/supabase/tenant_supabase_client.dart';
 import 'package:pruzi_korak/data/auth/AuthRepositoryImpl.dart';
@@ -37,6 +38,7 @@ Future<void> configureDI() async {
 void setupInitialLocator() {
   getIt.registerSingleton<SessionStream>(SessionStream());
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
+  getIt.registerSingleton<LoginNotificationEvent>(LoginNotificationEvent());
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppLocalStorage>()),
   );
