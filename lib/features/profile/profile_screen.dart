@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is ProfileLoaded) {
           return ProfileLoadedSection(
             userModel: state.userModel,
-            onLogout: () => context.read<ProfileBloc>().add(ProfileLogOut()),
+            onLogout: () => _showLogoutDialog(context),
             onDeleteAccount: () => _showDeleteAccountDialog(context),
           );
         } else {
@@ -77,6 +77,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onConfirm:
                 () => context.read<ProfileBloc>().add(ProfileDeleteAccount()),
           ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmActionDialog(
+        icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
+        title: AppLocalizations.of(context)!.logout_dialog_title,
+        description: AppLocalizations.of(context)!.logout_dialog_message,
+        cancelText: AppLocalizations.of(context)!.quit,
+        confirmText: AppLocalizations.of(context)!.log_out,
+        onCancel: () => Navigator.of(context).pop(),
+        onConfirm: () => context.read<ProfileBloc>().add(ProfileLogOut()),
+      ),
     );
   }
 }

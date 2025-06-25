@@ -206,6 +206,18 @@ abstract class AppLocalizations {
   /// **'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.'**
   String get leaving_us_message;
 
+  /// No description provided for @logout_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Da li sigurno želiš da se odjaviš?'**
+  String get logout_dialog_title;
+
+  /// No description provided for @logout_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.'**
+  String get logout_dialog_message;
+
   /// No description provided for @quit.
   ///
   /// In en, this message translates to:

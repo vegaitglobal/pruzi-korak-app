@@ -65,6 +65,13 @@ class AppLocalizationsSr extends AppLocalizations {
       'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.';
 
   @override
+  String get logout_dialog_title => 'Da li sigurno želiš da se odjaviš?';
+
+  @override
+  String get logout_dialog_message =>
+      'Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.';
+
+  @override
   String get quit => 'Odustani';
 
   @override
