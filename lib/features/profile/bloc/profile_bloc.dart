@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
+import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
@@ -12,8 +13,9 @@ part 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AppLocalStorage _localStorage;
   final AuthRepository _authRepository;
+  final LocalNotificationHandler _localNotificationHandler;
 
-  ProfileBloc(this._localStorage, this._authRepository) : super(ProfileInitial()) {
+  ProfileBloc(this._localStorage, this._authRepository, this._localNotificationHandler) : super(ProfileInitial()) {
     on<ProfileLoad>((event, emit) async {
       emit(ProfileLoading());
 
@@ -35,6 +37,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileLogOut>((event, emit) async {
       try {
         await _authRepository.logout();
+        await _localNotificationHandler.cancelAllNotifications();
         emit(ProfileLoggedOut());
       } catch (e) {
         AppLogger.logError('Error during logout: $e');

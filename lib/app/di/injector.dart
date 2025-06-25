@@ -9,6 +9,7 @@ import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository_impl.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/local/local_storage_impl.dart';
+import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service_impl.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
@@ -79,6 +80,13 @@ Future<void> setupNotification() async {
   getIt.registerLazySingleton(() => FlutterLocalNotificationsPlugin());
   getIt.registerLazySingleton<LocalNotificationService>(
     () => LocalNotificationServiceImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton<LocalNotificationHandler>(
+    () => LocalNotificationHandler(
+      getIt<LocalNotificationService>(),
+      getIt<AuthRepository>(),
+    ),
   );
 }
 

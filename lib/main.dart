@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pruzi_korak/app/app.dart';
-import 'package:pruzi_korak/app/notification_initializer.dart';
+import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/util/timezone_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/di/injector.dart';
@@ -15,7 +15,8 @@ void main() async {
   await initSupabase();
   await configureDI();
 
-  await initLocalNotifications();
+  // Initialize notifications
+  await getIt<LocalNotificationHandler>().init();
 
   runApp(const MyApp());
 }

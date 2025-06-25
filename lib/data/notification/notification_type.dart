@@ -12,4 +12,12 @@ enum NotificationType {
         return null;
     }
   }
+
+  @override
+  String toString() {
+    return switch (this) {
+      NotificationType.daily => 'daily',
+      NotificationType.instant => 'instant',
+    };
+  }
 }

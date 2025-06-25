@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

@@ -8,7 +8,7 @@ import 'package:pruzi_korak/data/health_data/health_repository';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
-import 'package:pruzi_korak/data/notification/local_notification_service.dart';
+import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
@@ -22,7 +22,6 @@ import 'package:pruzi_korak/features/team_leaderboard/details/bloc/team_details_
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/motivational_message/motivational_message_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
-import 'package:pruzi_korak/app/app_config.dart';
 
 import 'navigation/navigation_router.dart';
 
@@ -42,15 +41,18 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_isNotificationScheduled) {
         _isNotificationScheduled = true;
-
         final localizations = AppLocalizations.of(navigatorKey.currentContext!);
         if (localizations != null) {
-          getIt<LocalNotificationService>().scheduleDailyNotification(
-            hour: AppConfig.motivationNotificationHour,
-            minute: AppConfig.motivationNotificationMinute,
-            title: localizations.motivation_notification_title,
-            body: localizations.motivation_notification_body,
-          );
+          getIt<AuthRepository>().isLoggedIn().then((isLoggedIn) {
+            if (isLoggedIn) {
+              getIt<LocalNotificationHandler>()
+                  .scheduleMotivationalNotification(
+                    title: localizations.motivation_notification_title,
+                    body: localizations.motivation_notification_body,
+                  );
+
+            }
+          });
         }
       }
     });
@@ -78,6 +80,7 @@ class _MyAppState extends State<MyApp> {
               (context) => ProfileBloc(
                 getIt<AppLocalStorage>(),
                 getIt<AuthRepository>(),
+                getIt<LocalNotificationHandler>(),
               ),
         ),
         BlocProvider<UserLeaderboardBloc>(
