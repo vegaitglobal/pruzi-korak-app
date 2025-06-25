@@ -166,13 +166,7 @@ class MainActivity : FlutterActivity() {
                 response.buckets.forEach { bucket ->
                     bucket.dataSets.forEach { ds ->
                         ds.dataPoints.forEach { dp ->
-                            val src = dp.originalDataSource.appPackageName ?: ""
-                            val stream = dp.originalDataSource.streamName ?: ""
-                            val isManual = src.contains("user_input", true)
-                                    || stream.contains("user_input", true)
-                                    || src.contains("com.google.android.apps.fitness")
-
-                            if (!isManual) {
+                            if (dp.originalDataSource.device != null) {
                                 totalSteps += dp.getValue(Field.FIELD_STEPS).asInt()
                             }
                         }
@@ -257,14 +251,17 @@ class MainActivity : FlutterActivity() {
 
     private fun registerStepSensor() {
         if (stepListener != null) return
+
         val fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
             .build()
         val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions) ?: return
 
-        stepListener = OnDataPointListener { dataPoint ->
-            val delta = dataPoint.getValue(Field.FIELD_STEPS).asInt().toDouble()
-            channel.invokeMethod("stepCountChanged", delta)
+        stepListener = OnDataPointListener { dp ->
+            if (dp.originalDataSource.device != null) {
+                val delta = dp.getValue(Field.FIELD_STEPS).asInt().toDouble()
+                channel.invokeMethod("stepCountChanged", delta)
+            }
         }
 
         Fitness.getSensorsClient(this, account)
@@ -275,8 +272,8 @@ class MainActivity : FlutterActivity() {
                     .build(),
                 stepListener!!
             )
-            .addOnSuccessListener { Log.d("MainActivity", "Sensor listener registered") }
-            .addOnFailureListener { e ->
+            .addOnSuccessListener   { Log.d("MainActivity", "Sensor listener registered") }
+            .addOnFailureListener   { e ->
                 Log.e("MainActivity", "Failed to register sensor listener", e)
                 stepListener = null
             }
