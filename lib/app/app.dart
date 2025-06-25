@@ -50,7 +50,6 @@ class _MyAppState extends State<MyApp> {
                     title: localizations.motivation_notification_title,
                     body: localizations.motivation_notification_body,
                   );
-
             }
           });
         }

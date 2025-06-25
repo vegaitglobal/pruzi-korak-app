@@ -12,8 +12,15 @@ class LocalNotificationHandler {
 
   LocalNotificationHandler(this._notificationService, this._authRepository);
 
-  Future<void> init() async {
+  Future<void> init(String? initialPayload) async {
     await _notificationService.init(onNotificationTap: _handleNotificationTap);
+
+    // Handle notification tap if the app was launched from a notification in cold start
+    if (initialPayload != null) {
+      Future.microtask(() {
+        _handleNotificationTap(initialPayload);
+      });
+    }
   }
 
   Future<void> scheduleMotivationalNotification({
@@ -78,10 +85,3 @@ class LocalNotificationHandler {
     await _notificationService.cancelAll();
   }
 }
- // Example for now
-// getIt<LocalNotificationHandler>()
-//     .showNow(
-// title: localizations.motivation_notification_title,
-// body: localizations.motivation_notification_body,
-// km: '11',
-// );
