@@ -1,19 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/app/theme/gradients.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
+import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 import 'dart:math' as math;
 
-class SplashOrganizationScreen extends StatelessWidget {
+class SplashOrganizationScreen extends StatefulWidget {
   const SplashOrganizationScreen({super.key});
 
   @override
+  State<SplashOrganizationScreen> createState() => _SplashOrganizationScreenState();
+}
+
+class _SplashOrganizationScreenState extends State<SplashOrganizationScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Navigate to campaign message screen after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        context.go(AppRoutes.organizationMessage.path());
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This URL can be easily replaced when implementing actual data fetching
-    const String partnerLogoUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMQJIvdAWXjzmThRBeIyvFbxP4Bs6ekmuRog&s";
-    
+    // Get organization data from the bloc if available
+    final state = context.watch<AboutOrganizationBloc>().state;
+
+    // Use organization logo if available, otherwise use default
+    final String partnerLogoUrl = state is AboutOrganizationLoaded
+        ? state.organization.logoUrl
+        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMQJIvdAWXjzmThRBeIyvFbxP4Bs6ekmuRog&s";
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Stack(
@@ -28,7 +54,7 @@ class SplashOrganizationScreen extends StatelessWidget {
               size: const Size(double.infinity, 150),
             ),
           ),
-          
+
           // Bottom wave
           Positioned(
             bottom: 0,
@@ -39,7 +65,7 @@ class SplashOrganizationScreen extends StatelessWidget {
               size: const Size(double.infinity, 150),
             ),
           ),
-          
+
           // Main content with logos
           Center(
             child: Column(
@@ -51,11 +77,11 @@ class SplashOrganizationScreen extends StatelessWidget {
                   size: 150,
                   color: AppColors.primary,
                 ),
-                
+
                 const SizedBox(height: 60), // raised bottom logo by 40 px
-                
+
                 // Second logo - Partner Logo (dynamically loaded)
-                const CachedImage(
+                CachedImage(
                   imageUrl: partnerLogoUrl,
                   width: 200,
                   height: 100,

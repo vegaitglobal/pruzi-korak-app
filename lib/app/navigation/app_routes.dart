@@ -2,13 +2,16 @@ enum AppRoutes {
   splash,
   login,
   home,
-  statistic,
+  userLeaderboard,
+  teamLeaderboard,
+  teamLeaderboardDetails,
   profile,
   aboutCompany,
   about,
   organizationMessage,
   splashOrganization, 
-  motivationalMessage
+  motivationalMessage,
+  congratsMessage
 }
 
 extension AppRoutesExtension on AppRoutes {
@@ -16,12 +19,15 @@ extension AppRoutesExtension on AppRoutes {
         AppRoutes.splash => '/',
         AppRoutes.login => '/login',
         AppRoutes.home => '/home',
-        AppRoutes.statistic => '/statistic',
+        AppRoutes.userLeaderboard => '/user_leaderboard',
+        AppRoutes.teamLeaderboard => '/team_leaderboard',
+        AppRoutes.teamLeaderboardDetails => 'team_leaderboard_details/:id',
         AppRoutes.profile => '/profile',
         AppRoutes.aboutCompany => '/about-company',
         AppRoutes.about => '/about',
         AppRoutes.organizationMessage => '/organization-message',
         AppRoutes.splashOrganization => '/splash-organization',
-        AppRoutes.motivationalMessage => '/motivational-message'
+        AppRoutes.motivationalMessage => '/motivational-message',
+        AppRoutes.congratsMessage => '/congrats-message'
       };
 }

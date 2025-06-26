@@ -24,8 +24,8 @@ final class ProfileLoaded extends ProfileState {
   List<Object> get props => [userModel];
 }
 
-final class ProfileLogoutPressed extends ProfileState {
-  const ProfileLogoutPressed();
+final class ProfileLoggedOut extends ProfileState {
+  const ProfileLoggedOut();
 }
 
 final class ProfileDeleted extends ProfileState {

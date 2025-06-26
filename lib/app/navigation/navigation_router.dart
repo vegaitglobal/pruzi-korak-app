@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pruzi_korak/app/di/injector.dart';
+import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
+import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/about_pruzi_korak_screen.dart';
+import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
 import 'package:pruzi_korak/features/home/home_screen.dart';
 import 'package:pruzi_korak/features/login/login_screen.dart';
-import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
-import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
 import 'package:pruzi_korak/features/profile/profile_screen.dart';
 import 'package:pruzi_korak/features/splash/splash_screen.dart';
 import 'package:pruzi_korak/features/splash_organization/splash_organization_screen.dart';
+import 'package:pruzi_korak/features/team_leaderboard/details/team_details_screen.dart';
+import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_screen.dart';
+import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_screen.dart';
 
 import 'app_routes.dart';
 import 'bottom_navigation_bar/app_bottom_navigation_page.dart';
@@ -34,7 +40,7 @@ final _router = GoRouter(
       path: AppRoutes.splashOrganization.path(),
       name: AppRoutes.splashOrganization.name,
       builder: (context, state) {
-        return SplashOrganizationScreen();
+        return const SplashOrganizationScreen();
       },
     ),
     GoRoute(
@@ -73,11 +79,35 @@ final _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoutes.statistic.path(),
-              name: AppRoutes.statistic.name,
+              path: AppRoutes.userLeaderboard.path(),
+              name: AppRoutes.userLeaderboard.name,
               pageBuilder: (context, state) {
-                return getPage(child: Center(child: const Text("Statistic")), state: state);
+                return getPage(child: UserLeaderboardScreen(), state: state);
               },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.teamLeaderboard.path(),
+              name: AppRoutes.teamLeaderboard.name,
+              pageBuilder: (context, state) {
+                return getPage(child: TeamLeaderboardScreen(), state: state);
+              },
+              routes: [
+                GoRoute(
+                    parentNavigatorKey: parentNavigatorKey,
+                    path: AppRoutes.teamLeaderboardDetails.path(),
+                    name: AppRoutes.teamLeaderboardDetails.name,
+                    pageBuilder: (context, state) {
+                      final id = state.pathParameters['id'] ?? '';
+                      return getPage(
+                        child: TeamDetailsScreen(id: id),
+                        state: state,
+                      );
+                    }),
+              ]
             ),
           ],
         ),

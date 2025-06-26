@@ -20,3 +20,10 @@ class AppGradients {
     stops: const [0.0, 0.3, 1.0],
   );
 }
+
+final appBarColor = Container(
+  decoration: BoxDecoration(
+    gradient: AppGradients.backgroundLinearGradient,
+  ),
+);
+

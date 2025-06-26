@@ -22,7 +22,7 @@ class UserAvatarImage extends StatelessWidget {
         placeholder: (context, url) =>
             CircularProgressIndicator(color: AppColors.primary),
         errorWidget: (context, url, error) =>
-            Image.asset(AppIcons.userPlaceholder, width: size, height: size),
+            Image.asset(AppIcons.icStep, width: size, height: size),
         httpHeaders: token != null ? {"Authorization": "Bearer $token"} : null,
         width: size,
         height: size,

@@ -5,6 +5,7 @@ import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
+import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
@@ -12,6 +13,7 @@ import 'package:pruzi_korak/shared_ui/components/buttons.dart';
 import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
+import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
@@ -29,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLogoutPressed) {
+        if (state is ProfileLoggedOut) {
           context.go(AppRoutes.login.path());
         } else if (state is ProfileDeleted) {
           context.go(AppRoutes.login.path());
@@ -51,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         } else {
           return ErrorComponent(
-            errorMessage: 'Greška pri učitavanju profila',
+            errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
             onRetry: () {
               context.read<ProfileBloc>().add(ProfileLoad());
             },
@@ -67,11 +69,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder:
           (context) => ConfirmActionDialog(
             icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
-            title: 'Napustate nas?',
-            description:
-                'Da li ste sigurni da želite da obrišete svoj profil? Sve informacije i vaš učinak će biti izbrisani.',
-            cancelText: 'Odustani',
-            confirmText: 'Obriši Profil',
+            title: AppLocalizations.of(context)!.leaving_us_title,
+            description: AppLocalizations.of(context)!.leaving_us_message,
+            cancelText: AppLocalizations.of(context)!.quit,
+            confirmText: AppLocalizations.of(context)!.delete_profile,
             onCancel: () => Navigator.of(context).pop(),
             onConfirm:
                 () => context.read<ProfileBloc>().add(ProfileDeleteAccount()),
@@ -94,6 +95,9 @@ class ProfileLoadedSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final initial =
+    userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -105,7 +109,7 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                userModel.fullName,
+                "${userModel.fistName} ${userModel.lastName}",
                 style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
               ),
               const SizedBox(height: 16),
@@ -115,7 +119,7 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: UserAvatarImage(imageUrl: userModel.imageUrl, size: 124),
+                child: InitialsAvatar(initial: initial, size: 124),
               ),
             ],
           ),
@@ -127,13 +131,13 @@ class ProfileLoadedSection extends StatelessWidget {
           child: Column(
             children: [
               AppButtonWithIcon(
-                text: 'Odjavi se',
+                text: AppLocalizations.of(context)!.log_out,
                 iconPath: AppIcons.icLogout,
                 onPressed: onLogout,
               ),
               const SizedBox(height: 24),
               ClickableText(
-                text: 'Obriši nalog',
+                text: AppLocalizations.of(context)!.delete_profile,
                 textColor: AppColors.error,
                 fontSize: 14,
                 onPressed: onDeleteAccount,

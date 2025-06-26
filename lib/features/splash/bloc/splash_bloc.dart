@@ -15,12 +15,10 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       if (isUserLoggedIn) {
         emit(UserLoggedIn());
       } else {
-        // emit(UserLoggedIn());
         emit(UserNotLoggedIn());
       }
     });
 
-    // Trigger the initial event to check if the user is logged in
     add(CheckUserLoggedIn());
   }
 }
