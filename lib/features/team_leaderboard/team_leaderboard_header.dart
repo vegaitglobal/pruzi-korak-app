@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
-import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
+import 'package:pruzi_korak/domain/leaderboard/team_leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
@@ -13,7 +13,7 @@ class TeamLeaderboardHeader extends StatelessWidget {
     required this.onItemClick,
   });
 
-  final TopThreeLeaderboardModel topThreeLeaderboardModel;
+  final TopThreeLeaderboardModel<TeamLeaderboardModel> topThreeLeaderboardModel;
   final Function(String) onItemClick;
 
   @override
@@ -58,7 +58,7 @@ class TeamLeaderboardItem extends StatelessWidget {
     required this.onItemClick,
   });
 
-  final LeaderboardModel leaderboardModel;
+  final TeamLeaderboardModel leaderboardModel;
   final double verticalOffset;
   final double imageSize;
   final Function(String) onItemClick;
@@ -72,7 +72,7 @@ class TeamLeaderboardItem extends StatelessWidget {
       child: Column(
         children: [
           InkWell(
-            onTap: () => onItemClick(leaderboardModel.id),
+            onTap: () => onItemClick(leaderboardModel.teamId),
             child: AvatarWithBadge(
               badgePosition: BadgePosition.bottomCenter,
               badgeSize: BadgeSize.large,
@@ -92,7 +92,7 @@ class TeamLeaderboardItem extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            "${leaderboardModel.distance} ${AppLocalizations.of(context)!.km}",
+            "${leaderboardModel.totalDistance} ${AppLocalizations.of(context)!.km}",
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,

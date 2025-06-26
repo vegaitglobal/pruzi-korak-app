@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 
-class TopThreeLeaderboardModel extends Equatable {
-  final LeaderboardModel first;
-  final LeaderboardModel second;
-  final LeaderboardModel third;
+class TopThreeLeaderboardModel<T> extends Equatable {
+  final T first;
+  final T second;
+  final T third;
 
   const TopThreeLeaderboardModel({
     required this.first,
@@ -13,9 +12,9 @@ class TopThreeLeaderboardModel extends Equatable {
   });
 
   @override
-  List<Object> get props => [first, second, third];
+  List<Object> get props => [first, second, third] as List<Object>;
 
-  factory TopThreeLeaderboardModel.fromList(List<LeaderboardModel> list) {
+  factory TopThreeLeaderboardModel.fromList(List<T> list) {
     if (list.length < 3) {
       throw Exception('Leaderboard list must contain at least 3 entries');
     }

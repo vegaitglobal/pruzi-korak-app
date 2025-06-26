@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
-import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
+import 'package:pruzi_korak/domain/leaderboard/team_leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_header.dart';
@@ -52,8 +52,8 @@ class UserLeaderboardSection extends StatelessWidget {
     required this.topThreeLeaderboardModel,
   });
 
-  final TopThreeLeaderboardModel topThreeLeaderboardModel;
-  final List<LeaderboardModel> leaderboardList;
+  final TopThreeLeaderboardModel<TeamLeaderboardModel> topThreeLeaderboardModel;
+  final List<TeamLeaderboardModel> leaderboardList;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class UserLeaderboardSection extends StatelessWidget {
             child: InfiniteScrollView(
               itemBuilder: (context, index) {
                 final item = TeamLeaderboardListItem(
-                  leaderboardModel: leaderboardList[index],
+                  teamLeaderboardModel: leaderboardList[index],
                   onItemClick: (teamId) {
                     context.pushNamed(
                       AppRoutes.teamLeaderboardDetails.name,
