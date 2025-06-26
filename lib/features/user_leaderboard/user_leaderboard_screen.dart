@@ -58,50 +58,77 @@ class UserLeaderboardSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.backgroundPrimary,
-      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          AppHeader(),
-          const SizedBox(height: 16.0),
-          UserLeaderboardHeader(
-            topThreeLeaderboardModel: topThreeLeaderboardModel,
-          ),
-          const SizedBox(height: 16.0),
+          _headerComponent(),
           Expanded(
-            child: InfiniteScrollView(
-              itemBuilder: (context, index) {
-                final item = UserLeaderboardListItem(
-                  leaderboardModel: leaderboardList[index],
-                );
-                final hasDivider = index < leaderboardList.length - 1;
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: item,
-                    ),
-                    if (hasDivider)
-                      Divider(
-                        height: 16,
-                        thickness: 1,
-                        color: AppColors.grayLight,
-                      ),
-                  ],
-                );
-              },
-              itemCount: leaderboardList.length,
-              isLastPage: true,
-              loadingEnabled: false,
-              fetchMore: () async {
-                //_fetchMoreData();
-              },
-              onRefresh: () async {
-                context.read<UserLeaderboardBloc>().add(LoadUserLeaderboard());
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: InfiniteScrollView(
+                itemBuilder: (context, index) {
+                  final item = UserLeaderboardListItem(
+                    leaderboardModel: leaderboardList[index],
+                  );
+                  final hasDivider = index < leaderboardList.length - 1;
+                  return Column(
+                    children: [
+                      Padding(padding: const EdgeInsets.all(8.0), child: item),
+                      if (hasDivider)
+                        Divider(
+                          height: 16,
+                          thickness: 1,
+                          color: AppColors.grayLight,
+                        ),
+                    ],
+                  );
+                },
+                itemCount: leaderboardList.length,
+                isLastPage: true,
+                loadingEnabled: false,
+                fetchMore: () async {
+                  //_fetchMoreData();
+                },
+                onRefresh: () async {
+                  context.read<UserLeaderboardBloc>().add(
+                    LoadUserLeaderboard(),
+                  );
+                },
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _headerComponent() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.backgroundPrimary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            offset: Offset(0, 4),
+            blurRadius: 8.0,
+            spreadRadius: 0.0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AppHeader(),
+            const SizedBox(height: 16.0),
+            UserLeaderboardHeader(
+              topThreeLeaderboardModel: topThreeLeaderboardModel,
+            ),
+            const SizedBox(height: 16.0),
+          ],
+        ),
       ),
     );
   }
