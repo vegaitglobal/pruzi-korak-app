@@ -12,7 +12,7 @@ final class UserLeaderboardLoading extends UserLeaderboardState {
 }
 
 final class UserLeaderboardLoaded extends UserLeaderboardState {
-  final TopThreeLeaderboardModel topThreeLeaderboardModel;
+  final TopThreeLeaderboardModel<LeaderboardModel> topThreeLeaderboardModel;
   final List<LeaderboardModel> leaderboardList;
 
   const UserLeaderboardLoaded({

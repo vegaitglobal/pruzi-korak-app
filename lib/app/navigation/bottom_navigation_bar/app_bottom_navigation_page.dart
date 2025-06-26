@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/app/theme/gradients.dart';
@@ -22,13 +23,21 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
     final activeIconColor = AppColors.primary;
     final iconColor = AppColors.textSecondary;
 
-    return Container(
-      decoration: BoxDecoration(color: AppColors.backgroundPrimary),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
-        appBar: null,
-        body: Container(
-          decoration: BoxDecoration(color: AppColors.backgroundPrimary),
-          child: SafeArea(child: widget.child),
+        extendBodyBehindAppBar: true,
+        backgroundColor: AppColors.backgroundPrimary,
+        body: Stack(
+          children: [
+            Container(
+              height: 40,
+              decoration: getStatusBarBackgroundForIndex(
+                widget.child.currentIndex,
+              ),
+            ),
+            SafeArea(child: widget.child),
+          ],
         ),
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
@@ -157,5 +166,15 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
         ),
       ),
     );
+  }
+
+  BoxDecoration getStatusBarBackgroundForIndex(int index) {
+    switch (index) {
+      case 3:
+      case 5:
+        return BoxDecoration(gradient: AppGradients.primaryLinearGradient);
+      default:
+        return const BoxDecoration(color: AppColors.backgroundPrimary);
+    }
   }
 }

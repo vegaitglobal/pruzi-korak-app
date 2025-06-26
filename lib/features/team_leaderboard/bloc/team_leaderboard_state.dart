@@ -12,8 +12,8 @@ final class TeamLeaderboardLoading extends TeamLeaderboardState {
 }
 
 final class TeamLeaderboardLoaded extends TeamLeaderboardState {
-  final TopThreeLeaderboardModel topThreeLeaderboardModel;
-  final List<LeaderboardModel> leaderboardList;
+  final TopThreeLeaderboardModel<TeamLeaderboardModel> topThreeLeaderboardModel;
+  final List<TeamLeaderboardModel> leaderboardList;
 
   const TeamLeaderboardLoaded({
     required this.topThreeLeaderboardModel,

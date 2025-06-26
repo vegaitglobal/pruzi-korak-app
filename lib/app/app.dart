@@ -98,7 +98,9 @@ class _MyAppState extends State<MyApp> {
           create:
               (context) => TeamLeaderboardBloc(getIt<LeaderboardRepository>()),
         ),
-        BlocProvider<TeamDetailsBloc>(create: (context) => TeamDetailsBloc()),
+        BlocProvider<TeamDetailsBloc>(create: (context) => TeamDetailsBloc(
+          leaderboardRepository: getIt<LeaderboardRepository>()
+        )),
         BlocProvider<AboutPruziKorakBloc>(
           create:
               (context) => AboutPruziKorakBloc(getIt<OrganizationRepository>()),

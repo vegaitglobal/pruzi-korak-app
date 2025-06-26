@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/di/injector.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
 import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/about_pruzi_korak_screen.dart';
@@ -121,8 +122,10 @@ final _router = GoRouter(
                   name: AppRoutes.teamLeaderboardDetails.name,
                   pageBuilder: (context, state) {
                     final id = state.pathParameters['id'] ?? '';
+                    final teamName =
+                        state.uri.queryParameters['teamName'] ?? '';
                     return getPage(
-                      child: TeamDetailsScreen(id: id),
+                      child: TeamDetailsScreen(id: id, teamName: teamName),
                       state: state,
                     );
                   },

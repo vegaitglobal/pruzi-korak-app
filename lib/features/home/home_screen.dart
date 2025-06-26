@@ -41,10 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: double.infinity,
+    return Container(
+      color: AppColors.backgroundPrimary,
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Center(
           child: BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
@@ -56,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   teamStepsModel: state.teamStepsModel,
                 ),
                 HomeError() => ErrorComponent(
-                  errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
+                  errorMessage:
+                      AppLocalizations.of(context)!.unexpected_error_occurred,
                   onRetry: () {
                     context.read<HomeBloc>().add(const HomeLoadEvent());
                   },
