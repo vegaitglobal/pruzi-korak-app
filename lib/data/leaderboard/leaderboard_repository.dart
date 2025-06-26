@@ -8,4 +8,6 @@ abstract class LeaderboardRepository {
 
   Future<({TopThreeLeaderboardModel<TeamLeaderboardModel> topThree, List<TeamLeaderboardModel> list})>
       getTeamLeaderboard();
+
+  Future<List<LeaderboardModel>> getUsersLeaderboardByTeam(String teamId);
 }

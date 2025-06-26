@@ -88,4 +88,37 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
       throw Exception('Failed to fetch leaderboard: $e');
     }
   }
+
+  @override
+  Future<List<LeaderboardModel>> getUsersLeaderboardByTeam(String teamId) async {
+    try {
+      final response = await _client.rpc(
+        'get_team_info',
+        params: {'input_team_id': teamId},
+      );
+
+      AppLogger.logInfo("getUsersLeaderboardByTeam response: $response");
+
+      final rawList = response as List;
+
+      rawList.sort((a, b) {
+        final aDistance = double.tryParse(a['total_distance'].toString()) ?? 0;
+        final bDistance = double.tryParse(b['total_distance'].toString()) ?? 0;
+        return bDistance.compareTo(aDistance);
+      });
+
+      final List<LeaderboardModel> leaderboard =
+          rawList.asMap().entries.map((entry) {
+            final index = entry.key;
+            final json = entry.value as Map<String, dynamic>;
+            final rank = (index + 1).toString();
+            return LeaderboardModel.fromJson(json, rank: rank);
+          }).toList();
+
+      return leaderboard;
+    } catch (e) {
+      AppLogger.logError("Failed to fetch team users: $e");
+      throw Exception('Failed to fetch team users: $e');
+    }
+  }
 }
