@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_header.dart';
@@ -104,6 +105,7 @@ class UserLeaderboardSection extends StatelessWidget {
 
   Widget _headerComponent() {
     return Container(
+      height: Dimension.LEADERBOARD_HEADER_HEIGHT,
       decoration: const BoxDecoration(
         color: AppColors.backgroundPrimary,
         boxShadow: [
@@ -126,7 +128,7 @@ class UserLeaderboardSection extends StatelessWidget {
             UserLeaderboardHeader(
               topThreeLeaderboardModel: topThreeLeaderboardModel,
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 8.0),
           ],
         ),
       ),

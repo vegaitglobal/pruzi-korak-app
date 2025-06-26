@@ -66,13 +66,19 @@ class TeamLeaderboardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-        leaderboardModel.teamName.isNotEmpty ? leaderboardModel.teamName[0] : '?';
+        leaderboardModel.teamName.isNotEmpty
+            ? leaderboardModel.teamName[0]
+            : '?';
     return Transform.translate(
       offset: Offset(0, verticalOffset),
       child: Column(
         children: [
           InkWell(
-            onTap: () => onItemClick(leaderboardModel.teamId, leaderboardModel.teamName),
+            onTap:
+                () => onItemClick(
+                  leaderboardModel.teamId,
+                  leaderboardModel.teamName,
+                ),
             child: AvatarWithBadge(
               badgePosition: BadgePosition.bottomCenter,
               badgeSize: BadgeSize.large,
@@ -81,13 +87,18 @@ class TeamLeaderboardItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            leaderboardModel.teamName,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: AppColors.primary,
+          SizedBox(
+            width: 80,
+            child: Text(
+              leaderboardModel.teamName,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              softWrap: true,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: AppColors.primary,
+              ),
             ),
           ),
           const SizedBox(height: 8),

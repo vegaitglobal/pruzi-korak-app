@@ -10,7 +10,6 @@ import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
 import 'package:pruzi_korak/shared_ui/components/buttons.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';

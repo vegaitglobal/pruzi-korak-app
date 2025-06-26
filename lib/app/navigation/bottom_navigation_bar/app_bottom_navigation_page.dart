@@ -26,6 +26,7 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
       decoration: BoxDecoration(color: AppColors.backgroundPrimary),
       child: Scaffold(
         appBar: null,
+        extendBodyBehindAppBar: true,
         body: Container(
           decoration: BoxDecoration(color: AppColors.backgroundPrimary),
           child: SafeArea(child: widget.child),

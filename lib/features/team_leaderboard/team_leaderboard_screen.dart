@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/domain/leaderboard/team_leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
@@ -114,6 +115,7 @@ class UserLeaderboardSection extends StatelessWidget {
 
   Widget _headerComponent(BuildContext context) {
     return Container(
+      height: Dimension.LEADERBOARD_HEADER_HEIGHT,
       decoration: const BoxDecoration(
         color: AppColors.backgroundPrimary,
         boxShadow: [
@@ -146,7 +148,7 @@ class UserLeaderboardSection extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 8.0),
           ],
         ),
       ),
