@@ -57,8 +57,6 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
       final response = await _client.rpc(
         'get_campaign_teams_with_distance');
 
-      AppLogger.logInfo("getTeamLeaderboard response: ${response}");
-
       final rawList = response as List;
 
       rawList.sort((a, b) {
@@ -76,7 +74,6 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
           }).toList();
 
       final topThree = TopThreeLeaderboardModel.fromList(leaderboard);
-      AppLogger.logInfo("Top three leaderboard: $topThree");
       final others =
           leaderboard.length > 3
               ? leaderboard.sublist(3)
@@ -96,8 +93,6 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
         'get_team_info',
         params: {'input_team_id': teamId},
       );
-
-      AppLogger.logInfo("getUsersLeaderboardByTeam response: $response");
 
       final rawList = response as List;
 

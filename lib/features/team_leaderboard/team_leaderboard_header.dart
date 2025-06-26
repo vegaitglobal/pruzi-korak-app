@@ -14,7 +14,7 @@ class TeamLeaderboardHeader extends StatelessWidget {
   });
 
   final TopThreeLeaderboardModel<TeamLeaderboardModel> topThreeLeaderboardModel;
-  final Function(String) onItemClick;
+  final Function(String, String) onItemClick;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class TeamLeaderboardItem extends StatelessWidget {
   final TeamLeaderboardModel leaderboardModel;
   final double verticalOffset;
   final double imageSize;
-  final Function(String) onItemClick;
+  final Function(String, String) onItemClick;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class TeamLeaderboardItem extends StatelessWidget {
       child: Column(
         children: [
           InkWell(
-            onTap: () => onItemClick(leaderboardModel.teamId),
+            onTap: () => onItemClick(leaderboardModel.teamId, leaderboardModel.teamName),
             child: AvatarWithBadge(
               badgePosition: BadgePosition.bottomCenter,
               badgeSize: BadgeSize.large,

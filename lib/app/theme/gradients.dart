@@ -23,7 +23,7 @@ class AppGradients {
 
 final appBarColor = Container(
   decoration: BoxDecoration(
-    gradient: AppGradients.backgroundLinearGradient,
+    gradient: AppGradients.primaryLinearGradient,
   ),
 );
 

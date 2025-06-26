@@ -67,11 +67,12 @@ class UserLeaderboardSection extends StatelessWidget {
           const SizedBox(height: 16.0),
           TeamLeaderboardHeader(
             topThreeLeaderboardModel: topThreeLeaderboardModel,
-            onItemClick: (teamId) {
+            onItemClick: (teamId, teamName) {
               AppLogger.logWarning("Navigating to team details for ID: $teamId");
               context.pushNamed(
                 AppRoutes.teamLeaderboardDetails.name,
                 pathParameters: {'id': teamId},
+                queryParameters: {'teamName': teamName},
               );
             },
           ),
@@ -85,6 +86,7 @@ class UserLeaderboardSection extends StatelessWidget {
                     context.pushNamed(
                       AppRoutes.teamLeaderboardDetails.name,
                       pathParameters: {'id': teamId},
+                      queryParameters: {'teamName': leaderboardList[index].teamName},
                     );
                   },
                 );

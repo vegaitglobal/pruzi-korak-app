@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/app/theme/gradients.dart';
@@ -8,15 +9,21 @@ import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/features/user_leaderboard/user_leaderboard_list_item.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
+import 'package:pruzi_korak/shared_ui/components/clickable_icon.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
 import 'bloc/team_details_bloc.dart';
 
 class TeamDetailsScreen extends StatefulWidget {
-  const TeamDetailsScreen({super.key, required this.id});
+  const TeamDetailsScreen({
+    super.key,
+    required this.id,
+    required this.teamName,
+  });
 
   final String id;
+  final String teamName;
 
   @override
   State<TeamDetailsScreen> createState() => _TeamDetailsScreenState();
@@ -41,6 +48,7 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
               child: CircularProgressIndicator(),
             ),
             TeamDetailsLoaded() => TeamDetailsLoadedSection(
+              teamName: widget.teamName,
               totalDistance: state.totalDistance,
               leaderboardList: state.leaderboardList,
             ),
@@ -65,10 +73,12 @@ class _TeamDetailsScreenState extends State<TeamDetailsScreen> {
 class TeamDetailsLoadedSection extends StatelessWidget {
   const TeamDetailsLoadedSection({
     super.key,
+    required this.teamName,
     required this.totalDistance,
     required this.leaderboardList,
   });
 
+  final String teamName;
   final String totalDistance;
   final List<LeaderboardModel> leaderboardList;
 
@@ -77,6 +87,24 @@ class TeamDetailsLoadedSection extends StatelessWidget {
     double headerHeight = MediaQuery.of(context).size.height / 2.5;
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          teamName,
+          style: AppTextStyles.titleSmall.copyWith(color: AppColors.white),
+        ),
+        leading: ClickableIcon(
+          appSvgIcon: AppSvgIcon(
+            iconPath: AppIcons.icBack,
+            color: AppColors.white,
+            size: 20.0,
+          ),
+          onPressed: context.pop,
+        ),
+        flexibleSpace: appBarColor,
+      ),
       body: Column(
         children: [
           Stack(
@@ -88,16 +116,19 @@ class TeamDetailsLoadedSection extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: StepsCircleComponentDetails(
-                    text: totalDistance,
-                    iconPath: AppIcons.icStepLarge,
-                    color: AppColors.white,
+                  child: Column(
+                    children: [
+                      StepsCircleComponentDetails(
+                        text: totalDistance,
+                        iconPath: AppIcons.icStepLarge,
+                        color: AppColors.white,
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               itemCount: leaderboardList.length,
@@ -106,6 +137,7 @@ class TeamDetailsLoadedSection extends StatelessWidget {
                       _buildLeaderboardItem(context, leaderboardList, index),
             ),
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );

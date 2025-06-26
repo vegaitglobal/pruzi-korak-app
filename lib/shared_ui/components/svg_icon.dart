@@ -20,7 +20,7 @@ class AppSvgIcon extends StatelessWidget {
         color ?? AppColors.primary,
         BlendMode.srcIn,
       ),
-      fit: BoxFit.scaleDown,
+      fit: BoxFit.fill,
     );
   }
 }
