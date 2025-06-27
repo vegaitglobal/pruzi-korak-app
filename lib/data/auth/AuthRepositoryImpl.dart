@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
+import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -13,8 +14,9 @@ const String _user_id_key = "input_user_id";
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _client;
   final AppLocalStorage _localStorage;
+  final OrganizationRepository _organizationRepository;
 
-  AuthRepositoryImpl(this._client, this._localStorage);
+  AuthRepositoryImpl(this._client, this._localStorage, this._organizationRepository);
 
   @override
   Future<void> logout() async {
@@ -63,7 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
       );
       var isDeviceValid = await _isDeviceValid(response.user!.id);
-      fetchAndSaveUser();
+      await fetchAndSaveUser();
+      await fetchAndSaveOrganizationInfo();
 
       if (isDeviceValid) return response.user;
     } on Exception catch (e) {
@@ -93,6 +96,18 @@ class AuthRepositoryImpl implements AuthRepository {
       await _localStorage.saveUser(user);
     } catch (e) {
       throw Exception('Failed to fetch home data: $e');
+    }
+  }
+
+  Future<void> fetchAndSaveOrganizationInfo() async {
+    try {
+      final organizationData = await _organizationRepository.fetchBySession();
+      await _localStorage.saveOrganizationInfo(
+        organizationData.heading,
+        organizationData.logoUrl,
+      );
+    } catch (e) {
+      throw Exception('Failed to fetch organization data: $e');
     }
   }
 }

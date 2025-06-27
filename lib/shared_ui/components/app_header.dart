@@ -6,6 +6,7 @@ import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 class AppHeader extends StatelessWidget {
   const AppHeader({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return Row(

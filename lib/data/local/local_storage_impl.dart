@@ -8,6 +8,8 @@ class AppLocalStorageImpl implements AppLocalStorage {
   final SharedPreferences _prefs;
 
   static const _userKey = 'user_model';
+  static const _companyNameKey = 'company_name';
+  static const _logoUrlKey = 'logo_url';
 
   AppLocalStorageImpl(this._prefs);
 
@@ -27,5 +29,23 @@ class AppLocalStorageImpl implements AppLocalStorage {
   @override
   Future<void> clearUserData() async {
     await _prefs.remove(_userKey);
+    await _prefs.remove(_companyNameKey);
+    await _prefs.remove(_logoUrlKey);
+  }
+
+  @override
+  Future<void> saveOrganizationInfo(String companyName, String logoUrl) async {
+    await _prefs.setString(_companyNameKey, companyName);
+    await _prefs.setString(_logoUrlKey, logoUrl);
+  }
+
+  @override
+  Future<String?> getCompanyName() async {
+    return _prefs.getString(_companyNameKey);
+  }
+
+  @override
+  Future<String?> getLogoUrl() async {
+    return _prefs.getString(_logoUrlKey);
   }
 }
