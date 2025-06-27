@@ -85,9 +85,6 @@ class HomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: replace with real dynamic data
-    const String badgeValue = '5';
-    const String teamName = 'Rounders';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -96,13 +93,13 @@ class HomeSection extends StatelessWidget {
         Spacer(flex: 1),
         UserSection(
           fullName: '${userModel.fistName} ${userModel.lastName}',
-          badgeValue: badgeValue,
+          badgeValue: null,
         ),
         SizedBox(height: 16),
         HomeUserSection(stepsModel: userStepsModel),
         SizedBox(height: 32),
         Text(
-          teamName,
+          userModel.teamName,
           style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
         ),
         SizedBox(height: 32),

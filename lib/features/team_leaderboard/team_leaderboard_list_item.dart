@@ -39,11 +39,6 @@ class TeamLeaderboardListItem extends StatelessWidget {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Roadrunners', // Replace with actual steps count
-                style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
-              ),
             ],
           ),
           const Spacer(),

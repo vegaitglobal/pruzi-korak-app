@@ -13,21 +13,16 @@ class UserSection extends StatelessWidget {
   });
 
   final String fullName;
-  final String badgeValue;
+  final String? badgeValue;
 
   @override
   Widget build(BuildContext context) {
     final initial =
-    fullName.isNotEmpty ? fullName[0] : '?';
+        fullName.isNotEmpty ? fullName[0] : '?';
 
     return Row(
       children: [
-        AvatarWithBadge(
-          badgeValue: badgeValue,
-          badgeSize: BadgeSize.large,
-          badgePosition: BadgePosition.topLeft,
-          child: InitialsAvatar(initial: initial, size: 66),
-        ),
+        _buildAvatar(initial),
         const SizedBox(width: 16),
         Text(
           fullName,
@@ -37,6 +32,18 @@ class UserSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAvatar(String initial) {
+    if (badgeValue == null) {
+      return InitialsAvatar(initial: initial, size: 66);
+    }
+    return AvatarWithBadge(
+      badgeValue: badgeValue!,
+      badgeSize: BadgeSize.large,
+      badgePosition: BadgePosition.topLeft,
+      child: InitialsAvatar(initial: initial, size: 66),
     );
   }
 }
