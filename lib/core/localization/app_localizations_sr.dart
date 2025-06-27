@@ -107,4 +107,7 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get motivation_notification_body =>
       'Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš.';
+
+  @override
+  String get logo_placeholder => 'Logo kompanije';
 }
