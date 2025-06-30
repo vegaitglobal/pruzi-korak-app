@@ -12,6 +12,7 @@ import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
+import 'package:pruzi_korak/data/permissions/permissions_service.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/features/campaign_message/bloc/campaign_message_bloc.dart';
@@ -68,7 +69,10 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<SplashBloc>(
-          create: (context) => SplashBloc(getIt<AuthRepository>()),
+          create: (context) => SplashBloc(
+            getIt<AuthRepository>(),
+            getIt<PermissionsService>(),
+          ),
         ),
         BlocProvider<LoginBloc>(
           create:
@@ -186,3 +190,4 @@ class _MyAppState extends State<MyApp> {
     }
   }
 }
+
