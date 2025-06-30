@@ -44,10 +44,6 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
         onNotificationTap(response.payload);
       },
     );
-
-    await _plugin
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
   @override
