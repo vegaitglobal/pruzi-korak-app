@@ -67,7 +67,7 @@ class CachedImage extends StatelessWidget {
           (context, url) => CircularProgressIndicator(color: AppColors.primary),
       errorWidget:
           (context, url, error) =>
-          errorPlaceholder ?? Icon(Icons.place, color: AppColors.error),
+              errorPlaceholder ?? Icon(Icons.place, color: AppColors.error),
       httpHeaders: token != null ? {"Authorization": "Bearer $token"} : null,
       width: width,
       height: height,

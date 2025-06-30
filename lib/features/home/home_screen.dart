@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   userModel: state.userModel,
                   userStepsModel: state.userStepsModel,
                   teamStepsModel: state.teamStepsModel,
+                  myRank: state.myRank,
                 ),
                 HomeError() => ErrorComponent(
                   errorMessage:
@@ -77,11 +78,13 @@ class HomeSection extends StatelessWidget {
     required this.userModel,
     required this.userStepsModel,
     required this.teamStepsModel,
+    required this.myRank,
   });
 
   final UserModel userModel;
   final StepsModel userStepsModel;
   final StepsModel teamStepsModel;
+  final int myRank;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +96,7 @@ class HomeSection extends StatelessWidget {
         Spacer(flex: 1),
         UserSection(
           fullName: '${userModel.fistName} ${userModel.lastName}',
-          badgeValue: null,
+          badgeValue: myRank > 0 ? myRank.toString() : null,
         ),
         SizedBox(height: 16),
         HomeUserSection(stepsModel: userStepsModel),

@@ -16,15 +16,17 @@ final class HomeLoaded extends HomeState {
   final UserModel userModel;
   final StepsModel userStepsModel;
   final StepsModel teamStepsModel;
+  final int myRank;
 
   const HomeLoaded({
     required this.userModel,
     required this.userStepsModel,
     required this.teamStepsModel,
+    required this.myRank,
   });
 
   @override
-  List<Object> get props => [userModel, userStepsModel, teamStepsModel];
+  List<Object> get props => [userModel, userStepsModel, teamStepsModel, myRank];
 }
 
 final class HomeError extends HomeState {
