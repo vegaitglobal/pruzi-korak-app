@@ -14,6 +14,7 @@ import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
+import 'package:pruzi_korak/features/campaign_message/bloc/campaign_message_bloc.dart';
 import 'package:pruzi_korak/features/home/bloc/home_bloc.dart';
 import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/bloc/about_pruzi_korak_bloc.dart';
@@ -112,6 +113,11 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider<MotivationalMessageBloc>(
           create: (context) => getIt<MotivationalMessageBloc>(),
+        ),
+        BlocProvider<CampaignMessageBloc>(
+          create:
+              (context) =>
+                  CampaignMessageBloc(getIt<OrganizationRepository>()),
         ),
       ],
 

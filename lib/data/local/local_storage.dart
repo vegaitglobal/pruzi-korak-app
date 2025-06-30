@@ -6,4 +6,10 @@ abstract class AppLocalStorage {
   Future<UserModel?> getUser();
 
   Future<void> clearUserData();
+
+  Future<void> saveOrganizationInfo(String companyName, String logoUrl);
+
+  Future<String?> getCompanyName();
+
+  Future<String?> getLogoUrl();
 }

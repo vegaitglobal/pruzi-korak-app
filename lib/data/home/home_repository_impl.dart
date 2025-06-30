@@ -1,3 +1,4 @@
+import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/team_user_stats.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
@@ -25,6 +26,18 @@ class HomeRepositoryImpl implements HomeRepository {
       );
     } catch (e) {
       throw Exception('Failed to fetch home data: $e');
+    }
+  }
+
+  @override
+  Future<int> getMyRank() async {
+    try {
+      final response = await _client.rpc('get_my_rank');
+      final int userRank = response as int;
+      return userRank;
+    } catch (e) {
+      AppLogger.logError('Error fetching user rank: $e');
+      throw Exception('Failed to fetch user rank: $e');
     }
   }
 

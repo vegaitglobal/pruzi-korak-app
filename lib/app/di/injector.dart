@@ -39,12 +39,17 @@ void setupInitialLocator() {
   getIt.registerSingleton<SessionStream>(SessionStream());
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
   getIt.registerSingleton<LoginNotificationEvent>(LoginNotificationEvent());
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppLocalStorage>()),
-  );
 
   getIt.registerLazySingleton<OrganizationRepository>(
     () => OrganizationRepositoryImpl(getIt<SupabaseClient>()),
+  );
+
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      getIt<SupabaseClient>(),
+      getIt<AppLocalStorage>(),
+      getIt<OrganizationRepository>(),
+    ),
   );
 }
 

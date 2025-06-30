@@ -289,6 +289,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your daily dose of inspiration has arrived. Tap to read.'**
   String get motivation_notification_body;
+
+  /// No description provided for @logo_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Company logo'**
+  String get logo_placeholder;
 }
 
 class _AppLocalizationsDelegate
