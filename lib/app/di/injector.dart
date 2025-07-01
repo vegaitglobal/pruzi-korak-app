@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/session/session_stream.dart';
 import 'package:pruzi_korak/core/supabase/tenant_supabase_client.dart';
@@ -46,11 +47,16 @@ void setupInitialLocator() {
     () => OrganizationRepositoryImpl(getIt<SupabaseClient>()),
   );
 
+  getIt.registerLazySingleton<MobileDeviceIdentifier>(
+    () => MobileDeviceIdentifier(),
+  );
+
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       getIt<SupabaseClient>(),
       getIt<AppLocalStorage>(),
       getIt<OrganizationRepository>(),
+      getIt<MobileDeviceIdentifier>(),
     ),
   );
 }
