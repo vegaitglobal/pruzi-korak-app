@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 import '../../domain/auth/AuthRepository.dart';
 
@@ -15,8 +16,9 @@ class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _client;
   final AppLocalStorage _localStorage;
   final OrganizationRepository _organizationRepository;
+  final MobileDeviceIdentifier _mobileDeviceIdentifier;
 
-  AuthRepositoryImpl(this._client, this._localStorage, this._organizationRepository);
+  AuthRepositoryImpl(this._client, this._localStorage, this._organizationRepository, this._mobileDeviceIdentifier);
 
   @override
   Future<void> logout() async {
@@ -36,26 +38,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   Future<String?> _getDeviceIdentifier() async {
-    switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return _readAndroidDeviceIdentifier(
-          await DeviceInfoPlugin().androidInfo,
-        );
-      case TargetPlatform.iOS:
-        return _getIosDeviceIdentifier(await DeviceInfoPlugin().iosInfo);
-
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-      case TargetPlatform.fuchsia:
-        throw UnsupportedPlatformException;
+    try {
+      final deviceIdentifier = await _mobileDeviceIdentifier.getDeviceId();
+      return deviceIdentifier;
+    } catch (e) {
+      if (kDebugMode) print('Error getting device identifier: $e');
+      return null;
     }
   }
-
-  String? _getIosDeviceIdentifier(IosDeviceInfo data) =>
-      data.identifierForVendor;
-
-  String? _readAndroidDeviceIdentifier(AndroidDeviceInfo build) => build.id;
 
   @override
   Future<User?> login(String email, String password) async {
@@ -72,6 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on Exception catch (e) {
       rethrow;
     }
+    return null;
   }
 
   Future<bool> _isDeviceValid(String userId) async {
