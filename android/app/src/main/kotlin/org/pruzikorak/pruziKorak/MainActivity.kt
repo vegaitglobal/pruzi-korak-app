@@ -55,6 +55,23 @@ class MainActivity : FlutterActivity() {
                     }
                 }
 
+                "getStepsGroupedByDay" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val end = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getStepsGroupedByDay(start, end, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 "getStepsFromCampaignStart" -> {
                     val ts = call.arguments as? Double
                     if (ts == null) {
@@ -140,6 +157,61 @@ class MainActivity : FlutterActivity() {
                 fitnessOptions
             )
         }
+    }
+
+    private fun getStepsGroupedByDay(
+        startTime: Long,
+        endTime: Long,
+        result: MethodChannel.Result
+    ) {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account == null) {
+            result.error("NO_ACCOUNT", "Google account not signed in", null)
+            return
+        }
+
+        val readRequest = DataReadRequest.Builder()
+            .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
+            .bucketByTime(1, TimeUnit.DAYS)
+            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .build()
+
+        Fitness.getHistoryClient(this, account)
+            .readData(readRequest)
+            .addOnSuccessListener { response ->
+                val results = mutableListOf<Map<String, Any>>()
+
+                response.buckets.forEach { bucket ->
+                    var stepsForDay = 0
+                    val startMillis = bucket.getStartTime(TimeUnit.MILLISECONDS)
+
+                    bucket.dataSets.forEach { ds ->
+                        ds.dataPoints.forEach { dp ->
+                            if (dp.originalDataSource.device != null) {
+                                stepsForDay += dp.getValue(Field.FIELD_STEPS).asInt()
+                            }
+                        }
+                    }
+
+                    val date = java.text.SimpleDateFormat("yyyy-MM-dd")
+                        .apply { timeZone = TimeZone.getDefault() }
+                        .format(startMillis)
+
+                    val kilometers = stepsForDay / 1300.0
+
+                    results.add(
+                        mapOf(
+                            "date" to date,
+                            "total_kilometers" to kilometers
+                        )
+                    )
+                }
+
+                result.success(results)
+            }
+            .addOnFailureListener { e ->
+                result.error("FITNESS_ERROR", "Failed to read grouped steps: ${e.localizedMessage}", null)
+            }
     }
 
     private fun getStepCount(

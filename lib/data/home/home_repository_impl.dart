@@ -28,38 +28,6 @@ class HomeRepositoryImpl implements HomeRepository {
     }
   }
 
-  Future<void> fetchSyncInfo() async {
-    final response = await Supabase.instance.client.functions.invoke('sync-info');
-
-    if (response.status != 200) {
-      throw Exception('Failed to fetch sync info: ${response.data}');
-    }
-
-    final data = response.data as Map<String, dynamic>;
-    final lastSyncAt = DateTime.parse(data['last_sync_at']);
-    final lastSignInAt = DateTime.parse(data['last_sign_in_at']);
-
-    print('Last sync: $lastSyncAt');
-    print('Last sign in: $lastSignInAt');
-  }
-
-  Future<void> sendDailyDistances(
-    String deviceId,
-    List<Map<String, dynamic>> distances,
-  ) async {
-    final response = await Supabase.instance.client.functions.invoke(
-      'sync-daily-distances',
-      body: {
-        'device_id': deviceId,
-        'distances': distances,
-      },
-    );
-
-    if (response.status != 200) {
-      throw Exception('Failed to sync distances: ${response.data}');
-    }
-  }
-
   @override
   Future<UserModel?> getUser() {
     // TODO: implement getUser
