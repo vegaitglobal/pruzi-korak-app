@@ -6,6 +6,8 @@ import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/team_user_stats.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
+import '../../../data/health_data/health_repository';
+
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -46,6 +48,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final userModel = response.user;
       final teamStepsModel = response.teamUserStats;
 
+      // Fetch user rank
+      final myRank = await homeRepository.getMyRank();
+
       final userStepsModel = StepsModel(
         steps: teamStepsModel.userToday,
         totalSteps: teamStepsModel.userTotal,
@@ -56,13 +61,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         totalSteps: teamStepsModel.teamTotal,
       );
 
-      emit(
-        HomeLoaded(
-          userModel: response.user,
-          userStepsModel: userStepsModel,
-          teamStepsModel: team,
-        ),
-      );
+      emit(HomeLoaded(
+        userModel: response.user,
+        userStepsModel: userStepsModel,
+        teamStepsModel: team,
+        myRank: myRank,
+      ));
     } catch (_) {
       emit(const HomeError());
     }

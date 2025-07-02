@@ -10,7 +10,6 @@ import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
 import 'package:pruzi_korak/shared_ui/components/buttons.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
@@ -48,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is ProfileLoaded) {
           return ProfileLoadedSection(
             userModel: state.userModel,
-            onLogout: () => context.read<ProfileBloc>().add(ProfileLogOut()),
+            onLogout: () => _showLogoutDialog(context),
             onDeleteAccount: () => _showDeleteAccountDialog(context),
           );
         } else {
@@ -77,6 +76,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onConfirm:
                 () => context.read<ProfileBloc>().add(ProfileDeleteAccount()),
           ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmActionDialog(
+        icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
+        title: AppLocalizations.of(context)!.logout_dialog_title,
+        description: AppLocalizations.of(context)!.logout_dialog_message,
+        cancelText: AppLocalizations.of(context)!.quit,
+        confirmText: AppLocalizations.of(context)!.log_out,
+        onCancel: () => Navigator.of(context).pop(),
+        onConfirm: () => context.read<ProfileBloc>().add(ProfileLogOut()),
+      ),
     );
   }
 }

@@ -38,7 +38,9 @@
   "log_out": "Odjavi se",
   "delete_profile": "Obriši profil",
   "leaving_us_title": "Napuštaš nas?",
-  "leaving_us_message": "Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.",
+  "leaving_us_message": "Da li sigurno želiš da obrišeš svoj profil? Svi podaci i tvoj učinak će biti obrisani.",
+  "logout_dialog_title": "Da li sigurno želiš da se odjaviš?",
+  "logout_dialog_message": "Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.",
   "quit": "Odustani",
   "permanently_delete_profile": "Trajno obrišite profil?",
   "km": "km",
@@ -46,5 +48,8 @@
   "congrats_message": "Upravo ste prešli",
   "password_validation_error": "Neispravan format šifre",
   "email_validation_error": "Neispravan format email adrese",
-  "unexpected_error_occurred": "Došlo je do neočekivane greške!"
+  "unexpected_error_occurred": "Došlo je do neočekivane greške!",
+  "motivation_notification_title": "Počni dan sa motivacijom",
+  "motivation_notification_body": "Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš.",
+  "logo_placeholder": "Logo kompanije"
 }

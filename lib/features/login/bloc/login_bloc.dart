@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 
 import '../../../core/utils/app_logger.dart';
@@ -14,8 +15,12 @@ const String _EMAIL =
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
+  final LoginNotificationEvent _loginNotificationEvent;
 
-  LoginBloc(this._authRepository) : super(LoginInitial()) {
+  LoginBloc(
+    this._authRepository,
+    this._loginNotificationEvent,
+  ) : super(LoginInitial()) {
     on<LoginUser>((event, emit) async {
       emit(Loading());
       var loginState = await onLoginUserEvent(event);
@@ -27,12 +32,21 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       _validateUserCredentialsInput(event);
       await _authRepository.login(event.email, event.password);
+
+      // Schedule notification after successful login
+      await _scheduleNotificationsAfterLogin();
+
       return LoginSuccess();
     } on LoginInputValidationException catch (e) {
       return LoginFailure(e);
     } on Exception catch (_) {
       return LoginFailure(null);
     }
+  }
+
+  Future<void> _scheduleNotificationsAfterLogin() async {
+    // Post a notification to indicate that login was successful and notifications should be scheduled
+    _loginNotificationEvent.notifyLoginSuccess();
   }
 
   void _validateUserCredentialsInput(LoginUser event) {

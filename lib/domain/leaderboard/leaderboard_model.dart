@@ -28,7 +28,7 @@ class LeaderboardModel extends Equatable {
     final teamName = json['team_name'] ?? '';
 
     return LeaderboardModel(
-      id: json['id'] as String,
+      id: (json['id'] ?? json['user_id']) as String,
       firstName: firstName,
       lastName: lastName,
       teamName: teamName,

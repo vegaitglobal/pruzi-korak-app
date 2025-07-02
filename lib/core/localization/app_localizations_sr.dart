@@ -62,7 +62,14 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get leaving_us_message =>
-      'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.';
+      'Da li sigurno želiš da obrišeš svoj profil? Svi podaci i tvoj učinak će biti obrisani.';
+
+  @override
+  String get logout_dialog_title => 'Da li sigurno želiš da se odjaviš?';
+
+  @override
+  String get logout_dialog_message =>
+      'Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.';
 
   @override
   String get quit => 'Odustani';
@@ -93,4 +100,14 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get unexpected_error_occurred => 'Došlo je do neočekivane greške!';
+
+  @override
+  String get motivation_notification_title => 'Počni dan sa motivacijom';
+
+  @override
+  String get motivation_notification_body =>
+      'Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš.';
+
+  @override
+  String get logo_placeholder => 'Logo kompanije';
 }

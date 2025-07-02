@@ -48,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: double.infinity,
+    return Container(
+      color: AppColors.backgroundPrimary,
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Center(
           child: BlocBuilder<HomeBloc, HomeState>(
             builder: (context, state) {
@@ -61,9 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   userModel: state.userModel,
                   userStepsModel: state.userStepsModel,
                   teamStepsModel: state.teamStepsModel,
+                  myRank: state.myRank,
                 ),
                 HomeError() => ErrorComponent(
-                  errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
+                  errorMessage:
+                      AppLocalizations.of(context)!.unexpected_error_occurred,
                   onRetry: () {
                     context.read<HomeBloc>().add(const HomeLoadEvent());
                   },
@@ -83,17 +85,16 @@ class HomeSection extends StatelessWidget {
     required this.userModel,
     required this.userStepsModel,
     required this.teamStepsModel,
+    required this.myRank,
   });
 
   final UserModel userModel;
   final StepsModel userStepsModel;
   final StepsModel teamStepsModel;
+  final int myRank;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: replace with real dynamic data
-    const String badgeValue = '5';
-    const String teamName = 'Rounders';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -102,13 +103,13 @@ class HomeSection extends StatelessWidget {
         Spacer(flex: 1),
         UserSection(
           fullName: '${userModel.fistName} ${userModel.lastName}',
-          badgeValue: badgeValue,
+          badgeValue: myRank > 0 ? myRank.toString() : null,
         ),
         SizedBox(height: 16),
         HomeUserSection(stepsModel: userStepsModel),
         SizedBox(height: 32),
         Text(
-          teamName,
+          userModel.teamName,
           style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
         ),
         SizedBox(height: 32),

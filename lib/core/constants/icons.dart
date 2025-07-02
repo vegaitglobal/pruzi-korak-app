@@ -21,4 +21,5 @@ class AppIcons {
   static const email = 'assets/icons/email.svg';
   static const icTeamLeaderboard = 'assets/icons/ic_team_leaderboard.svg';
   static const trophy = 'assets/icons/trophy.svg';
+  static const icBack = 'assets/icons/ic_back.svg';
 }

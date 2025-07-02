@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
-import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
+import 'package:pruzi_korak/domain/leaderboard/team_leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/team_leaderboard/team_leaderboard_header.dart';
@@ -52,67 +53,104 @@ class UserLeaderboardSection extends StatelessWidget {
     required this.topThreeLeaderboardModel,
   });
 
-  final TopThreeLeaderboardModel topThreeLeaderboardModel;
-  final List<LeaderboardModel> leaderboardList;
+  final TopThreeLeaderboardModel<TeamLeaderboardModel> topThreeLeaderboardModel;
+  final List<TeamLeaderboardModel> leaderboardList;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.backgroundPrimary,
-      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          AppHeader(),
-          const SizedBox(height: 16.0),
-          TeamLeaderboardHeader(
-            topThreeLeaderboardModel: topThreeLeaderboardModel,
-            onItemClick: (teamId) {
-              AppLogger.logWarning("Navigating to team details for ID: $teamId");
-              context.pushNamed(
-                AppRoutes.teamLeaderboardDetails.name,
-                pathParameters: {'id': teamId},
-              );
-            },
-          ),
-          const SizedBox(height: 16.0),
+          _headerComponent(context),
           Expanded(
-            child: InfiniteScrollView(
-              itemBuilder: (context, index) {
-                final item = TeamLeaderboardListItem(
-                  leaderboardModel: leaderboardList[index],
-                  onItemClick: (teamId) {
-                    context.pushNamed(
-                      AppRoutes.teamLeaderboardDetails.name,
-                      pathParameters: {'id': teamId},
-                    );
-                  },
-                );
-                final hasDivider = index < leaderboardList.length - 1;
-                return Column(
-                  children: [
-                    Padding(padding: const EdgeInsets.all(8.0), child: item),
-                    if (hasDivider)
-                      Divider(
-                        height: 16,
-                        thickness: 1,
-                        color: AppColors.grayLight,
-                      ),
-                  ],
-                );
-              },
-              itemCount: leaderboardList.length,
-              isLastPage: true,
-              loadingEnabled: false,
-              fetchMore: () async {
-                //_fetchMoreData();
-              },
-              onRefresh: () async {
-                context.read<TeamLeaderboardBloc>().add(LoadTeamLeaderboard());
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: InfiniteScrollView(
+                itemBuilder: (context, index) {
+                  final item = TeamLeaderboardListItem(
+                    teamLeaderboardModel: leaderboardList[index],
+                    onItemClick: (teamId) {
+                      context.pushNamed(
+                        AppRoutes.teamLeaderboardDetails.name,
+                        pathParameters: {'id': teamId},
+                        queryParameters: {
+                          'teamName': leaderboardList[index].teamName,
+                        },
+                      );
+                    },
+                  );
+                  final hasDivider = index < leaderboardList.length - 1;
+                  return Column(
+                    children: [
+                      Padding(padding: const EdgeInsets.all(8.0), child: item),
+                      if (hasDivider)
+                        Divider(
+                          height: 16,
+                          thickness: 1,
+                          color: AppColors.grayLight,
+                        ),
+                    ],
+                  );
+                },
+                itemCount: leaderboardList.length,
+                isLastPage: true,
+                loadingEnabled: false,
+                fetchMore: () async {
+                  //_fetchMoreData();
+                },
+                onRefresh: () async {
+                  context.read<TeamLeaderboardBloc>().add(
+                    LoadTeamLeaderboard(),
+                  );
+                },
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _headerComponent(BuildContext context) {
+    return Container(
+      height: Dimension.LEADERBOARD_HEADER_HEIGHT,
+      decoration: const BoxDecoration(
+        color: AppColors.backgroundPrimary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            offset: Offset(0, 4),
+            blurRadius: 8.0,
+            spreadRadius: 0.0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AppHeader(),
+            const SizedBox(height: 16.0),
+            TeamLeaderboardHeader(
+              topThreeLeaderboardModel: topThreeLeaderboardModel,
+              onItemClick: (teamId, teamName) {
+                AppLogger.logWarning(
+                  "Navigating to team details for ID: $teamId",
+                );
+                context.pushNamed(
+                  AppRoutes.teamLeaderboardDetails.name,
+                  pathParameters: {'id': teamId},
+                  queryParameters: {'teamName': teamName},
+                );
+              },
+            ),
+            const SizedBox(height: 8.0),
+          ],
+        ),
       ),
     );
   }

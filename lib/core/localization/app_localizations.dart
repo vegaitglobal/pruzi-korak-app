@@ -206,6 +206,18 @@ abstract class AppLocalizations {
   /// **'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.'**
   String get leaving_us_message;
 
+  /// No description provided for @logout_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Da li sigurno želiš da se odjaviš?'**
+  String get logout_dialog_title;
+
+  /// No description provided for @logout_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.'**
+  String get logout_dialog_message;
+
   /// No description provided for @quit.
   ///
   /// In en, this message translates to:
@@ -265,6 +277,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Došlo je do neočekivane greške!'**
   String get unexpected_error_occurred;
+
+  /// No description provided for @motivation_notification_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your day with motivation'**
+  String get motivation_notification_title;
+
+  /// No description provided for @motivation_notification_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily dose of inspiration has arrived. Tap to read.'**
+  String get motivation_notification_body;
+
+  /// No description provided for @logo_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Company logo'**
+  String get logo_placeholder;
 }
 
 class _AppLocalizationsDelegate

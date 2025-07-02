@@ -65,6 +65,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Da li sigurno želiš da obrišeš svoj profil? Sve informacije i tvoj učinak će biti obrisani.';
 
   @override
+  String get logout_dialog_title => 'Da li sigurno želiš da se odjaviš?';
+
+  @override
+  String get logout_dialog_message =>
+      'Tvoji podaci i učinak biće sačuvani i moći ćeš opet da pristupiš svom profilu.';
+
+  @override
   String get quit => 'Odustani';
 
   @override
@@ -93,4 +100,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unexpected_error_occurred => 'Došlo je do neočekivane greške!';
+
+  @override
+  String get motivation_notification_title => 'Start your day with motivation';
+
+  @override
+  String get motivation_notification_body =>
+      'Your daily dose of inspiration has arrived. Tap to read.';
+
+  @override
+  String get logo_placeholder => 'Company logo';
 }

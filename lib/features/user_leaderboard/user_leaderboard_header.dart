@@ -72,6 +72,7 @@ class LeaderboardItem extends StatelessWidget {
           Text(
             '${leaderboardModel.firstName}\n${leaderboardModel.lastName}',
             textAlign: TextAlign.center,
+            maxLines: 2,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 12,
