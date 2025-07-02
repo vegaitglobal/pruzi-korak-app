@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pruzi_korak/data/health_data/health_repository.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/team_user_stats.dart';
@@ -16,21 +17,32 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   final HomeRepository homeRepository;
 
-  HomeBloc(this.homeRepository, {required this.healthRepository}) : super(HomeLoading()) {
+  HomeBloc(this.homeRepository, {required this.healthRepository})
+    : super(HomeLoading()) {
     on<HomeLoadEvent>(_onLoad);
     add(const HomeLoadEvent());
   }
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {
     try {
-      // TODO: Uncomment and implement the actual health data fetching logic
-      //final stepsToday = await healthRepository.getStepsToday();
-      //final stepsSinceStart = await healthRepository.getStepsFromCampaignStart(campaignStart);
+      final syncData = await healthRepository.fetchSyncInfo();
 
-      // final userStepsModel = StepsModel(
-      //   steps: stepsToday.toStringAsFixed(0),
-      //   totalSteps: stepsSinceStart.toStringAsFixed(0),
-      // );
+      final lastSyncAtStr = syncData['last_sync_at'];
+      final lastSignInAtStr = syncData['last_sign_in_at'];
+
+      final lastSyncAt =
+          lastSyncAtStr != null
+              ? DateTime.parse(lastSyncAtStr)
+              : (lastSignInAtStr != null
+                  ? DateTime.parse(lastSignInAtStr)
+                  : campaignStart);
+
+      final dailyDistances = await healthRepository
+          .getDailyDistancesFromLastSync(lastSyncAt);
+
+      if (dailyDistances.isNotEmpty) {
+        await healthRepository.sendDailyDistances(dailyDistances);
+      }
 
       final response = await homeRepository.getHomeData();
       final userModel = response.user;

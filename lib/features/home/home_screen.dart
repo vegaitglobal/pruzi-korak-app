@@ -27,6 +27,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _listenToHealthKitCallbacks();
+    //_channel.invokeMethod('startStepListener');
+  }
+
+  @override
+  void dispose() {
+    //_channel.invokeMethod('stopStepListener');
+    super.dispose();
   }
 
   void _listenToHealthKitCallbacks() {

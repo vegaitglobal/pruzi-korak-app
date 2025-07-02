@@ -32,6 +32,16 @@ import HealthKit
                 self.fetchStepsToday { steps in
                     result(steps)
                 }
+                
+            case "getStepsGroupedByDay":
+                if let timestamp = call.arguments as? Double {
+                    let startDate = Date(timeIntervalSince1970: timestamp)
+                    self.fetchStepsGroupedByDay(from: startDate) { resultArray in
+                        result(resultArray)
+                    }
+                } else {
+                    result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
+                }
 
             case "getStepsFromCampaignStart":
                 if let timestamp = call.arguments as? Double {
@@ -111,6 +121,40 @@ import HealthKit
     func fetchStepsFromCampaignStart(_ campaignStart: Date, completion: @escaping (Double) -> Void) {
         let now = Date()
         fetchSteps(from: campaignStart, to: now, includeManual: includeManualSteps, completion: completion)
+    }
+    
+    func fetchStepsGroupedByDay(from startDate: Date, completion: @escaping ([Any]) -> Void) {
+        let now = Date()
+        
+        let calendar = Calendar.current
+        var currentDay = calendar.startOfDay(for: startDate)
+        let lastDay = calendar.startOfDay(for: now)
+        
+        var results: [[String: Any]] = []
+        let group = DispatchGroup()
+        
+        while currentDay <= lastDay {
+            let dayStart = currentDay
+            guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { break }
+            
+            group.enter()
+            fetchSteps(from: dayStart, to: min(dayEnd, now), includeManual: includeManualSteps) { steps in
+                let kilometers = steps / 1300.0
+                let dateString = ISO8601DateFormatter().string(from: dayStart).prefix(10)
+                results.append([
+                    "date": String(dateString),
+                    "total_kilometers": kilometers
+                ])
+                group.leave()
+            }
+            
+            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: currentDay) else { break }
+            currentDay = nextDay
+        }
+        
+        group.notify(queue: .main) {
+            completion(results)
+        }
     }
 
     private func fetchSteps(from startDate: Date, to endDate: Date, includeManual: Bool = false, completion: @escaping (Double) -> Void) {
