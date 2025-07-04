@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
-import 'package:pruzi_korak/core/constants/icons.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
 class AppButton extends StatelessWidget {

@@ -18,7 +18,7 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
       final response = await _client.rpc(
         'get_my_team_users_with_distance');
 
-      AppLogger.logInfo("getUsersLeaderboard response: ${response}");
+      AppLogger.logInfo("getUsersLeaderboard response: $response");
 
       final rawList = response as List;
 

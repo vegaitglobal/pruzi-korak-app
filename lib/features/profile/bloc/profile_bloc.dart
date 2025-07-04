@@ -4,7 +4,6 @@ import 'package:pruzi_korak/app/di/injector.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
-import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 

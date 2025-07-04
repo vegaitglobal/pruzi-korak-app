@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
@@ -59,7 +58,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await fetchAndSaveOrganizationInfo();
 
       if (isDeviceValid) return response.user;
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
     return null;

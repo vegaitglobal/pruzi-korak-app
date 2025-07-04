@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:pruzi_korak/shared_ui/util/num_extension.dart';
 
 class TeamLeaderboardModel extends Equatable {
   final String teamId;
@@ -24,7 +25,7 @@ class TeamLeaderboardModel extends Equatable {
     return TeamLeaderboardModel(
       teamId: json['team_id'] as String,
       teamName: teamName,
-      totalDistance: (json['total_distance'] ?? 0).toString(),
+      totalDistance: ((json['total_distance'] ?? 0) as num).toTwoDecimalString(),
       rank: rank,
       imageUrl: json['image_url'],
     );
