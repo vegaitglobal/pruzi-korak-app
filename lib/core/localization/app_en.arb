@@ -31,5 +31,7 @@
   "unexpected_error_occurred": "Došlo je do neočekivane greške!",
   "motivation_notification_title": "Start your day with motivation",
   "motivation_notification_body": "Your daily dose of inspiration has arrived. Tap to read.",
-  "logo_placeholder": "Company logo"
+  "logo_placeholder": "Company logo",
+  "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku"
+
 }

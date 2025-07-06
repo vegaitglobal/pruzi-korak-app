@@ -110,4 +110,8 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get logo_placeholder => 'Logo kompanije';
+
+  @override
+  String get errorEmailOrPassword =>
+      'Uneli ste neispravno korisničko ime ili lozinku';
 }

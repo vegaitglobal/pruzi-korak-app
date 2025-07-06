@@ -295,6 +295,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Company logo'**
   String get logo_placeholder;
+
+  /// No description provided for @errorEmailOrPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Uneli ste neispravno korisničko ime ili lozinku'**
+  String get errorEmailOrPassword;
 }
 
 class _AppLocalizationsDelegate
