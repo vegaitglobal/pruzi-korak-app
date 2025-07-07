@@ -32,6 +32,10 @@
   "motivation_notification_title": "Start your day with motivation",
   "motivation_notification_body": "Your daily dose of inspiration has arrived. Tap to read.",
   "logo_placeholder": "Company logo",
+  "team_label": "Tim:",
+  "team_rank_label": "Rang tima:",
+  "user_team_rank_label": "Tvoj rang tima:",
+  "user_global_rank_label": "Tvoj globalni rang:",
   "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku"
 
 }

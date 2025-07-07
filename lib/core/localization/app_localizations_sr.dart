@@ -112,6 +112,18 @@ class AppLocalizationsSr extends AppLocalizations {
   String get logo_placeholder => 'Logo kompanije';
 
   @override
+  String get team_label => 'Tim:';
+
+  @override
+  String get team_rank_label => 'Rang tima:';
+
+  @override
+  String get user_team_rank_label => 'Tvoj rang u timu:';
+
+  @override
+  String get user_global_rank_label => 'Tvoj globalni rang:';
+
+  @override
   String get errorEmailOrPassword =>
       'Uneli ste neispravno korisničko ime ili lozinku';
 }

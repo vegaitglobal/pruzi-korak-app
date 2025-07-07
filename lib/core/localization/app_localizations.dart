@@ -296,6 +296,30 @@ abstract class AppLocalizations {
   /// **'Company logo'**
   String get logo_placeholder;
 
+  /// No description provided for @team_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tim:'**
+  String get team_label;
+
+  /// No description provided for @team_rank_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rang tima:'**
+  String get team_rank_label;
+
+  /// No description provided for @user_team_rank_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tvoj rang tima:'**
+  String get user_team_rank_label;
+
+  /// No description provided for @user_global_rank_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Tvoj globalni rang:'**
+  String get user_global_rank_label;
+
   /// No description provided for @errorEmailOrPassword.
   ///
   /// In en, this message translates to:

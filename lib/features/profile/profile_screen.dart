@@ -6,8 +6,10 @@ import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
 import 'package:pruzi_korak/core/localization/app_localizations.dart';
+import 'package:pruzi_korak/domain/profile/user_rank_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
+import 'package:pruzi_korak/features/profile/team_ranking_card.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
 import 'package:pruzi_korak/shared_ui/components/buttons.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
@@ -47,12 +49,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is ProfileLoaded) {
           return ProfileLoadedSection(
             userModel: state.userModel,
+            userRankModel: state.userRankModel,
             onLogout: () => _showLogoutDialog(context),
             onDeleteAccount: () => _showDeleteAccountDialog(context),
           );
         } else {
           return ErrorComponent(
-            errorMessage: AppLocalizations.of(context)!.unexpected_error_occurred,
+            errorMessage:
+                AppLocalizations.of(context)!.unexpected_error_occurred,
             onRetry: () {
               context.read<ProfileBloc>().add(ProfileLoad());
             },
@@ -82,15 +86,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => ConfirmActionDialog(
-        icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
-        title: AppLocalizations.of(context)!.logout_dialog_title,
-        description: AppLocalizations.of(context)!.logout_dialog_message,
-        cancelText: AppLocalizations.of(context)!.quit,
-        confirmText: AppLocalizations.of(context)!.log_out,
-        onCancel: () => Navigator.of(context).pop(),
-        onConfirm: () => context.read<ProfileBloc>().add(ProfileLogOut()),
-      ),
+      builder:
+          (context) => ConfirmActionDialog(
+            icon: AppSvgIcon(iconPath: AppIcons.icSad, size: 38),
+            title: AppLocalizations.of(context)!.logout_dialog_title,
+            description: AppLocalizations.of(context)!.logout_dialog_message,
+            cancelText: AppLocalizations.of(context)!.quit,
+            confirmText: AppLocalizations.of(context)!.log_out,
+            onCancel: () => Navigator.of(context).pop(),
+            onConfirm: () => context.read<ProfileBloc>().add(ProfileLogOut()),
+          ),
     );
   }
 }
@@ -101,16 +106,17 @@ class ProfileLoadedSection extends StatelessWidget {
     required this.userModel,
     required this.onLogout,
     required this.onDeleteAccount,
+    this.userRankModel,
   });
 
   final UserModel userModel;
+  final UserRankModel? userRankModel;
   final VoidCallback onLogout;
   final VoidCallback onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
-    final initial =
-    userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
+    final initial = userModel.fistName.isNotEmpty ? userModel.fistName[0] : '?';
 
     return Stack(
       clipBehavior: Clip.none,
@@ -135,6 +141,14 @@ class ProfileLoadedSection extends StatelessWidget {
                 ),
                 child: InitialsAvatar(initial: initial, size: 124),
               ),
+              const SizedBox(height: 24),
+              if (userRankModel != null)
+                TeamRankingCard(
+                  teamName: userRankModel!.teamName,
+                  teamRank: userRankModel!.teamRankGlobal,
+                  userTeamRank: userRankModel!.userRankTeam,
+                  userGlobalRank: userRankModel!.userRankGlobal,
+                )
             ],
           ),
         ),

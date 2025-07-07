@@ -28,6 +28,7 @@ import 'package:pruzi_korak/features/team_leaderboard/details/bloc/team_details_
 import 'package:pruzi_korak/features/user_leaderboard/bloc/user_leaderboard_bloc.dart';
 import 'package:pruzi_korak/features/motivational_message/motivational_message_bloc.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/data/profile/profile_repository.dart';
 
 import 'navigation/navigation_router.dart';
 
@@ -91,6 +92,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<ProfileBloc>(
           create:
               (context) => ProfileBloc(
+                getIt<ProfileRepository>(),
                 getIt<AppLocalStorage>(),
                 getIt<AuthRepository>(),
               ),
