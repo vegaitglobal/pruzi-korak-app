@@ -1,4 +1,3 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// A service to handle requesting and checking various app permissions
 abstract class PermissionsService {

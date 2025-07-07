@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:pruzi_korak/core/constants/app_constants.dart';
 import 'package:pruzi_korak/data/leaderboard/leaderboard_repository.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
-import 'package:pruzi_korak/domain/user/steps_model.dart';
 
 part 'user_leaderboard_event.dart';
 

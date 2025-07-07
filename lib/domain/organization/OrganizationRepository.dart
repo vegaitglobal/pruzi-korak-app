@@ -1,4 +1,5 @@
 /// Abstract repository -----------------------------------------------------
+library;
 
 abstract class OrganizationRepository {
   /// Fetch organization by ID and return description + social links.
@@ -86,12 +87,12 @@ class OrganizationData {
       sm = smSource;
     }
 
-    String website_url1 = '';
-    String website_url2 = '';
+    String websiteUrl1 = '';
+    String websiteUrl2 = '';
 
     if (sm != null) {
-      website_url1 = sm['website_url1'] as String? ?? '';
-      website_url2 = sm['website_url2'] as String? ?? '';
+      websiteUrl1 = sm['website_url1'] as String? ?? '';
+      websiteUrl2 = sm['website_url2'] as String? ?? '';
       void maybeAdd(String key, String? url) {
         if (url == null || url.isEmpty) return;
 
@@ -122,8 +123,8 @@ class OrganizationData {
       socialLinks: links,
       logoUrl: logoUrl,
       heading: heading,
-      website_url1: website_url1,
-      website_url2: website_url2,
+      website_url1: websiteUrl1,
+      website_url2: websiteUrl2,
     );
   }
 

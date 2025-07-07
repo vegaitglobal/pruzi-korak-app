@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _unexpectedErrorMessage(LoginState state) {
     if (state is LoginFailure && state.exception == null) {
       return Text(
-        _localizedStrings!.unexpected_error_occurred,
+        _localizedStrings!.errorEmailOrPassword,
         style: TextStyle(color: AppColors.error),
       );
     } else {

@@ -3,10 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/data/health_data/health_repository.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
-import 'package:pruzi_korak/domain/user/team_user_stats.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
-import '../../../data/health_data/health_repository';
 
 part 'home_event.dart';
 part 'home_state.dart';
