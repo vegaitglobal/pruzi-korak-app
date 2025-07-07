@@ -25,15 +25,17 @@ class UserLeaderboardHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        LeaderboardItem(leaderboardModel: second, imageSize: 84),
-        const SizedBox(width: 24),
+        if (second != null)
+          LeaderboardItem(leaderboardModel: second, imageSize: 84),
+        if (second != null) const SizedBox(width: 24),
         LeaderboardItem(
           leaderboardModel: first,
           verticalOffset: -20,
           imageSize: 100,
         ),
-        const SizedBox(width: 24),
-        LeaderboardItem(leaderboardModel: third, imageSize: 84),
+        if (third != null) const SizedBox(width: 24),
+        if (third != null)
+          LeaderboardItem(leaderboardModel: third, imageSize: 84),
       ],
     );
   }

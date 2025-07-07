@@ -26,24 +26,26 @@ class TeamLeaderboardHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        TeamLeaderboardItem(
-          leaderboardModel: second,
-          imageSize: 84,
-          onItemClick: onItemClick,
-        ),
-        const SizedBox(width: 24),
+        if (second != null)
+          TeamLeaderboardItem(
+            leaderboardModel: second,
+            imageSize: 84,
+            onItemClick: onItemClick,
+          ),
+        if (second != null) const SizedBox(width: 24),
         TeamLeaderboardItem(
           leaderboardModel: first,
           verticalOffset: -20,
           imageSize: 100,
           onItemClick: onItemClick,
         ),
-        const SizedBox(width: 24),
-        TeamLeaderboardItem(
-          leaderboardModel: third,
-          imageSize: 84,
-          onItemClick: onItemClick,
-        ),
+        if (third != null) const SizedBox(width: 24),
+        if (third != null)
+          TeamLeaderboardItem(
+            leaderboardModel: third,
+            imageSize: 84,
+            onItemClick: onItemClick,
+          ),
       ],
     );
   }
