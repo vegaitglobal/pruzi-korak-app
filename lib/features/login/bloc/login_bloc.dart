@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 
-import '../../../core/utils/app_logger.dart';
 
 part 'login_event.dart';
 

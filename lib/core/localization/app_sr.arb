@@ -51,5 +51,10 @@
   "unexpected_error_occurred": "Došlo je do neočekivane greške!",
   "motivation_notification_title": "Počni dan sa motivacijom",
   "motivation_notification_body": "Tvoja dnevna doza inspiracije je stigla. Klikni da pročitaš.",
-  "logo_placeholder": "Logo kompanije"
+  "logo_placeholder": "Logo kompanije",
+  "team_label": "Tim:",
+  "team_rank_label": "Rang tima:",
+  "user_team_rank_label": "Tvoj rang u timu:",
+  "user_global_rank_label": "Tvoj globalni rang:",
+  "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku"
 }

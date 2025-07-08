@@ -17,8 +17,9 @@ final class ProfileLoading extends ProfileState {
 
 final class ProfileLoaded extends ProfileState {
   final UserModel userModel;
+  final UserRankModel? userRankModel;
 
-  const ProfileLoaded({required this.userModel});
+  const ProfileLoaded({required this.userModel, this.userRankModel});
 
   @override
   List<Object> get props => [userModel];
@@ -31,3 +32,4 @@ final class ProfileLoggedOut extends ProfileState {
 final class ProfileDeleted extends ProfileState {
   const ProfileDeleted();
 }
+

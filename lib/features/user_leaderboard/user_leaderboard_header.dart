@@ -4,7 +4,6 @@ import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 
 
@@ -26,15 +25,17 @@ class UserLeaderboardHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        LeaderboardItem(leaderboardModel: second, imageSize: 84),
-        const SizedBox(width: 24),
+        if (second != null)
+          LeaderboardItem(leaderboardModel: second, imageSize: 84),
+        if (second != null) const SizedBox(width: 24),
         LeaderboardItem(
           leaderboardModel: first,
           verticalOffset: -20,
           imageSize: 100,
         ),
-        const SizedBox(width: 24),
-        LeaderboardItem(leaderboardModel: third, imageSize: 84),
+        if (third != null) const SizedBox(width: 24),
+        if (third != null)
+          LeaderboardItem(leaderboardModel: third, imageSize: 84),
       ],
     );
   }

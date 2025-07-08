@@ -16,6 +16,8 @@ import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service_impl.dart';
 import 'package:pruzi_korak/data/permissions/permissions_service.dart';
 import 'package:pruzi_korak/data/permissions/permissions_service_impl.dart';
+import 'package:pruzi_korak/data/profile/profile_repository.dart';
+import 'package:pruzi_korak/data/profile/profile_repository_impl.dart';
 import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
 import 'package:pruzi_korak/data/organization/organization_repository_impl.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
@@ -85,6 +87,9 @@ void setRepositories() {
   );
   getIt.registerLazySingleton<UserContentRepository>(
     () => UserContentRepositoryImpl(getIt<SupabaseClient>()),
+  );
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(getIt<SupabaseClient>()),
   );
   getIt.registerFactory<MotivationalMessageBloc>(
     () => MotivationalMessageBloc(getIt<UserContentRepository>()),

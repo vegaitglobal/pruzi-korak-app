@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pruzi_korak/app/di/injector.dart';
-import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/features/about_organization/about_organization_screen.dart';
-import 'package:pruzi_korak/features/about_organization/bloc/about_organization_bloc.dart';
 import 'package:pruzi_korak/features/about_pruzi_korak/about_pruzi_korak_screen.dart';
 import 'package:pruzi_korak/features/campaign_message/campaign_message_screen.dart';
 import 'package:pruzi_korak/features/congrats_message/congrats_message_screen.dart';

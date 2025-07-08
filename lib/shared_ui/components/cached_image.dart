@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
-import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 
 class UserAvatarImage extends StatelessWidget {
   const UserAvatarImage({
@@ -61,6 +60,11 @@ class CachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.trim().isEmpty) {
+      return errorPlaceholder ??
+          Icon(Icons.broken_image, color: AppColors.error, size: width);
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       placeholder:
