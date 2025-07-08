@@ -71,7 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final response = await _client.rpc(
         'log_in',
-        params: {'email': email, 'password': password, 'device_id': deviceId},
+        params: {'input_email': email, 'input_passcode': password, 'device_id': deviceId},
       );
 
       if (response is Map<String, dynamic> && response['error'] != null) {
