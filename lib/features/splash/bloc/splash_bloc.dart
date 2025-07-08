@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/data/permissions/permissions_service.dart';
-import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
 part 'splash_event.dart';
 

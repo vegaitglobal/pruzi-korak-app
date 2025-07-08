@@ -2,7 +2,7 @@ import 'package:pruzi_korak/app/app_config.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/navigation/navigation_router.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
-import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
 import 'notification_type.dart';
 
