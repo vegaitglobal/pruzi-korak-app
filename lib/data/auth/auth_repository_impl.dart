@@ -5,11 +5,7 @@ import 'package:pruzi_korak/domain/user/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
-import '../../domain/auth/AuthRepository.dart';
-
-const String _device_validation_endpoint = "validate_and_register_device";
-const String _device_id_key = "device_id";
-const String _user_id_key = "input_user_id";
+import '../../domain/auth/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _client;
@@ -17,11 +13,17 @@ class AuthRepositoryImpl implements AuthRepository {
   final OrganizationRepository _organizationRepository;
   final MobileDeviceIdentifier _mobileDeviceIdentifier;
 
-  AuthRepositoryImpl(this._client, this._localStorage, this._organizationRepository, this._mobileDeviceIdentifier);
+  AuthRepositoryImpl(
+    this._client,
+    this._localStorage,
+    this._organizationRepository,
+    this._mobileDeviceIdentifier,
+  );
 
   @override
   Future<void> logout() async {
     try {
+      await _rpcLogout();
       await _client.auth.signOut();
       await _localStorage.clearUserData();
     } catch (e) {
@@ -36,6 +38,59 @@ class AuthRepositoryImpl implements AuthRepository {
     return true;
   }
 
+  @override
+  Future<User?> login(String email, String password) async {
+    try {
+      var response = await _client.auth.signInWithPassword(
+        password: password,
+        email: email,
+      );
+      // Verify device identifier
+      await _rpcLogin(email, password);
+
+      // Fetch and save user data
+      await fetchAndSaveUser();
+      await fetchAndSaveOrganizationInfo();
+
+      return response.user;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<void> _rpcLogin(String email, String password) async {
+    try {
+      final deviceId = await _getDeviceIdentifier();
+      if (deviceId == null) throw UnsupportedDeviceIdentifierState();
+
+      final response = await _client.rpc(
+        'log_in',
+        params: {'email': email, 'password': password, 'device_id': deviceId},
+      );
+
+      if (response is Map<String, dynamic> && response['error'] != null) {
+        throw UnsupportedDeviceIdentifierState();
+      }
+    } catch (e) {
+      throw Exception('Failed to login: $e');
+    }
+  }
+
+  Future<void> _rpcLogout() async {
+    try {
+      final deviceId = await _getDeviceIdentifier();
+      if (deviceId == null) throw UnsupportedDeviceIdentifierState();
+
+      final response = await _client.rpc('log_out');
+
+      if (response is Map<String, dynamic> && response['error'] != null) {
+        throw LogoutFailedException();
+      }
+    } catch (e) {
+      throw Exception('Failed to logout: $e');
+    }
+  }
+
   Future<String?> _getDeviceIdentifier() async {
     try {
       final deviceIdentifier = await _mobileDeviceIdentifier.getDeviceId();
@@ -46,36 +101,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  @override
-  Future<User?> login(String email, String password) async {
-    try {
-      var response = await _client.auth.signInWithPassword(
-        password: password,
-        email: email,
-      );
-      var isDeviceValid = await _isDeviceValid(response.user!.id);
-      await fetchAndSaveUser();
-      await fetchAndSaveOrganizationInfo();
-
-      if (isDeviceValid) return response.user;
-    } on Exception {
-      rethrow;
-    }
-    return null;
-  }
-
-  Future<bool> _isDeviceValid(String userId) async {
-    try {
-      String? deviceId = await _getDeviceIdentifier();
-      if (deviceId == null) throw UnsupportedDeviceIdentifierState();
-      return await _client.rpc(
-        _device_validation_endpoint,
-        params: {_user_id_key: userId, _device_id_key: deviceId},
-      );
-    } on Exception catch (_) {
-      return false;
-    }
-  }
+  // Mark: User data
 
   Future<void> fetchAndSaveUser() async {
     try {
@@ -107,3 +133,5 @@ sealed class AuthExceptions implements Exception {}
 class UnsupportedPlatformException implements AuthExceptions {}
 
 class UnsupportedDeviceIdentifierState implements AuthExceptions {}
+
+class LogoutFailedException implements AuthExceptions {}

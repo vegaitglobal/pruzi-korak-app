@@ -5,7 +5,7 @@ import 'package:pruzi_korak/core/events/login_notification_event.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/data/profile/profile_repository.dart';
-import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 import 'package:pruzi_korak/domain/profile/user_rank_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 

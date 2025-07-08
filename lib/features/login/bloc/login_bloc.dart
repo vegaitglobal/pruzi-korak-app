@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
-import 'package:pruzi_korak/domain/auth/AuthRepository.dart';
+import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
 
 part 'login_event.dart';
