@@ -14,7 +14,9 @@ import HealthKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-
+        
+        GeneratedPluginRegistrant.register(with: self)
+        
         let controller = window?.rootViewController as! FlutterViewController
         flutterChannel = FlutterMethodChannel(
             name: "org.pruziKorak.healthkit/callback",

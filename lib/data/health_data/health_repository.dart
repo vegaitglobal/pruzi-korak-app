@@ -87,6 +87,17 @@ class HealthRepository {
   Future<void> sendDailyDistances(List<Map<String, dynamic>> distances) async {
     debugPrint('🔍 Calling sync-daily-distances...');
 
+    if (distances.isEmpty) {
+      debugPrint('📭 No distances to sync.');
+      return;
+    }
+
+    for (final entry in distances) {
+      debugPrint(
+        '📅 Sending: date=${entry['date']}, km=${entry['total_kilometers']}',
+      );
+    }
+
     try {
       final response = await Supabase.instance.client.functions
           .invoke('sync-daily-distances', body: {'distances': distances})
