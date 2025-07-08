@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/local/local_storage.dart';
 import 'package:pruzi_korak/domain/organization/OrganizationRepository.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
@@ -34,7 +35,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<bool> isLoggedIn() async {
     final session = _client.auth.currentSession;
-    if (session == null) return false;
+    final user = await _localStorage.getUser();
+    if (session == null || user == null) return false;
     return true;
   }
 
@@ -53,6 +55,10 @@ class AuthRepositoryImpl implements AuthRepository {
       await fetchAndSaveOrganizationInfo();
 
       return response.user;
+    } on UnsupportedDeviceIdentifierException {
+      // Session must be cleared because user is not allowed on this device
+      await _client.auth.signOut();
+      rethrow;
     } on Exception {
       rethrow;
     }
@@ -61,7 +67,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> _rpcLogin(String email, String password) async {
     try {
       final deviceId = await _getDeviceIdentifier();
-      if (deviceId == null) throw UnsupportedDeviceIdentifierState();
+      if (deviceId == null) throw UnsupportedDeviceIdentifierException();
 
       final response = await _client.rpc(
         'log_in',
@@ -69,17 +75,18 @@ class AuthRepositoryImpl implements AuthRepository {
       );
 
       if (response is Map<String, dynamic> && response['error'] != null) {
-        throw UnsupportedDeviceIdentifierState();
+        throw UnsupportedDeviceIdentifierException();
       }
     } catch (e) {
-      throw Exception('Failed to login: $e');
+      if (kDebugMode) AppLogger.logDebug('RPC Login Error: $e');
+      throw UnsupportedDeviceIdentifierException();
     }
   }
 
   Future<void> _rpcLogout() async {
     try {
       final deviceId = await _getDeviceIdentifier();
-      if (deviceId == null) throw UnsupportedDeviceIdentifierState();
+      if (deviceId == null) throw UnsupportedDeviceIdentifierException();
 
       final response = await _client.rpc('log_out');
 
@@ -132,6 +139,6 @@ sealed class AuthExceptions implements Exception {}
 
 class UnsupportedPlatformException implements AuthExceptions {}
 
-class UnsupportedDeviceIdentifierState implements AuthExceptions {}
+class UnsupportedDeviceIdentifierException implements AuthExceptions {}
 
 class LogoutFailedException implements AuthExceptions {}

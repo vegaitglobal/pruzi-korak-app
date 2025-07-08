@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:pruzi_korak/core/events/login_notification_event.dart';
+import 'package:pruzi_korak/data/auth/auth_repository_impl.dart';
 import 'package:pruzi_korak/domain/auth/auth_repository.dart';
-
 
 part 'login_event.dart';
 
@@ -16,10 +16,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
   final LoginNotificationEvent _loginNotificationEvent;
 
-  LoginBloc(
-    this._authRepository,
-    this._loginNotificationEvent,
-  ) : super(LoginInitial()) {
+  LoginBloc(this._authRepository, this._loginNotificationEvent)
+    : super(LoginInitial()) {
     on<LoginUser>((event, emit) async {
       emit(Loading());
       var loginState = await onLoginUserEvent(event);
@@ -38,7 +36,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       return LoginSuccess();
     } on LoginInputValidationException catch (e) {
       return LoginFailure(e);
-    } on Exception catch (_) {
+    } on UnsupportedDeviceIdentifierException catch (e) {
+      return LoginFailure(e);
+    } on Exception catch (e) {
       return LoginFailure(null);
     }
   }

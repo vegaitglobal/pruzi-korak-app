@@ -126,4 +126,8 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get errorEmailOrPassword =>
       'Uneli ste neispravno korisničko ime ili lozinku';
+
+  @override
+  String get errorUnsupportedDevice =>
+      'Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo.';
 }

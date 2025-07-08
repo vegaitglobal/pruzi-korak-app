@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
+import 'package:pruzi_korak/data/auth/auth_repository_impl.dart';
 import 'package:pruzi_korak/features/login/bloc/login_bloc.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 import '../../app/navigation/app_routes.dart';
@@ -197,6 +198,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return Text(
         _localizedStrings!.errorEmailOrPassword,
         style: TextStyle(color: AppColors.error),
+        textAlign: TextAlign.center,
+      );
+    } else if (state is LoginFailure &&
+        state.exception is UnsupportedDeviceIdentifierException) {
+      return Text(
+        _localizedStrings!.errorUnsupportedDevice,
+        style: TextStyle(color: AppColors.error),
+        textAlign: TextAlign.center,
       );
     } else {
       return SizedBox.shrink();

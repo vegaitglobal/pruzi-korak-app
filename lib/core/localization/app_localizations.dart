@@ -325,6 +325,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uneli ste neispravno korisničko ime ili lozinku'**
   String get errorEmailOrPassword;
+
+  /// No description provided for @errorUnsupportedDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo'**
+  String get errorUnsupportedDevice;
 }
 
 class _AppLocalizationsDelegate

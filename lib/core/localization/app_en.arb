@@ -36,6 +36,7 @@
   "team_rank_label": "Rang tima:",
   "user_team_rank_label": "Tvoj rang tima:",
   "user_global_rank_label": "Tvoj globalni rang:",
-  "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku"
+  "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku",
+  "errorUnsupportedDevice": "Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo"
 
 }
