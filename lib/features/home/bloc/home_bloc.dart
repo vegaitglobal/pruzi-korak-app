@@ -5,14 +5,11 @@ import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
-
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HealthRepository healthRepository;
-  final DateTime campaignStart = DateTime(2024, 6, 13);
-
   final HomeRepository homeRepository;
 
   HomeBloc(this.homeRepository, {required this.healthRepository})
@@ -26,14 +23,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final syncData = await healthRepository.fetchSyncInfo();
 
       final lastSyncAtStr = syncData['last_sync_at'];
-      final lastSignInAtStr = syncData['last_sign_in_at'];
+      final todayStart = DateTime.now().toLocal();
 
       final lastSyncAt =
           lastSyncAtStr != null
               ? DateTime.parse(lastSyncAtStr)
-              : (lastSignInAtStr != null
-                  ? DateTime.parse(lastSignInAtStr)
-                  : campaignStart);
+              : todayStart;
 
       final dailyDistances = await healthRepository
           .getDailyDistancesFromLastSync(lastSyncAt);
@@ -59,12 +54,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         totalSteps: teamStepsModel.teamTotal,
       );
 
-      emit(HomeLoaded(
-        userModel: response.user,
-        userStepsModel: userStepsModel,
-        teamStepsModel: team,
-        myRank: myRank,
-      ));
+      emit(
+        HomeLoaded(
+          userModel: response.user,
+          userStepsModel: userStepsModel,
+          teamStepsModel: team,
+          myRank: myRank,
+        ),
+      );
     } catch (_) {
       emit(const HomeError());
     }
