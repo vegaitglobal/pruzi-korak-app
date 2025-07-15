@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pruzi_korak/app/app.dart';
 import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
@@ -13,10 +15,12 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await TimezoneHelper.configure();
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
 
   await initSupabase();
   await configureDI();
@@ -30,7 +34,15 @@ void main() async {
   // Initialize notifications
   await getIt<LocalNotificationHandler>().init(initialPayload);
 
-  runApp(const MyApp());
+  runApp(
+    kDebugMode
+        ? DevicePreview(
+          enabled: true,
+          tools: const [...DevicePreview.defaultTools],
+          builder: (context) => const MyApp(),
+        )
+        : const MyApp(),
+  );
 }
 
 Future<void> initSupabase() async => Supabase.initialize(

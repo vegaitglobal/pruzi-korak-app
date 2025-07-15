@@ -97,15 +97,7 @@ class AboutOrganizationContent extends StatelessWidget {
                           const SizedBox(height: 20),
                           if (organization.website_url1.isNotEmpty) ...[
                             GestureDetector(
-                              onTap: () async {
-                                final url = organization.website_url1;
-                                if (await canLaunchUrl(Uri.parse(url))) {
-                                  await launchUrl(
-                                    Uri.parse(url),
-                                    mode: LaunchMode.externalApplication,
-                                  );
-                                }
-                              },
+                              onTap: () => launchURL(organization.website_url1),
                               child: Text(
                                 organization.website_url1,
                                 style: AppTextStyles.bodySmall.copyWith(
@@ -119,15 +111,7 @@ class AboutOrganizationContent extends StatelessWidget {
                           if (organization.website_url2.isNotEmpty) ...[
                             const SizedBox(height: 10),
                             GestureDetector(
-                              onTap: () async {
-                                final url = organization.website_url2;
-                                if (await canLaunchUrl(Uri.parse(url))) {
-                                  await launchUrl(
-                                    Uri.parse(url),
-                                    mode: LaunchMode.externalApplication,
-                                  );
-                                }
-                              },
+                              onTap: () => launchURL(organization.website_url2),
                               child: Text(
                                 organization.website_url2,
                                 style: AppTextStyles.bodySmall.copyWith(

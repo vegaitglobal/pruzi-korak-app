@@ -31,7 +31,7 @@ class _AppBottomNavigationPageState extends State<AppBottomNavigationPage> {
         body: Stack(
           children: [
             Container(
-              height: 40,
+              height: MediaQuery.of(context).padding.top + 4,
               decoration: getStatusBarBackgroundForIndex(
                 widget.child.currentIndex,
               ),

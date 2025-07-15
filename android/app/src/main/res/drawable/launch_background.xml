@@ -1,19 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Gradijent -->
     <item>
-        <shape android:shape="rectangle">
-            <gradient
-                android:startColor="#5FD198"
-                android:endColor="#00ABA7"
-                android:angle="160"/> <!-- 0 = left→right; 270 = top→bottom -->
-        </shape>
+        <bitmap android:gravity="fill" android:src="@drawable/background"/>
     </item>
-
-    <!-- Logo -->
     <item>
-        <bitmap
-            android:src="@drawable/splash_logo"
-            android:gravity="center"
-            android:antialias="true" />
+        <bitmap android:gravity="center" android:src="@drawable/splash"/>
     </item>
 </layer-list>
