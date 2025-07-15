@@ -47,6 +47,7 @@ dependencies:
   mobile_device_identifier: ^0.0.3
   device_preview: ^1.3.1
 
+
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -70,7 +71,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.13.1
-  flutter_native_splash: ^2.4.0
+  flutter_native_splash: ^2.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -126,9 +127,9 @@ flutter_launcher_icons:
 
 flutter_native_splash:
   color: "#00ABA7"                # pozadina
-  image: "assets/icons/splash_logo.png"   # centralni PNG (512–1024 px)
-  android_gravity: center   
+  image: "assets/icons/app_splash_logo.png"   # centralni PNG (512–1024 px)
+  android_gravity: center
   android_12:
     color: "#00ABA7"
-    image: "assets/icons/splash_logo.png"
-  web: false           
+    image: "assets/icons/app_splash_logo.png"
+  web: false
