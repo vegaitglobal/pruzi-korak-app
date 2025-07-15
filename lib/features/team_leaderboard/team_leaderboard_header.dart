@@ -91,15 +91,18 @@ class TeamLeaderboardItem extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: 80,
-            child: Text(
-              leaderboardModel.teamName,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              softWrap: true,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-                color: AppColors.primary,
+            height: 32,
+            child: Center(
+              child: Text(
+                leaderboardModel.teamName,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                softWrap: true,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ),
