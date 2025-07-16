@@ -22,6 +22,8 @@ class TeamLeaderboardHeader extends StatelessWidget {
     final second = topThreeLeaderboardModel.second;
     final third = topThreeLeaderboardModel.third;
 
+    final hasLessItems = (second == null || third == null);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -29,13 +31,14 @@ class TeamLeaderboardHeader extends StatelessWidget {
         if (second != null)
           TeamLeaderboardItem(
             leaderboardModel: second,
-            imageSize: 84,
+            imageSize: hasLessItems ? 100 : 84,
             onItemClick: onItemClick,
           ),
-        if (second != null) const SizedBox(width: 24),
+        if (second != null) SizedBox(width: hasLessItems ? 42 : 24),
         TeamLeaderboardItem(
           leaderboardModel: first,
-          verticalOffset: -20,
+          // Only apply vertical offset if we have all three items
+          verticalOffset: hasLessItems ? 0 : -20,
           imageSize: 100,
           onItemClick: onItemClick,
         ),
@@ -43,7 +46,7 @@ class TeamLeaderboardHeader extends StatelessWidget {
         if (third != null)
           TeamLeaderboardItem(
             leaderboardModel: third,
-            imageSize: 84,
+            imageSize: hasLessItems ? 100 : 84,
             onItemClick: onItemClick,
           ),
       ],
