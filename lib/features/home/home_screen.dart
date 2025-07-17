@@ -12,6 +12,7 @@ import 'package:pruzi_korak/features/home/user_section.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
+import 'package:pruzi_korak/shared_ui/components/platform_specific_pull_to_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -50,30 +51,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.backgroundPrimary,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              return switch (state) {
-                HomeLoading() => const AppLoader(),
-                HomeLoaded() => HomeSection(
-                  userModel: state.userModel,
-                  userStepsModel: state.userStepsModel,
-                  teamStepsModel: state.teamStepsModel,
-                  myRank: state.myRank,
-                ),
-                HomeError() => ErrorComponent(
-                  errorMessage:
-                      AppLocalizations.of(context)!.unexpected_error_occurred,
-                  onRetry: () {
-                    context.read<HomeBloc>().add(const HomeLoadEvent());
-                  },
-                ),
-              };
-            },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: const AppHeader(),
           ),
-        ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Center(
+              child: BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  return switch (state) {
+                    HomeLoading() => const AppLoader(),
+                    HomeLoaded() => HomeSection(
+                      userModel: state.userModel,
+                      userStepsModel: state.userStepsModel,
+                      teamStepsModel: state.teamStepsModel,
+                      myRank: state.myRank,
+                    ),
+                    HomeError() => ErrorComponent(
+                      errorMessage:
+                          AppLocalizations.of(context)!.unexpected_error_occurred,
+                      onRetry: () {
+                        context.read<HomeBloc>().add(const HomeLoadEvent());
+                      },
+                    ),
+                  };
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -95,28 +104,34 @@ class HomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AppHeader(),
-        Spacer(flex: 1),
-        UserSection(
-          fullName: '${userModel.fistName} ${userModel.lastName}',
-          badgeValue: myRank > 0 ? myRank.toString() : null,
-        ),
-        SizedBox(height: 16),
-        HomeUserSection(stepsModel: userStepsModel),
-        SizedBox(height: 32),
-        Text(
-          userModel.teamName,
-          style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
-        ),
-        SizedBox(height: 32),
+    return PlatformSpecificPullToRefresh(
+      onRefresh: () async {
+        context.read<HomeBloc>().add(const HomeLoadEvent());
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            UserSection(
+              fullName: '${userModel.fistName} ${userModel.lastName}',
+              badgeValue: myRank > 0 ? myRank.toString() : null,
+            ),
+            SizedBox(height: 16),
+            HomeUserSection(stepsModel: userStepsModel),
+            SizedBox(height: 32),
+            Text(
+              userModel.teamName,
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
+            ),
+            SizedBox(height: 32),
 
-        HomeTeamSection(stepsModel: teamStepsModel),
-        Spacer(flex: 1),
-      ],
+            HomeTeamSection(stepsModel: teamStepsModel),
+            SizedBox(height: 32),
+          ],
+        ),
+      ),
     );
   }
 }

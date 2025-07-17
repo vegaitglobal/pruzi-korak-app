@@ -20,6 +20,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {
     try {
+      emit (HomeLoading());
+      
       final syncData = await healthRepository.fetchSyncInfo();
 
       final lastSyncAtStr = syncData['last_sync_at'];
