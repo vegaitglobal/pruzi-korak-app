@@ -25,7 +25,8 @@ class PlatformSpecificPullToRefresh extends StatelessWidget {
           CupertinoSliverRefreshControl(
             onRefresh: onRefresh,
           ),
-          SliverToBoxAdapter(
+          SliverFillRemaining(
+            hasScrollBody: true,
             child: child,
           ),
         ],
