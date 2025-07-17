@@ -20,23 +20,46 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {
     try {
-      emit (HomeLoading());
-      
+      emit(HomeLoading());
+
       final syncData = await healthRepository.fetchSyncInfo();
 
       final lastSyncAtStr = syncData['last_sync_at'];
-      final todayStart = DateTime.now().toLocal();
+      final lastSignInAtStr = syncData['last_sign_in_at'];
+
+      final today = DateTime.now();
+      final todayDate = DateTime(today.year, today.month, today.day);
 
       final lastSyncAt =
-          lastSyncAtStr != null
-              ? DateTime.parse(lastSyncAtStr)
-              : todayStart;
+          lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
+      final lastSignInAt =
+          lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
-      final dailyDistances = await healthRepository
-          .getDailyDistancesFromLastSync(lastSyncAt);
+      DateTime syncStart = today; 
+      if (lastSyncAt != null && lastSignInAt != null) {
+        syncStart =
+            lastSyncAt.isAfter(lastSignInAt) ? lastSyncAt : lastSignInAt;
+      } else if (lastSyncAt != null) {
+        syncStart = lastSyncAt;
+      } else if (lastSignInAt != null) {
+        syncStart = lastSignInAt;
+      }
 
-      if (dailyDistances.isNotEmpty) {
-        await healthRepository.sendDailyDistances(dailyDistances);
+      final syncStartDateOnly = DateTime(
+        syncStart.year,
+        syncStart.month,
+        syncStart.day,
+      );
+
+      if (syncStartDateOnly == todayDate) {
+        final stepsToday = await healthRepository.getStepsToday();
+        await healthRepository.sendTodayDistance(stepsToday);
+      } else {
+        final dailyDistances = await healthRepository
+            .getDailyDistancesFromLastSync(syncStart);
+        if (dailyDistances.isNotEmpty) {
+          await healthRepository.sendDailyDistances(dailyDistances);
+        }
       }
 
       final response = await homeRepository.getHomeData();
