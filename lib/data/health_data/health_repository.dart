@@ -122,4 +122,26 @@ class HealthRepository {
       debugPrint('🪵 $stack');
     }
   }
+
+  Future<void> sendTodayDistance(double kilometers) async {
+  debugPrint('📤 Calling sync-today-distances with $kilometers km...');
+
+  try {
+    final response = await Supabase.instance.client.functions
+        .invoke('sync-today-distances', body: {'kilometers': kilometers})
+        .timeout(const Duration(seconds: 3));
+
+    debugPrint('📬 Response received: status=${response.status}');
+
+    if (response.status != 200) {
+      debugPrint('❌ sync-today-distances failed: ${response.data}');
+      throw Exception('sync-today-distances failed: ${response.data}');
+    }
+
+    debugPrint('✅ sync-today-distances success: $kilometers km');
+  } catch (e, stack) {
+    debugPrint('❌ sendTodayDistance error: $e');
+    debugPrint('🪵 $stack');
+  }
+}
 }

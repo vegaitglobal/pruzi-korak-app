@@ -20,23 +20,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {
     try {
-      emit (HomeLoading());
-      
+      emit(HomeLoading());
+
       final syncData = await healthRepository.fetchSyncInfo();
 
       final lastSyncAtStr = syncData['last_sync_at'];
-      final todayStart = DateTime.now().toLocal();
+      final lastSignInAtStr = syncData['last_sign_in_at'];
+
+      final today = DateTime.now();
+      final todayDate = DateTime(today.year, today.month, today.day);
 
       final lastSyncAt =
-          lastSyncAtStr != null
-              ? DateTime.parse(lastSyncAtStr)
-              : todayStart;
+          lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
+      final lastSignInAt =
+          lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
+
+      DateTime syncStart = today;
+      if (lastSyncAt != null && lastSignInAt != null) {
+        syncStart =
+            lastSyncAt.isAfter(lastSignInAt) ? lastSyncAt : lastSignInAt;
+      } else if (lastSyncAt != null) {
+        syncStart = lastSyncAt;
+      } else if (lastSignInAt != null) {
+        syncStart = lastSignInAt;
+      }
+
+      final syncStartDateOnly = DateTime(
+        syncStart.year,
+        syncStart.month,
+        syncStart.day,
+      );
 
       final dailyDistances = await healthRepository
-          .getDailyDistancesFromLastSync(lastSyncAt);
+          .getDailyDistancesFromLastSync(syncStart);
 
       if (dailyDistances.isNotEmpty) {
-        await healthRepository.sendDailyDistances(dailyDistances);
+        if (syncStartDateOnly == todayDate) {
+          final kilometers =
+              dailyDistances.first['total_kilometers'] as double?;
+          if (kilometers != null) {
+            await healthRepository.sendTodayDistance(kilometers);
+          }
+        } else {
+          await healthRepository.sendDailyDistances(dailyDistances);
+        }
       }
 
       final response = await homeRepository.getHomeData();
