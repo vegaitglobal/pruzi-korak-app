@@ -35,7 +35,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final lastSignInAt =
           lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
-      DateTime syncStart = today; 
+      DateTime syncStart = today;
       if (lastSyncAt != null && lastSignInAt != null) {
         syncStart =
             lastSyncAt.isAfter(lastSignInAt) ? lastSyncAt : lastSignInAt;
@@ -53,7 +53,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       if (syncStartDateOnly == todayDate) {
         final stepsToday = await healthRepository.getStepsToday();
-        await healthRepository.sendTodayDistance(stepsToday);
+        final kilometers = stepsToday / 1300.0;
+        await healthRepository.sendTodayDistance(kilometers);
       } else {
         final dailyDistances = await healthRepository
             .getDailyDistancesFromLastSync(syncStart);
