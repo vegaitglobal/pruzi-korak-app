@@ -51,14 +51,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         syncStart.day,
       );
 
-      if (syncStartDateOnly == todayDate) {
-        final stepsToday = await healthRepository.getStepsToday();
-        final kilometers = stepsToday / 1300.0;
-        await healthRepository.sendTodayDistance(kilometers);
-      } else {
-        final dailyDistances = await healthRepository
-            .getDailyDistancesFromLastSync(syncStart);
-        if (dailyDistances.isNotEmpty) {
+      final dailyDistances = await healthRepository
+          .getDailyDistancesFromLastSync(syncStart);
+
+      if (dailyDistances.isNotEmpty) {
+        if (syncStartDateOnly == todayDate) {
+          final kilometers =
+              dailyDistances.first['total_kilometers'] as double?;
+          if (kilometers != null) {
+            await healthRepository.sendTodayDistance(kilometers);
+          }
+        } else {
           await healthRepository.sendDailyDistances(dailyDistances);
         }
       }
