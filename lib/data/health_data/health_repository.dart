@@ -41,7 +41,6 @@ class HealthRepository {
         'getStepsGroupedByDay',
         lastSync.millisecondsSinceEpoch / 1000,
       );
-
       return result?.map((e) => Map<String, dynamic>.from(e)).toList() ?? [];
     } catch (e, stack) {
       debugPrint('❌ Error in getDailyDistancesFromLastSync: $e');

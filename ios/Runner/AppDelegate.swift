@@ -8,7 +8,7 @@ import HealthKit
     let healthStore = HKHealthStore()
     let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
     var flutterChannel: FlutterMethodChannel?
-    let includeManualSteps = false
+    let includeManualSteps = true
 
     override func application(
         _ application: UIApplication,
@@ -127,33 +127,38 @@ import HealthKit
     
     func fetchStepsGroupedByDay(from startDate: Date, completion: @escaping ([Any]) -> Void) {
         let now = Date()
-        
         let calendar = Calendar.current
-        var currentDay = calendar.startOfDay(for: startDate)
+        var currentDay = startDate
         let lastDay = calendar.startOfDay(for: now)
-        
+
         var results: [[String: Any]] = []
         let group = DispatchGroup()
-        
-        while currentDay <= lastDay {
+
+        while currentDay <= now {
             let dayStart = currentDay
-            guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { break }
-            
+
+            let dayEnd: Date
+            if calendar.isDate(dayStart, inSameDayAs: now) {
+                dayEnd = now
+            } else {
+                dayEnd = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: dayStart))!
+            }
+
             group.enter()
-            fetchSteps(from: dayStart, to: min(dayEnd, now), includeManual: includeManualSteps) { steps in
+            fetchSteps(from: dayStart, to: dayEnd, includeManual: includeManualSteps) { steps in
                 let kilometers = steps / 1300.0
-                let dateString = ISO8601DateFormatter().string(from: dayStart).prefix(10)
+                let dateString = ISO8601DateFormatter().string(from: calendar.startOfDay(for: dayStart)).prefix(10)
                 results.append([
                     "date": String(dateString),
                     "total_kilometers": kilometers
                 ])
                 group.leave()
             }
-            
-            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: currentDay) else { break }
+
+            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: currentDay)) else { break }
             currentDay = nextDay
         }
-        
+
         group.notify(queue: .main) {
             completion(results)
         }
