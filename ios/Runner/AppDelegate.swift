@@ -44,6 +44,16 @@ import HealthKit
                 } else {
                     result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
                 }
+                
+            case "getTodayStepsSinceLastSync":
+                if let timestamp = call.arguments as? Double {
+                    let sinceDate = Date(timeIntervalSince1970: timestamp)
+                    self.fetchSteps(from: sinceDate, to: Date(), includeManual: self.includeManualSteps) { steps in
+                        result(steps)
+                    }
+                } else {
+                    result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
+                }
 
             case "getStepsFromCampaignStart":
                 if let timestamp = call.arguments as? Double {

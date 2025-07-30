@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _listenToHealthKitCallbacks() {
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'stepCountChanged') {
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
           context.read<HomeBloc>().add(const HomeLoadEvent());
         }

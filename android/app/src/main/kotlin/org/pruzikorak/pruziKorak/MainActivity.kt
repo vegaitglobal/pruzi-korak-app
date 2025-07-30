@@ -19,6 +19,7 @@ import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.fitness.request.OnDataPointListener
 import com.google.android.gms.fitness.request.DataReadRequest
 import com.google.android.gms.fitness.request.SensorRequest
+import java.text.SimpleDateFormat
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
@@ -66,6 +67,23 @@ class MainActivity : FlutterActivity() {
                             ensureActivityPermission(result) {
                                 withFitPermissions(result) {
                                     getStepsGroupedByDay(start, end, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                "getTodayStepsSinceLastSync" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val now = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getStepCount(start, now, result)
                                 }
                             }
                         }
@@ -193,7 +211,7 @@ class MainActivity : FlutterActivity() {
                         }
                     }
 
-                    val date = java.text.SimpleDateFormat("yyyy-MM-dd")
+                    val date = SimpleDateFormat("yyyy-MM-dd")
                         .apply { timeZone = TimeZone.getDefault() }
                         .format(startMillis)
 
@@ -207,7 +225,40 @@ class MainActivity : FlutterActivity() {
                     )
                 }
 
-                result.success(results)
+                val todayDate = SimpleDateFormat("yyyy-MM-dd")
+                    .apply { timeZone = TimeZone.getDefault() }
+                    .format(System.currentTimeMillis())
+
+                val hasToday = results.any { it["date"] == todayDate }
+
+                if (!hasToday) {
+                    val now = System.currentTimeMillis()
+                    val startOfToday = getStartOfDayMillis(now)
+
+                    getStepCount(startOfToday, now, object : MethodChannel.Result {
+                        override fun success(todaySteps: Any?) {
+                            val steps = (todaySteps as? Double) ?: 0.0
+                            val kilometers = steps / 1300.0
+                            results.add(
+                                mapOf(
+                                    "date" to todayDate,
+                                    "total_kilometers" to kilometers
+                                )
+                            )
+                            result.success(results)
+                        }
+
+                        override fun error(code: String, message: String?, details: Any?) {
+                            result.success(results)
+                        }
+
+                        override fun notImplemented() {
+                            result.success(results)
+                        }
+                    })
+                } else {
+                    result.success(results)
+                }
             }
             .addOnFailureListener { e ->
                 result.error("FITNESS_ERROR", "Failed to read grouped steps: ${e.localizedMessage}", null)

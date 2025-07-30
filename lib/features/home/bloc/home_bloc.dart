@@ -51,33 +51,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         syncStart.day,
       );
 
-      final dailyDistances = await healthRepository
-          .getDailyDistancesFromLastSync(syncStart);
+      if (syncStartDateOnly == todayDate) {
+        final kilometers = await healthRepository.getTodayDistanceSinceLastSync(syncStart);
+        await healthRepository.sendTodayDistance(kilometers);
+      } else {
+        final allDistances = await healthRepository
+            .getDailyDistancesFromLastSync(syncStart);
+        final filteredDistances =
+            allDistances.where((entry) {
+              final dateStr = entry['date'] as String?;
+              final km = entry['total_kilometers'] as double? ?? 0.0;
+              if (dateStr == null) return false;
 
-      if (dailyDistances.isNotEmpty) {
-        if (syncStartDateOnly == todayDate) {
-          final kilometers =
-              dailyDistances.first['total_kilometers'] as double?;
-          if (kilometers != null) {
-            await healthRepository.sendTodayDistance(kilometers);
-          }
-        } else {
-          final filteredDistances =
-              dailyDistances.where((entry) {
-                final dateStr = entry['date'] as String?;
-                final km = entry['total_kilometers'] as double? ?? 0.0;
-                if (dateStr == null) return false;
+              final entryDate = DateTime.tryParse(dateStr);
+              if (entryDate == null) return false;
 
-                final entryDate = DateTime.tryParse(dateStr);
-                if (entryDate == null) return false;
+              return !(lastSignInAt != null &&
+                      entryDate.isBefore(lastSignInAt)) &&
+                  km > 0;
+            }).toList();
 
-                return !(lastSignInAt != null &&
-                        entryDate.isBefore(lastSignInAt)) &&
-                    km > 0;
-              }).toList();
-
-          await healthRepository.sendDailyDistances(filteredDistances);
-        }
+        await healthRepository.sendDailyDistances(filteredDistances);
       }
 
       final response = await homeRepository.getHomeData();
