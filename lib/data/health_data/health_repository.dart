@@ -123,24 +123,40 @@ class HealthRepository {
   }
 
   Future<void> sendTodayDistance(double kilometers) async {
-  debugPrint('📤 Calling sync-today-distances with $kilometers km...');
+    debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
-  try {
-    final response = await Supabase.instance.client.functions
-        .invoke('sync-today-distances', body: {'kilometers': kilometers})
-        .timeout(const Duration(seconds: 3));
+    try {
+      final response = await Supabase.instance.client.functions
+          .invoke('sync-today-distances', body: {'kilometers': kilometers})
+          .timeout(const Duration(seconds: 3));
 
-    debugPrint('📬 Response received: status=${response.status}');
+      debugPrint('📬 Response received: status=${response.status}');
 
-    if (response.status != 200) {
-      debugPrint('❌ sync-today-distances failed: ${response.data}');
-      throw Exception('sync-today-distances failed: ${response.data}');
+      if (response.status != 200) {
+        debugPrint('❌ sync-today-distances failed: ${response.data}');
+        throw Exception('sync-today-distances failed: ${response.data}');
+      }
+
+      debugPrint('✅ sync-today-distances success: $kilometers km');
+    } catch (e, stack) {
+      debugPrint('❌ sendTodayDistance error: $e');
+      debugPrint('🪵 $stack');
     }
-
-    debugPrint('✅ sync-today-distances success: $kilometers km');
-  } catch (e, stack) {
-    debugPrint('❌ sendTodayDistance error: $e');
-    debugPrint('🪵 $stack');
   }
-}
+
+  Future<double> getTodayDistanceSinceLastSync(DateTime timestamp) async {
+    try {
+      final seconds = timestamp.millisecondsSinceEpoch / 1000;
+      final steps = await _channel.invokeMethod<double>(
+        'getTodayStepsSinceLastSync',
+        seconds,
+      );
+      final kilometers = (steps ?? 0) / 1300.0;
+      return kilometers;
+    } catch (e, stack) {
+      debugPrint('❌ Error in getTodayDistanceSinceLastSync: $e');
+      debugPrint('StackTrace: $stack');
+      return 0;
+    }
+  }
 }
