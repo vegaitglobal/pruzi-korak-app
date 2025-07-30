@@ -62,7 +62,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             await healthRepository.sendTodayDistance(kilometers);
           }
         } else {
-          await healthRepository.sendDailyDistances(dailyDistances);
+          final filteredDistances =
+              dailyDistances.where((entry) {
+                final dateStr = entry['date'] as String?;
+                final km = entry['total_kilometers'] as double? ?? 0.0;
+                if (dateStr == null) return false;
+
+                final entryDate = DateTime.tryParse(dateStr);
+                if (entryDate == null) return false;
+
+                return !(lastSignInAt != null &&
+                        entryDate.isBefore(lastSignInAt)) &&
+                    km > 0;
+              }).toList();
+
+          await healthRepository.sendDailyDistances(filteredDistances);
         }
       }
 
