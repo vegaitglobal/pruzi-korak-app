@@ -128,26 +128,26 @@ import HealthKit
     func fetchStepsGroupedByDay(from startDate: Date, completion: @escaping ([Any]) -> Void) {
         let now = Date()
         let calendar = Calendar.current
-        var currentDay = startDate
+        var currentDay = calendar.startOfDay(for: startDate)
         let lastDay = calendar.startOfDay(for: now)
 
         var results: [[String: Any]] = []
         let group = DispatchGroup()
 
-        while currentDay <= now {
+        while currentDay <= lastDay {
             let dayStart = currentDay
 
             let dayEnd: Date
             if calendar.isDate(dayStart, inSameDayAs: now) {
                 dayEnd = now
             } else {
-                dayEnd = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: dayStart))!
+                dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
             }
 
             group.enter()
             fetchSteps(from: dayStart, to: dayEnd, includeManual: includeManualSteps) { steps in
                 let kilometers = steps / 1300.0
-                let dateString = ISO8601DateFormatter().string(from: calendar.startOfDay(for: dayStart)).prefix(10)
+                let dateString = ISO8601DateFormatter().string(from: dayStart).prefix(10)
                 results.append([
                     "date": String(dateString),
                     "total_kilometers": kilometers
@@ -155,7 +155,7 @@ import HealthKit
                 group.leave()
             }
 
-            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: currentDay)) else { break }
+            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: dayStart) else { break }
             currentDay = nextDay
         }
 
