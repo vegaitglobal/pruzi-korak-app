@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/data/health_data/health_repository.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
@@ -57,6 +58,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } else {
         final allDistances = await healthRepository
             .getDailyDistancesFromLastSync(syncStart);
+            debugPrint('🏷️ allDistances: $allDistances');
         final filteredDistances =
             allDistances.where((entry) {
               final dateStr = entry['date'] as String?;

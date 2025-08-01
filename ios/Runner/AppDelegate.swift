@@ -135,43 +135,48 @@ import HealthKit
         fetchSteps(from: campaignStart, to: now, includeManual: includeManualSteps, completion: completion)
     }
     
-    func fetchStepsGroupedByDay(from startDate: Date, completion: @escaping ([Any]) -> Void) {
-        let now = Date()
-        let calendar = Calendar.current
-        var currentDay = calendar.startOfDay(for: startDate)
-        let lastDay = calendar.startOfDay(for: now)
+    func fetchStepsGroupedByDay(from startDate: Date, completion: @escaping ([[String: Any]]) -> Void) {
+      let now = Date()
+      let calendar = Calendar.current
+      let startDay = calendar.startOfDay(for: startDate)
+      let endDay = calendar.startOfDay(for: now)
 
-        var results: [[String: Any]] = []
-        let group = DispatchGroup()
+      let dayCount = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
 
-        while currentDay <= lastDay {
-            let dayStart = currentDay
+      var results: [[String: Any]] = []
+      let group = DispatchGroup()
 
-            let dayEnd: Date
-            if calendar.isDate(dayStart, inSameDayAs: now) {
-                dayEnd = now
-            } else {
-                dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
-            }
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "yyyy-MM-dd"
+      dateFormatter.timeZone = calendar.timeZone
 
-            group.enter()
-            fetchSteps(from: dayStart, to: dayEnd, includeManual: includeManualSteps) { steps in
-                let kilometers = steps / 1300.0
-                let dateString = ISO8601DateFormatter().string(from: dayStart).prefix(10)
-                results.append([
-                    "date": String(dateString),
-                    "total_kilometers": kilometers
-                ])
-                group.leave()
-            }
-
-            guard let nextDay = calendar.date(byAdding: .day, value: 1, to: dayStart) else { break }
-            currentDay = nextDay
+      for i in 0...dayCount {
+        guard let dayStart = calendar.date(byAdding: .day, value: i, to: startDay) else {
+          continue
         }
 
-        group.notify(queue: .main) {
-            completion(results)
+        let dayEnd: Date
+        if i == dayCount {
+          dayEnd = now
+        } else {
+          dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
         }
+
+        group.enter()
+        fetchSteps(from: dayStart, to: dayEnd, includeManual: includeManualSteps) { steps in
+          let km = steps / 1300.0
+          let dateString = dateFormatter.string(from: dayStart)
+          results.append([
+            "date": dateString,
+            "total_kilometers": km
+          ])
+          group.leave()
+        }
+      }
+
+      group.notify(queue: .main) {
+        completion(results)
+      }
     }
 
     private func fetchSteps(from startDate: Date, to endDate: Date, includeManual: Bool = false, completion: @escaping (Double) -> Void) {
