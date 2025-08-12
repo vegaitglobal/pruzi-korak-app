@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,27 +25,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
+  Timer? _debounce;
+
 
   @override
   void initState() {
     super.initState();
     _listenToHealthKitCallbacks();
-    //_channel.invokeMethod('startStepListener');
+    _channel.invokeMethod('startStepListener');
   }
 
   @override
   void dispose() {
-    //_channel.invokeMethod('stopStepListener');
+    _channel.invokeMethod('stopStepListener');
     super.dispose();
   }
 
   void _listenToHealthKitCallbacks() {
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'stepCountChanged') {
-        await Future.delayed(const Duration(seconds: 2));
-        if (mounted) {
+        // Simple debounce so you don't spam HomeLoadEvent
+        _debounce?.cancel();
+        _debounce = Timer(const Duration(seconds: 3), () {
+          if (!mounted) return;
           context.read<HomeBloc>().add(const HomeLoadEvent());
-        }
+        });
       }
     });
   }
