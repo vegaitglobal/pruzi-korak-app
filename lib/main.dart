@@ -9,6 +9,7 @@ import 'package:pruzi_korak/util/timezone_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/di/injector.dart';
 import 'core/constants/app_constants.dart';
+import 'data/health_data/helth_native_sync.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,8 @@ void main() async {
 
   // Initialize notifications
   await getIt<LocalNotificationHandler>().init(initialPayload);
+
+  await HealthNativeEvents.instance.install();
 
   runApp(
     kDebugMode

@@ -24,35 +24,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
-  Timer? _debounce;
 
 
   @override
   void initState() {
-    super.initState();
-    _listenToHealthKitCallbacks();
-    _channel.invokeMethod('startStepListener');
-  }
+    super.initState();}
 
-  @override
-  void dispose() {
-    _channel.invokeMethod('stopStepListener');
-    super.dispose();
-  }
-
-  void _listenToHealthKitCallbacks() {
-    _channel.setMethodCallHandler((call) async {
-      if (call.method == 'stepCountChanged') {
-        // Simple debounce so you don't spam HomeLoadEvent
-        _debounce?.cancel();
-        _debounce = Timer(const Duration(seconds: 3), () {
-          if (!mounted) return;
-          context.read<HomeBloc>().add(const HomeLoadEvent());
-        });
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
