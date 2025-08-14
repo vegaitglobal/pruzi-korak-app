@@ -16,20 +16,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final HealthRepository healthRepository;
   final HomeRepository homeRepository;
 
-  StreamSubscription<double>? _stepsSub;
-  Timer? _debounce;
-
   HomeBloc(this.homeRepository, {required this.healthRepository})
     : super(HomeLoading()) {
     on<HomeLoadEvent>(_onLoad);
     add(const HomeLoadEvent());
-
-    _stepsSub = HealthNativeEvents.instance.kmDeltas.listen((_) {
-      _debounce?.cancel();
-      _debounce = Timer(const Duration(seconds: 3), () {
-        add(const HomeLoadEvent());
-      });
-    });
   }
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {
@@ -117,12 +107,5 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } catch (_) {
       emit(const HomeError());
     }
-  }
-
-  @override
-  Future<void> close() {
-    _debounce?.cancel();
-    _stepsSub?.cancel();
-    return super.close();
   }
 }

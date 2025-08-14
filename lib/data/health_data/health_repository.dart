@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
+import 'bg_flush_cache.dart';
+
 class HealthRepository {
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
 
@@ -126,6 +128,8 @@ class HealthRepository {
     debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
     try {
+      await BgFlushCache.saveToday(kilometers);
+
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
           .timeout(const Duration(seconds: 3));
@@ -133,6 +137,7 @@ class HealthRepository {
       debugPrint('📬 Response received: status=${response.status}');
 
       if (response.status != 200) {
+        await BgFlushCache.clearToday();
         debugPrint('❌ sync-today-distances failed: ${response.data}');
         throw Exception('sync-today-distances failed: ${response.data}');
       }
@@ -152,6 +157,9 @@ class HealthRepository {
         seconds,
       );
       final kilometers = (steps ?? 0) / 1300.0;
+
+      await BgFlushCache.saveToday(kilometers);
+
       return kilometers;
     } catch (e, stack) {
       debugPrint('❌ Error in getTodayDistanceSinceLastSync: $e');
