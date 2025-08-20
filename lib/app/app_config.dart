@@ -1,5 +1,5 @@
 
 class AppConfig {
-  static const int motivationNotificationHour = 16;
-  static const int motivationNotificationMinute = 27;
+  static const int motivationNotificationHour = 10;
+  static const int motivationNotificationMinute = 0;
 }

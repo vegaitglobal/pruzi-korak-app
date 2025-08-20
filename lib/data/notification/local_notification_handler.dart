@@ -17,7 +17,7 @@ class LocalNotificationHandler {
     await _notificationService.init(onNotificationTap: _handleNotificationTap);
 
     if (initialPayload != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.microtask(() {
         _handleNotificationTap(initialPayload);
       });
     }
