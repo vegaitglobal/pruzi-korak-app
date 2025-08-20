@@ -131,6 +131,7 @@ class _MyAppState extends State<MyApp> {
       child: SessionListener(
         router: router,
         child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
           title: 'Pruži korak',
           supportedLocales: const [Locale('sr', 'Latn')],
 
