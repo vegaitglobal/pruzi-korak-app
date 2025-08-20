@@ -60,21 +60,21 @@ Future<void> initSupabase() async => Supabase.initialize(
 Future<void> _initWorkmanager() async {
   await Workmanager().initialize(callbackDispatcher);
 
-  // await Workmanager().registerPeriodicTask(
-  //   'flush-task-id',
-  //   kBgTaskName,
-  //   frequency: const Duration(minutes: 30),
-  //   initialDelay: const Duration(minutes: 5),
-  //   backoffPolicy: BackoffPolicy.exponential,
-  //   constraints: Constraints(networkType: NetworkType.connected),
-  // );
-
-  // Test verzija: One-off task sa kratkim delay-em
-   Workmanager().registerOneOffTask(
-    'test-flush-task-id',
+  await Workmanager().registerPeriodicTask(
+    'flush-task-id',
     kBgTaskName,
-    initialDelay: const Duration(seconds: 240), // Pokreće se nakon 10 sekundi
+    frequency: const Duration(minutes: 30),
+    initialDelay: const Duration(minutes: 5),
     backoffPolicy: BackoffPolicy.exponential,
     constraints: Constraints(networkType: NetworkType.connected),
   );
+
+  // Test verzija: One-off task sa kratkim delay-em
+  //  Workmanager().registerOneOffTask(
+  //   'test-flush-task-id',
+  //   kBgTaskName,
+  //   initialDelay: const Duration(seconds: 240), // Pokreće se nakon 10 sekundi
+  //   backoffPolicy: BackoffPolicy.exponential,
+  //   constraints: Constraints(networkType: NetworkType.connected),
+  // );
 }

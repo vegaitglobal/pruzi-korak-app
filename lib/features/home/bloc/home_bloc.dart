@@ -19,6 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(this.homeRepository, {required this.healthRepository})
     : super(HomeLoading()) {
     on<HomeLoadEvent>(_onLoad);
+
     add(const HomeLoadEvent());
   }
 

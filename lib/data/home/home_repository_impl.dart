@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/user/team_user_stats.dart';
@@ -17,6 +18,8 @@ class HomeRepositoryImpl implements HomeRepository {
     try {
       final response = await _client.rpc('get_user_and_team_kilometers');
       final user = await _localStorage.getUser();
+
+      debugPrint("response: $response");
 
       final stats = TeamUserStats.fromJson(response as Map<String, dynamic>);
 

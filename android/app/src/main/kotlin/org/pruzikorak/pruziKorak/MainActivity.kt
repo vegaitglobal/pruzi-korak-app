@@ -420,6 +420,9 @@ class MainActivity : FlutterActivity() {
 
                 mainHandler.post {
                     channel.invokeMethod("stepCountChanged", deltaKm)
+
+                    // Also update cache for background updates
+                    updateStepCache(deltaKm)
                 }
             }
         }
@@ -450,5 +453,26 @@ class MainActivity : FlutterActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterStepSensor()
+    }
+
+    /**
+     * Updates the cached step count for today in SharedPreferences.
+     * This is used to keep track of steps in the background.
+     */
+    private fun updateStepCache(deltaKm: Double) {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        // Safely read the current value
+        val currentKm = try {
+            prefs.getFloat("flutter.bg_pending_today_km", 0f)
+        } catch (e: ClassCastException) {
+            editor.remove("flutter.bg_pending_today_km")
+            editor.apply()
+            0f
+        }
+
+        val newTotal = currentKm + deltaKm.toFloat()
+        editor.putFloat("flutter.bg_pending_today_km", newTotal).apply()
     }
 }
