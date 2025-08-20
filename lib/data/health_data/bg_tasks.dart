@@ -27,8 +27,6 @@ Future<void> _bootstrapBgDI() async {
       url: AppConstants.SUPABASE_URL,
       anonKey: AppConstants.SUPABASE_KEY,
     );
-    // (opciono) eksplicitno povuci sesiju
-   // await Supabase.instance.client.auth.recoverSession();
 
     getItBg.registerSingleton<SupabaseClient>(Supabase.instance.client);
   }

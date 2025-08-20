@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (_life == AppLifecycleState.resumed) {
         _debounce?.cancel();
         _debounce = Timer(const Duration(seconds: 3), () {
-          if (mounted) context.read<HomeBloc>().add(const HomeLoadEvent());
+          if (mounted) context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
         });
       } else {}
     });
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _life = state;
     if (state == AppLifecycleState.resumed) {
-      context.read<HomeBloc>().add(const HomeLoadEvent());
+      context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
     }
   }
 

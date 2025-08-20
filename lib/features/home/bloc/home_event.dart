@@ -10,3 +10,10 @@ class HomeLoadEvent extends HomeEvent {
   @override
   List<Object?> get props => [];
 }
+
+class HomeSilentUpdateEvent extends HomeEvent {
+  const HomeSilentUpdateEvent();
+
+  @override
+  List<Object?> get props => [];
+}
