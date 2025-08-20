@@ -60,12 +60,20 @@ Future<void> initSupabase() async => Supabase.initialize(
 Future<void> _initWorkmanager() async {
   await Workmanager().initialize(callbackDispatcher);
 
-  // Android: period >= 15min; iOS: best-effort (Background fetch mora biti uključen u Capabilities)
-  await Workmanager().registerPeriodicTask(
-    'flush-task-id',
+  // await Workmanager().registerPeriodicTask(
+  //   'flush-task-id',
+  //   kBgTaskName,
+  //   frequency: const Duration(minutes: 30),
+  //   initialDelay: const Duration(minutes: 5),
+  //   backoffPolicy: BackoffPolicy.exponential,
+  //   constraints: Constraints(networkType: NetworkType.connected),
+  // );
+
+  // Test verzija: One-off task sa kratkim delay-em
+   Workmanager().registerOneOffTask(
+    'test-flush-task-id',
     kBgTaskName,
-    frequency: const Duration(minutes: 30),
-    initialDelay: const Duration(minutes: 5),
+    initialDelay: const Duration(seconds: 30), // Pokreće se nakon 10 sekundi
     backoffPolicy: BackoffPolicy.exponential,
     constraints: Constraints(networkType: NetworkType.connected),
   );

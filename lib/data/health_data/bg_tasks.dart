@@ -11,6 +11,8 @@ import '../../data/health_data/bg_flush_cache.dart';
 import '../../core/utils/app_logger.dart';
 
 const String kBgTaskName = 'flush-today-distance';
+const String kLastSyncAttemptKey = 'last_sync_attempt_timestamp';
+const String kPendingSyncKey = 'pending_sync_data';
 
 final GetIt getItBg = GetIt.asNewInstance();
 
@@ -54,41 +56,63 @@ void callbackDispatcher() {
     try {
       await _bootstrapBgDI();
 
-      final supa = Supabase.instance.client;
-      final host = Uri.parse(AppConstants.SUPABASE_URL).host;
+      // Always return success for the task since we're using a local-first approach
+      bool taskSuccess = true;
 
-
-      final dnsOk = await _waitForDns(host);
-      if (!dnsOk) {
-        AppLogger.logWarning("BG Task: DNS lookup failed for $host");
-        return Future.value(false);
-      }
-
+      // Read today's data from cache
       final km = await BgFlushCache.readToday();
       AppLogger.logInfo("BG Task: Read from cache: $km kilometers");
 
       if (km == null) {
-        AppLogger.logInfo("BG Task: No kilometers data found, exiting");
+        AppLogger.logInfo("BG Task: No kilometers data found, exiting with success");
         return Future.value(true);
       }
 
-      AppLogger.logInfo("BG Task: Invoking sync-today-distances function with $km kilometers");
-      final resp = await supa.functions
-          .invoke('sync-today-distances', body: {'kilometers': km})
-          .timeout(const Duration(seconds: 20));
+      // Try to sync data but don't fail the task if sync fails
+      bool syncSuccess = false;
+      try {
+        final supa = Supabase.instance.client;
+        final host = Uri.parse(AppConstants.SUPABASE_URL).host;
 
-      AppLogger.logInfo("BG Task: Function response status: ${resp.status}");
+        final dnsOk = await _waitForDns(host);
+        if (!dnsOk) {
+          AppLogger.logWarning("BG Task: DNS lookup failed for $host, will retry later");
+          // Store last sync attempt timestamp
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt(kLastSyncAttemptKey, DateTime.now().millisecondsSinceEpoch);
+          return Future.value(taskSuccess); // Return success even though sync failed
+        }
 
-      final ok = resp.status == 200;
-      if (ok) {
-        await BgFlushCache.clearToday();
-        AppLogger.logInfo("BG Task: Cache cleared successfully");
-      } else {
-        AppLogger.logWarning("BG Task: Failed to sync data, status code: ${resp.status}");
+        AppLogger.logInfo("BG Task: Invoking sync-today-distances function with $km kilometers");
+        final resp = await supa.functions
+            .invoke('sync-today-distances', body: {'kilometers': km})
+            .timeout(const Duration(seconds: 20));
+
+        AppLogger.logInfo("BG Task: Function response status: ${resp.status}");
+
+        syncSuccess = resp.status == 200;
+        if (syncSuccess) {
+          await BgFlushCache.clearToday();
+          AppLogger.logInfo("BG Task: Cache cleared after successful sync");
+        } else {
+          AppLogger.logWarning(
+              "BG Task: Failed to sync data, status code: ${resp.status}. Will retry later.");
+          // Store last sync attempt timestamp
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt(kLastSyncAttemptKey, DateTime.now().millisecondsSinceEpoch);
+        }
+      } catch (e) {
+        AppLogger.logError("BG Task: Error while attempting to sync", e);
+        // Store last sync attempt timestamp
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(kLastSyncAttemptKey, DateTime.now().millisecondsSinceEpoch);
       }
-      return Future.value(ok);
+
+      // Always return success for the WorkManager task
+      return Future.value(taskSuccess);
     } catch (e) {
-      AppLogger.logError("BG Task: Error in background task", e);
+      AppLogger.logError("BG Task: Critical error in background task", e);
+      // Return false only for critical errors that affect the task itself
       return Future.value(false);
     }
   });
