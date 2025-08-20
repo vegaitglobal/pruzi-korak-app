@@ -7,8 +7,11 @@ import 'package:pruzi_korak/app/app.dart';
 import 'package:pruzi_korak/data/notification/local_notification_handler.dart';
 import 'package:pruzi_korak/util/timezone_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:workmanager/workmanager.dart';
 import 'app/di/injector.dart';
 import 'core/constants/app_constants.dart';
+import 'data/health_data/bg_tasks.dart';
+import 'data/health_data/helth_native_sync.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +28,8 @@ void main() async {
   await initSupabase();
   await configureDI();
 
+  await _initWorkmanager();
+
   // Check if app cold start from notification click
   final notificationAppLaunchDetails =
       await FlutterLocalNotificationsPlugin().getNotificationAppLaunchDetails();
@@ -33,6 +38,8 @@ void main() async {
 
   // Initialize notifications
   await getIt<LocalNotificationHandler>().init(initialPayload);
+
+  await HealthNativeEvents.instance.install();
 
   runApp(
     kDebugMode
@@ -49,3 +56,25 @@ Future<void> initSupabase() async => Supabase.initialize(
   url: AppConstants.SUPABASE_URL,
   anonKey: AppConstants.SUPABASE_KEY,
 );
+
+Future<void> _initWorkmanager() async {
+  await Workmanager().initialize(callbackDispatcher);
+
+  await Workmanager().registerPeriodicTask(
+    'flush-task-id',
+    kBgTaskName,
+    frequency: const Duration(minutes: 30),
+    initialDelay: const Duration(minutes: 5),
+    backoffPolicy: BackoffPolicy.exponential,
+    constraints: Constraints(networkType: NetworkType.connected),
+  );
+
+  // Test verzija: One-off task sa kratkim delay-em
+  //  Workmanager().registerOneOffTask(
+  //   'test-flush-task-id',
+  //   kBgTaskName,
+  //   initialDelay: const Duration(seconds: 240), // Pokreće se nakon 10 sekundi
+  //   backoffPolicy: BackoffPolicy.exponential,
+  //   constraints: Constraints(networkType: NetworkType.connected),
+  // );
+}
