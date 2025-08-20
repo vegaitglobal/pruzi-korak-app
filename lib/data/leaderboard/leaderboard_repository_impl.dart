@@ -38,12 +38,8 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
 
       final topThree = TopThreeLeaderboardModel.fromList(leaderboard);
       AppLogger.logInfo("Top three leaderboard: $topThree");
-      final others =
-          leaderboard.length > 3
-              ? leaderboard.sublist(3)
-              : <LeaderboardModel>[];
 
-      return (topThree: topThree, list: others);
+      return (topThree: topThree, list: leaderboard);
     } catch (e) {
       AppLogger.logError("Failed to fetch leaderboard: $e");
       throw Exception('Failed to fetch leaderboard: $e');
@@ -74,12 +70,8 @@ class LeaderboardRepositoryImpl implements LeaderboardRepository {
           }).toList();
 
       final topThree = TopThreeLeaderboardModel.fromList(leaderboard);
-      final others =
-          leaderboard.length > 3
-              ? leaderboard.sublist(3)
-              : <TeamLeaderboardModel>[];
 
-      return (topThree: topThree, list: others);
+      return (topThree: topThree, list: leaderboard);
     } catch (e) {
       AppLogger.logError("Failed to fetch leaderboard: $e");
       throw Exception('Failed to fetch leaderboard: $e');
