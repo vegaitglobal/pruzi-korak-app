@@ -84,10 +84,7 @@ class StepsCircleComponent extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.transparent,
-        border: Border.all(
-          color: color, // Use the provided color for the border
-          width: 3, // Adjust border width as needed
-        ),
+        border: Border.all(color: color, width: 3),
       ),
       child: Center(
         child: Column(
@@ -95,9 +92,25 @@ class StepsCircleComponent extends StatelessWidget {
           children: [
             AppSvgIcon(iconPath: iconPath, color: color, size: 20),
             const SizedBox(height: 4),
-            Text(text, style: AppTextStyles.labelMedium.copyWith(color: color)),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(scale: animation, child: child),
+                );
+              },
+              child: Text(
+                text,
+                key: ValueKey<String>(text),
+                style: AppTextStyles.labelMedium.copyWith(color: color),
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(AppLocalizations.of(context)!.km, style: AppTextStyles.bodySmall.copyWith(color: color)),
+            Text(
+              AppLocalizations.of(context)!.km,
+              style: AppTextStyles.bodySmall.copyWith(color: color),
+            ),
           ],
         ),
       ),
