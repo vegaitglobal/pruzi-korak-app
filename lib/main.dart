@@ -37,7 +37,7 @@ void main() async {
   runApp(
     kDebugMode
         ? DevicePreview(
-          enabled: true,
+          enabled: false,
           tools: const [...DevicePreview.defaultTools],
           builder: (context) => const MyApp(),
         )
