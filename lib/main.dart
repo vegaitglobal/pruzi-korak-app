@@ -73,7 +73,7 @@ Future<void> _initWorkmanager() async {
    Workmanager().registerOneOffTask(
     'test-flush-task-id',
     kBgTaskName,
-    initialDelay: const Duration(seconds: 30), // Pokreće se nakon 10 sekundi
+    initialDelay: const Duration(seconds: 240), // Pokreće se nakon 10 sekundi
     backoffPolicy: BackoffPolicy.exponential,
     constraints: Constraints(networkType: NetworkType.connected),
   );

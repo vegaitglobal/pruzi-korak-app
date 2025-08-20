@@ -51,37 +51,52 @@ class HealthRepository {
     }
   }
 
-  Future<Map<String, String?>> fetchSyncInfo() async {
+  Future<Map<String, String?>> fetchSyncInfo({int maxRetries = 3}) async {
     debugPrint('🔍 Calling sync-info...');
-    try {
-      final response = await Supabase.instance.client.functions
-          .invoke('sync-info')
-          .timeout(
-            const Duration(seconds: 5),
-            onTimeout:
-                () => throw TimeoutException('Supabase function timed out'),
-          );
+    int retryCount = 0;
+    Duration delay = const Duration(seconds: 1);
 
-      debugPrint('📬 Response received: ${response.status}');
+    while (true) {
+      try {
+        final response = await Supabase.instance.client.functions
+            .invoke('sync-info')
+            .timeout(
+              const Duration(seconds: 5),
+              onTimeout:
+                  () => throw TimeoutException('Supabase function timed out'),
+            );
 
-      if (response.status != 200) {
-        debugPrint('❌ Failed with: ${response.data}');
-        throw Exception('Failed to fetch sync info: ${response.data}');
+        debugPrint('📬 Response received: ${response.status}');
+
+        if (response.status != 200) {
+          debugPrint('❌ Failed with: ${response.data}');
+          throw Exception('Failed to fetch sync info: ${response.data}');
+        }
+
+        final data = response.data as Map<String, dynamic>;
+
+        final lastSyncAt = data['last_sync_at'] as String?;
+        final lastSignInAt = data['last_sign_in_at'] as String?;
+
+        debugPrint('✅ Last sync: $lastSyncAt');
+        debugPrint('✅ Last sign in: $lastSignInAt');
+
+        return {'last_sync_at': lastSyncAt, 'last_sign_in_at': lastSignInAt};
+      } catch (e, stack) {
+        debugPrint('❌ fetchSyncInfo error: $e');
+        debugPrint('$stack');
+
+        retryCount++;
+        if (retryCount > maxRetries) {
+          debugPrint('❌ Maximum retries ($maxRetries) reached for fetchSyncInfo');
+          rethrow;
+        }
+
+        debugPrint('⏱️ Retrying fetchSyncInfo (${retryCount}/$maxRetries) after ${delay.inMilliseconds}ms');
+        await Future.delayed(delay);
+        // Exponential backoff: double the delay for next retry
+        delay *= 2;
       }
-
-      final data = response.data as Map<String, dynamic>;
-
-      final lastSyncAt = data['last_sync_at'] as String?;
-      final lastSignInAt = data['last_sign_in_at'] as String?;
-
-      debugPrint('✅ Last sync: $lastSyncAt');
-      debugPrint('✅ Last sign in: $lastSignInAt');
-
-      return {'last_sync_at': lastSyncAt, 'last_sign_in_at': lastSignInAt};
-    } catch (e, stack) {
-      debugPrint('❌ fetchSyncInfo error: $e');
-      debugPrint('$stack');
-      rethrow;
     }
   }
 
