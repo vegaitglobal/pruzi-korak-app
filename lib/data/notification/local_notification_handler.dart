@@ -16,7 +16,7 @@ class LocalNotificationHandler {
   Future<void> init(String? initialPayload) async {
     await _notificationService.init(onNotificationTap: _handleNotificationTap);
 
-    final backgroundPayload = (_notificationService as LocalNotificationServiceImpl).getAndClearBackgroundPayload();
+    final backgroundPayload = _notificationService.getAndClearBackgroundPayload();
 
     // Handle notification tap if the app was launched from a notification in cold start
     final payload = initialPayload ?? backgroundPayload;

@@ -18,6 +18,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     _backgroundNotificationPayload = notificationResponse.payload;
   }
 
+  @override
   String? getAndClearBackgroundPayload() {
     final payload = _backgroundNotificationPayload;
     _backgroundNotificationPayload = null;
