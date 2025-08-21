@@ -14,7 +14,7 @@ final LeaderboardRepository leaderboardRepository;
 
   TeamLeaderboardBloc(this.leaderboardRepository) : super(TeamLeaderboardLoading()) {
     on<LoadTeamLeaderboard>((event, emit) async {
-      // TODO: implement event handler
+      emit(TeamLeaderboardLoading());
       try {
         final response = await leaderboardRepository.getTeamLeaderboard();
         emit(
