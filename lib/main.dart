@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -39,7 +40,10 @@ void main() async {
   // Initialize notifications
   await getIt<LocalNotificationHandler>().init(initialPayload);
 
-  await HealthNativeEvents.instance.install();
+  // Install HealthNativeEvents only on Android devices
+  if (Platform.isAndroid) {
+    await HealthNativeEvents.instance.install();
+  }
 
   runApp(
     kDebugMode
