@@ -48,17 +48,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _fetchAndUpdateData(Emitter<HomeState> emit) async {
     final syncData = await healthRepository.fetchSyncInfo();
+    final today = DateTime.now();
 
+    final syncStartDate = _determineSyncStartDate(syncData, today);
+    await _syncHealthData(syncStartDate, today);
+    await _loadAndEmitHomeData(emit);
+  }
+
+  DateTime _determineSyncStartDate(Map<String, dynamic> syncData, DateTime today) {
     final lastSyncAtStr = syncData['last_sync_at'];
     final lastSignInAtStr = syncData['last_sign_in_at'];
 
-    final today = DateTime.now();
-    final todayDate = DateTime(today.year, today.month, today.day);
-
-    final lastSyncAt =
-        lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
-    final lastSignInAt =
-        lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
+    final lastSyncAt = lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
+    final lastSignInAt = lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
     DateTime syncStart = today;
     if (lastSyncAt != null && lastSignInAt != null) {
@@ -69,45 +71,54 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       syncStart = lastSignInAt;
     }
 
-    final syncStartDateOnly = DateTime(
-      syncStart.year,
-      syncStart.month,
-      syncStart.day,
-    );
+    return syncStart;
+  }
+
+  Future<void> _syncHealthData(DateTime syncStart, DateTime today) async {
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final syncStartDateOnly = DateTime(syncStart.year, syncStart.month, syncStart.day);
 
     if (syncStartDateOnly == todayDate) {
-      final kilometers = await healthRepository.getTodayDistanceSinceLastSync(
-        syncStart,
-      );
-      await healthRepository.sendTodayDistance(kilometers);
+      await _syncTodayData(syncStart);
     } else {
-      final allDistances = await healthRepository.getDailyDistancesFromLastSync(
-        syncStart,
-      );
-      debugPrint('🏷️ allDistances: $allDistances');
-      final filteredDistances =
-          allDistances.where((entry) {
-            final dateStr = entry['date'] as String?;
-            final km = entry['total_kilometers'] as double? ?? 0.0;
-            if (dateStr == null) return false;
-
-            final entryDate = DateTime.tryParse(dateStr);
-            if (entryDate == null) return false;
-
-            return !(lastSignInAt != null &&
-                    entryDate.isBefore(lastSignInAt)) &&
-                km > 0;
-          }).toList();
-
-      await healthRepository.sendDailyDistances(filteredDistances);
+      await _syncHistoricalData(syncStart);
     }
+  }
 
+  Future<void> _syncTodayData(DateTime syncStart) async {
+    final kilometers = await healthRepository.getTodayDistanceSinceLastSync(syncStart);
+    await healthRepository.sendTodayDistance(kilometers);
+  }
+
+  Future<void> _syncHistoricalData(DateTime syncStart) async {
+    final allDistances = await healthRepository.getDailyDistancesFromLastSync(syncStart);
+    debugPrint('🏷️ allDistances: $allDistances');
+
+    final lastSignInAtStr = (await healthRepository.fetchSyncInfo())['last_sign_in_at'];
+    final lastSignInAt = lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
+
+    final filteredDistances = _filterValidDistances(allDistances, lastSignInAt);
+    await healthRepository.sendDailyDistances(filteredDistances);
+  }
+
+  List<Map<String, dynamic>> _filterValidDistances(
+      List<Map<String, dynamic>> distances, DateTime? lastSignInAt) {
+    return distances.where((entry) {
+      final dateStr = entry['date'] as String?;
+      final km = entry['total_kilometers'] as double? ?? 0.0;
+      if (dateStr == null) return false;
+
+      final entryDate = DateTime.tryParse(dateStr);
+      if (entryDate == null) return false;
+
+      return !(lastSignInAt != null && entryDate.isBefore(lastSignInAt)) && km > 0;
+    }).toList();
+  }
+
+  Future<void> _loadAndEmitHomeData(Emitter<HomeState> emit) async {
     final response = await homeRepository.getHomeData();
-    final userModel = response.user;
-    final teamStepsModel = response.teamUserStats;
-
-    // Fetch user rank
     final myRank = await homeRepository.getMyRank();
+    final teamStepsModel = response.teamUserStats;
 
     final userStepsModel = StepsModel(
       steps: teamStepsModel.userToday,
