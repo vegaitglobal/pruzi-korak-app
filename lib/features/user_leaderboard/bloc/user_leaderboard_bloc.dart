@@ -15,6 +15,7 @@ class UserLeaderboardBloc
   UserLeaderboardBloc(this.leaderboardRepository)
     : super(UserLeaderboardLoading()) {
     on<UserLeaderboardEvent>((event, emit) async {
+      emit(UserLeaderboardLoading());
       try {
         final response = await leaderboardRepository.getUsersLeaderboard();
         emit(

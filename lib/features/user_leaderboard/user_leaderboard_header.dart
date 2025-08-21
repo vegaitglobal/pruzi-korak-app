@@ -4,8 +4,8 @@ import 'package:pruzi_korak/core/localization/app_localizations.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
+import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
-
 
 class UserLeaderboardHeader extends StatelessWidget {
   const UserLeaderboardHeader({
@@ -56,7 +56,9 @@ class LeaderboardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initial =
-    leaderboardModel.firstName.isNotEmpty ? leaderboardModel.firstName[0] : '?';
+        leaderboardModel.firstName.isNotEmpty
+            ? leaderboardModel.firstName[0]
+            : '?';
 
     return Transform.translate(
       offset: Offset(0, verticalOffset),
@@ -66,8 +68,13 @@ class LeaderboardItem extends StatelessWidget {
             badgePosition: BadgePosition.bottomCenter,
             badgeSize: BadgeSize.large,
             badgeValue: leaderboardModel.rank,
-            child: InitialsAvatar(initial: initial, size: imageSize),
-
+            child:
+                leaderboardModel.imageUrl != null
+                    ? UserAvatarImage(
+                      imageUrl: leaderboardModel.imageUrl!,
+                      size: imageSize,
+                    )
+                    : InitialsAvatar(initial: initial, size: imageSize),
           ),
           const SizedBox(height: 16),
           Text(
