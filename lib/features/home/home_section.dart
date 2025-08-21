@@ -38,18 +38,22 @@ class HomeTeamSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate responsive circle size based on screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+    final circleSize = screenWidth * 0.3; // Slightly larger circle size (30% of width)
+
     return IntrinsicHeight(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
               children: [
                 StepsCircleComponent(
                   text: stepsModel.steps,
                   iconPath: AppIcons.icStep,
                   color: AppColors.primary,
+                  size: circleSize,
                 ),
                 SizedBox(height: 8),
                 Text(
@@ -61,16 +65,20 @@ class HomeTeamSection extends StatelessWidget {
                 ),
               ],
             ),
-            VerticalDivider(
-              width: 1, // Divider thickness
-              color: AppColors.primary, // Divider color
-            ),
-            Column(
+          ),
+          VerticalDivider(
+            width: 24,
+            thickness: 1,
+            color: AppColors.primary,
+          ),
+          Expanded(
+            child: Column(
               children: [
                 StepsCircleComponent(
                   text: stepsModel.totalSteps,
                   iconPath: AppIcons.icPlusPrimary,
                   color: AppColors.primary,
+                  size: circleSize,
                 ),
                 SizedBox(height: 8),
                 Text(
@@ -82,8 +90,8 @@ class HomeTeamSection extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
