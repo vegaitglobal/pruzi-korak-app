@@ -11,6 +11,19 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
   @override
   FlutterLocalNotificationsPlugin get plugin => _plugin;
 
+  static String? _backgroundNotificationPayload;
+
+  @pragma('vm:entry-point')
+  void notificationTapBackground(NotificationResponse notificationResponse) {
+    _backgroundNotificationPayload = notificationResponse.payload;
+  }
+
+  String? getAndClearBackgroundPayload() {
+    final payload = _backgroundNotificationPayload;
+    _backgroundNotificationPayload = null;
+    return payload;
+  }
+
   @override
   Future<void> init({
     required Function(String? payload) onNotificationTap,
@@ -43,6 +56,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         onNotificationTap(response.payload);
       },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
   }
 

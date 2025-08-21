@@ -4,6 +4,7 @@ import 'package:pruzi_korak/app/navigation/navigation_router.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
+import 'local_notification_service_impl.dart';
 import 'notification_type.dart';
 
 class LocalNotificationHandler {
@@ -15,8 +16,11 @@ class LocalNotificationHandler {
   Future<void> init(String? initialPayload) async {
     await _notificationService.init(onNotificationTap: _handleNotificationTap);
 
+    final backgroundPayload = (_notificationService as LocalNotificationServiceImpl).getAndClearBackgroundPayload();
+
     // Handle notification tap if the app was launched from a notification in cold start
-    if (initialPayload != null) {
+    final payload = initialPayload ?? backgroundPayload;
+    if (payload != null) {
       Future.microtask(() {
         _handleNotificationTap(initialPayload);
       });
