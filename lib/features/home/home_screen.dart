@@ -121,12 +121,16 @@ class HomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate responsive spacing based on screen height
+    final screenHeight = MediaQuery.of(context).size.height;
+    final verticalSpacing = screenHeight * 0.025; // 2.5% of screen height
+
     return PlatformSpecificPullToRefresh(
       onRefresh: () async {
-        context.read<HomeBloc>().add(const HomeLoadEvent());
+        context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
       },
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,19 +139,19 @@ class HomeSection extends StatelessWidget {
               fullName: '${userModel.fistName} ${userModel.lastName}',
               badgeValue: myRank > 0 ? myRank.toString() : null,
             ),
-            SizedBox(height: 16),
+            SizedBox(height: verticalSpacing),
             HomeUserSection(stepsModel: userStepsModel),
-            SizedBox(height: 32),
+            SizedBox(height: verticalSpacing * 1.2),
             Text(
               userModel.teamName,
               style: AppTextStyles.bodyLarge.copyWith(
                 color: AppColors.textVariant,
+                fontSize: screenHeight * 0.022, // Make text size responsive
               ),
             ),
-            SizedBox(height: 32),
-
+            SizedBox(height: verticalSpacing),
             HomeTeamSection(stepsModel: teamStepsModel),
-            SizedBox(height: 32),
+            SizedBox(height: verticalSpacing),
           ],
         ),
       ),

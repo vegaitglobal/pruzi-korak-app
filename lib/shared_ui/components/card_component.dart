@@ -19,9 +19,16 @@ class CardComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width to make component responsive
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Calculate responsive width and height with larger percentages
+    final cardWidth = (screenWidth - 54) * 0.48; // 48% of available width with less padding reduction
+    final cardHeight = cardWidth * 1.25; // Keep the aspect ratio (1.25 is close to original 200/160 ratio)
+
     return SizedBox(
-      width: 160,
-      height: 200,
+      width: cardWidth,
+      height: cardHeight,
       child: Card(
         color: AppColors.backgroundPrimary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -44,17 +51,21 @@ class CardComponent extends StatelessWidget {
                     text: stepsCount,
                     iconPath: iconPath,
                     color: AppColors.backgroundPrimary,
+                    size: cardWidth * 0.62, // Scale circle relative to card width
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                description,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -70,17 +81,19 @@ class StepsCircleComponent extends StatelessWidget {
     required this.text,
     required this.iconPath,
     required this.color,
+    this.size = 100,
   });
 
   final String text;
   final String iconPath;
   final Color color;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 100,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.transparent,
@@ -90,7 +103,7 @@ class StepsCircleComponent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AppSvgIcon(iconPath: iconPath, color: color, size: 20),
+            AppSvgIcon(iconPath: iconPath, color: color, size: size * 0.2),
             const SizedBox(height: 4),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 500),
@@ -103,13 +116,19 @@ class StepsCircleComponent extends StatelessWidget {
               child: Text(
                 text,
                 key: ValueKey<String>(text),
-                style: AppTextStyles.labelMedium.copyWith(color: color),
+                style: AppTextStyles.labelMedium.copyWith(
+                  color: color,
+                  fontSize: size * 0.16, // Scale text with circle size
+                ),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               AppLocalizations.of(context)!.km,
-              style: AppTextStyles.bodySmall.copyWith(color: color),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: color,
+                fontSize: size * 0.12, // Scale text with circle size
+              ),
             ),
           ],
         ),
