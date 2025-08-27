@@ -61,8 +61,9 @@ void callbackDispatcher() {
       final km = await BgFlushCache.readToday();
       AppLogger.logInfo("BG Task: Read from cache: $km kilometers");
 
-      if (km == null) {
-        AppLogger.logInfo("BG Task: No kilometers data found, exiting with success");
+      // Don't proceed if data is null or not positive
+      if (km == null || km <= 0.0) {
+        AppLogger.logInfo("BG Task: No valid kilometers data found (null or <= 0), exiting with success");
         return Future.value(true);
       }
 
