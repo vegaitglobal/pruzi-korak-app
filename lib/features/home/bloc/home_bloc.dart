@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/data/health_data/health_repository.dart';
 import 'package:pruzi_korak/data/health_data/helth_native_sync.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
+import 'package:pruzi_korak/domain/health/daily_distance.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
 import 'package:pruzi_korak/domain/user/user_model.dart';
 
@@ -101,12 +102,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     await healthRepository.sendDailyDistances(filteredDistances);
   }
 
-  List<Map<String, dynamic>> _filterValidDistances(
-      List<Map<String, dynamic>> distances, DateTime? lastSignInAt) {
+  List<DailyDistance> _filterValidDistances(
+      List<DailyDistance> distances, DateTime? lastSignInAt) {
     return distances.where((entry) {
-      final dateStr = entry['date'] as String?;
-      final km = entry['total_kilometers'] as double? ?? 0.0;
-      if (dateStr == null) return false;
+      final dateStr = entry.date;
+      final km = entry.totalKilometers;
 
       final entryDate = DateTime.tryParse(dateStr);
       if (entryDate == null) return false;
