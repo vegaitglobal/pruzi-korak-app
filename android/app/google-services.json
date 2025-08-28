@@ -26,6 +26,14 @@
           "client_type": 1,
           "android_info": {
             "package_name": "org.pruzikorak.pruziKorak",
+            "certificate_hash": "4b0d2cd41fd5a12b6979b016b946c540ecaffdfa"
+          }
+        },
+        {
+          "client_id": "910633772133-an3tukr78jhc05tl26qltngr8nkieukn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.pruzikorak.pruziKorak",
             "certificate_hash": "0729da2a40b8b9f41bd45326a862264578fa7d81"
           }
         }
