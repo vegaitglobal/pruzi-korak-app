@@ -134,6 +134,8 @@ class HealthRepository {
 
       debugPrint('📬 Response received: status=${response.status}');
 
+      await BgFlushCache.clearToday();
+
       if (response.status != 200) {
         debugPrint(
           '❌ sendDailyDistances error: ${response.status}: ${response.data}',
@@ -158,16 +160,15 @@ class HealthRepository {
     debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
     try {
-      await BgFlushCache.saveToday(kilometers);
-
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
           .timeout(const Duration(seconds: 3));
 
+      await BgFlushCache.clearToday();
+
       debugPrint('📬 Response received: status=${response.status}');
 
       if (response.status != 200) {
-        await BgFlushCache.clearToday();
         debugPrint('❌ sync-today-distances failed: ${response.data}');
         throw Exception('sync-today-distances failed: ${response.data}');
       }
@@ -187,8 +188,6 @@ class HealthRepository {
         seconds,
       );
       final kilometers = (steps ?? 0) / 1300.0;
-
-      await BgFlushCache.saveToday(kilometers);
 
       return kilometers;
     } catch (e, stack) {
