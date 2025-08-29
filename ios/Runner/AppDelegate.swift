@@ -8,7 +8,7 @@ import HealthKit
     let healthStore = HKHealthStore()
     let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
     var flutterChannel: FlutterMethodChannel?
-    let includeManualSteps = true
+    let includeManualSteps = false
 
     override func application(
         _ application: UIApplication,
