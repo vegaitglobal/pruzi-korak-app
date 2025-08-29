@@ -57,6 +57,7 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     await _plugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
+        debugPrint('onDidReceiveNotificationResponse: ${response.payload}');
         onNotificationTap(response.payload);
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,

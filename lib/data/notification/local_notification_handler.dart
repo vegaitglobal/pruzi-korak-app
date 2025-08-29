@@ -19,6 +19,9 @@ class LocalNotificationHandler {
 
     final backgroundPayload = _notificationService.getAndClearBackgroundPayload();
 
+    debugPrint("📱 Initial notification payload: $initialPayload");
+    debugPrint("📱 Background notification payload: $backgroundPayload");
+
     // Handle notification tap if the app was launched from a notification in cold start
     final payload = initialPayload ?? backgroundPayload;
     if (payload != null) {
@@ -65,6 +68,7 @@ class LocalNotificationHandler {
 
 
   void _handleNotificationTap(String? payload) async {
+    debugPrint("📱 handleNotificationTap payload: $payload");
     if (payload == null) return;
 
     final isLoggedIn = await _authRepository.isLoggedIn();
