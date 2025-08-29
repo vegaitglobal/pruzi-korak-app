@@ -1,7 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_service.dart';
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  debugPrint('Notification tapped in background: ${notificationResponse.payload}');
+  _backgroundNotificationPayload = notificationResponse.payload;
+}
+
+String? _backgroundNotificationPayload;
 
 class LocalNotificationServiceImpl implements LocalNotificationService {
   final FlutterLocalNotificationsPlugin _plugin;
@@ -10,13 +19,6 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
 
   @override
   FlutterLocalNotificationsPlugin get plugin => _plugin;
-
-  static String? _backgroundNotificationPayload;
-
-  @pragma('vm:entry-point')
-  void notificationTapBackground(NotificationResponse notificationResponse) {
-    _backgroundNotificationPayload = notificationResponse.payload;
-  }
 
   @override
   String? getAndClearBackgroundPayload() {
@@ -145,3 +147,4 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     return const NotificationDetails(android: androidDetails);
   }
 }
+
