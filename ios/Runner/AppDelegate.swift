@@ -1,6 +1,8 @@
 import UIKit
 import Flutter
 import HealthKit
+import flutter_local_notifications
+
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -16,12 +18,19 @@ import HealthKit
     ) -> Bool {
         
         GeneratedPluginRegistrant.register(with: self)
-        
+
+        UNUserNotificationCenter.current().delegate = self
+
         let controller = window?.rootViewController as! FlutterViewController
         flutterChannel = FlutterMethodChannel(
             name: "org.pruziKorak.healthkit/callback",
             binaryMessenger: controller.binaryMessenger
         )
+
+        // Required for background notification handling
+        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
+            GeneratedPluginRegistrant.register(with: registry)
+        }
 
         flutterChannel?.setMethodCallHandler { [weak self] call, result in
             guard let self = self else {

@@ -41,7 +41,6 @@ void main() async {
   await getIt<LocalNotificationHandler>().init(initialPayload);
 
   await HealthNativeEvents.instance.install();
-  
 
   runApp(
     kDebugMode
@@ -80,3 +79,9 @@ Future<void> _initWorkmanager() async {
   //   constraints: Constraints(networkType: NetworkType.connected),
   // );
 }
+
+// For testing purposes
+// Future.delayed(const Duration(seconds: 2), () {
+// debugPrint("📱 Sending test notification on iOS");
+// getIt<LocalNotificationHandler>().showTestNotification();
+// });
