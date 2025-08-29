@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:pruzi_korak/app/app_config.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/navigation/navigation_router.dart';
@@ -52,6 +53,16 @@ class LocalNotificationHandler {
       payload: "${NotificationType.instant.toString()}|$km",
     );
   }
+
+  Future<void> showTestNotification() async {
+    await _notificationService.showTestNotification(
+      title: "Test Notification",
+      body: "This is a test notification sent on app start",
+      payload: "${NotificationType.instant.toString()}|5.0",
+    );
+    debugPrint("📱 Test notification sent on app start");
+  }
+
 
   void _handleNotificationTap(String? payload) async {
     if (payload == null) return;

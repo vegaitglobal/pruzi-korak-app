@@ -146,5 +146,60 @@ class LocalNotificationServiceImpl implements LocalNotificationService {
     );
     return const NotificationDetails(android: androidDetails);
   }
+
+  NotificationDetails _buildTestNotificationDetails() {
+    const androidDetails = AndroidNotificationDetails(
+      'test_channel_id',
+      'Test Notifications',
+      channelDescription: 'Test notifications for debugging',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      // Use the category we defined
+      categoryIdentifier: 'plainCategory',
+      // Set a unique thread identifier
+      threadIdentifier: 'test-thread',
+      // Make sure payload is accessible in the user info dictionary
+      attachments: null,
+    );
+
+    return const NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+  }
+
+  @override
+  Future<void> showTestNotification({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    // Using a fixed ID for test notification
+    const int testNotificationId = 9999;
+
+    // Add delay to ensure permissions are granted
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // On iOS, make sure we set proper notification details
+    final details = _buildTestNotificationDetails();
+
+    debugPrint("📱 Showing test notification with payload: $payload");
+
+    await _plugin.show(
+      testNotificationId,
+      title,
+      body,
+      details,
+      payload: payload,
+    );
+
+    debugPrint("📱 Test notification sent with payload: $payload");
+  }
 }
 
