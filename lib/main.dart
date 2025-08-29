@@ -40,10 +40,8 @@ void main() async {
   // Initialize notifications
   await getIt<LocalNotificationHandler>().init(initialPayload);
 
-  // Install HealthNativeEvents only on Android devices
-  if (Platform.isAndroid) {
-    await HealthNativeEvents.instance.install();
-  }
+  await HealthNativeEvents.instance.install();
+  
 
   runApp(
     kDebugMode
