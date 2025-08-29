@@ -18,7 +18,9 @@ import flutter_local_notifications
     ) -> Bool {
         
         GeneratedPluginRegistrant.register(with: self)
-        
+
+        UNUserNotificationCenter.current().delegate = self
+
         let controller = window?.rootViewController as! FlutterViewController
         flutterChannel = FlutterMethodChannel(
             name: "org.pruziKorak.healthkit/callback",
