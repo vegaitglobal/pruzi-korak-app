@@ -33,6 +33,24 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {
+    try {
+      final response = await _client.rpc('delete_my_profile');
+
+      if (response is Map<String, dynamic> && response['error'] != null) {
+        throw AccountDeletionFailedException();
+      }
+
+      // Clean up local data and sign out
+      await _client.auth.signOut();
+      await _localStorage.clearUserData();
+    } catch (e) {
+      AppLogger.logDebug('Delete Account Error: $e');
+      throw Exception('Failed to delete account: $e');
+    }
+  }
+
+  @override
   Future<bool> isLoggedIn() async {
     final session = _client.auth.currentSession;
     final user = await _localStorage.getUser();
@@ -142,3 +160,5 @@ class UnsupportedPlatformException implements AuthExceptions {}
 class UnsupportedDeviceIdentifierException implements AuthExceptions {}
 
 class LogoutFailedException implements AuthExceptions {}
+
+class AccountDeletionFailedException implements AuthExceptions {}
