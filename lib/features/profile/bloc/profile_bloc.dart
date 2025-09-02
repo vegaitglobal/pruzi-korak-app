@@ -37,6 +37,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       } catch (e) {
         AppLogger.logWarning('Error loading profile: $e');
+        emit(ProfileError());
       }
     });
 
@@ -58,6 +59,5 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileDeleted());
     });
 
-    add(ProfileLoad());
   }
 }
