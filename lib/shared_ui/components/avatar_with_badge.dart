@@ -1,8 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/gradients.dart';
+import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
+import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 
 class AvatarWithBadge extends StatelessWidget {
   const AvatarWithBadge({
+    super.key,
+    required this.badgeValue,
+    this.badgeSize = BadgeSize.small,
+    this.badgePosition = BadgePosition.bottomCenter,
+    this.imageUrl,
+    this.initial,
+    required this.size,
+  });
+
+  final String badgeValue;
+  final BadgeSize badgeSize;
+  final BadgePosition badgePosition;
+  final String? imageUrl;
+  final String? initial;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return AvatarWithBadgeContainer(
+      badgePosition: badgePosition,
+      badgeSize: badgeSize,
+      badgeValue: badgeValue,
+      child: imageUrl != null
+          ? UserAvatarImage(
+              imageUrl: imageUrl!,
+              size: size,
+            )
+          : InitialsAvatar(initial: initial ?? '?', size: size),
+    );
+  }
+}
+
+class AvatarWithBadgeContainer extends StatelessWidget {
+  const AvatarWithBadgeContainer({
     super.key,
     required this.child,
     required this.badgeValue,
@@ -17,7 +53,6 @@ class AvatarWithBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLarge = badgeSize == BadgeSize.large;
 
     final double badgePadding = badgeSize == BadgeSize.large ? 10 : 6;
     final double fontSize = badgeSize == BadgeSize.large ? 14 : 12;

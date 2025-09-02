@@ -38,7 +38,7 @@ class UserSection extends StatelessWidget {
     if (badgeValue == null) {
       return InitialsAvatar(initial: initial, size: 66);
     }
-    return AvatarWithBadge(
+    return AvatarWithBadgeContainer(
       badgeValue: badgeValue!,
       badgeSize: BadgeSize.large,
       badgePosition: BadgePosition.topLeft,

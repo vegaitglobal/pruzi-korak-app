@@ -26,7 +26,7 @@ class TeamLeaderboardListItem extends StatelessWidget {
       onTap: () => onItemClick(teamLeaderboardModel.teamId),
       child: Row(
         children: [
-          AvatarWithBadge(
+          AvatarWithBadgeContainer(
             badgePosition: BadgePosition.topLeft,
             badgeSize: BadgeSize.small,
             badgeValue: teamLeaderboardModel.rank,
