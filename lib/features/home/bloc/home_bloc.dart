@@ -22,8 +22,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     : super(HomeLoading()) {
     on<HomeLoadEvent>(_onLoad);
     on<HomeSilentUpdateEvent>(_onSilentUpdate);
-
-    add(const HomeLoadEvent());
   }
 
   Future<void> _onLoad(HomeLoadEvent event, Emitter<HomeState> emit) async {

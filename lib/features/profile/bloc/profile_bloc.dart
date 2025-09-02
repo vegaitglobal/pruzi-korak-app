@@ -51,13 +51,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         emit(ProfileLoggedOut());
       } catch (e) {
         AppLogger.logError('Error during logout: $e');
+        emit(ProfileError());
       }
     });
 
-    on<ProfileDeleteAccount>((event, emit) {
-      // Handle delete account logic
-      emit(ProfileDeleted());
-    });
+    on<ProfileDeleteAccount>((event, emit) async {
+      try {
+        await _authRepository.deleteAccount();
+        getIt<LoginNotificationEvent>().notifyLogout();
 
+        emit(ProfileDeleted());
+      } catch (e) {
+        AppLogger.logError('Error during account deletion: $e');
+        emit(ProfileError());
+      }
+    });
   }
 }

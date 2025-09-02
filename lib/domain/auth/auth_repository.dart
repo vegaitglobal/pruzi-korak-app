@@ -6,5 +6,7 @@ abstract class AuthRepository {
 
   Future<void> logout();
 
+  Future<void> deleteAccount();
+
   Future<bool> isLoggedIn();
 }
