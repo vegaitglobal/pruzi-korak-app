@@ -1,5 +1,7 @@
 package org.pruzikorak.pruziKorak
 
+import android.os.Handler
+import android.os.Looper
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -19,6 +21,7 @@ import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.fitness.request.OnDataPointListener
 import com.google.android.gms.fitness.request.DataReadRequest
 import com.google.android.gms.fitness.request.SensorRequest
+import java.text.SimpleDateFormat
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
@@ -28,10 +31,22 @@ class MainActivity : FlutterActivity() {
         private const val SIGN_IN_REQUEST_CODE = 9001
         private const val ACTIVITY_RECOGNITION_REQUEST_CODE = 1002
         private const val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1001
+
+        private const val EVENTS_NAME  = "org.pruziKorak.healthkit/step_events"
+
+        private const val METERS_PER_STEP = 1000.0 / 1300.0    // ~0.769m po koraku (1300 steps = 1km)
+        private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 100m
+        private const val MIN_EMIT_INTERVAL_MS = 30_000L       // minimalni razmak između emitovanja (anti-spam)
+        private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne “zamre”)
     }
 
     private lateinit var channel: MethodChannel
+
     private var stepListener: OnDataPointListener? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private var stepsSinceLastEmit = 0
+    private var lastEmitAt = 0L
 
     private var pendingStepCall: Pair<MethodChannel.Result, () -> Unit>? = null
     private var pendingActivityPermissionCall: Pair<MethodChannel.Result, () -> Unit>? = null
@@ -66,6 +81,23 @@ class MainActivity : FlutterActivity() {
                             ensureActivityPermission(result) {
                                 withFitPermissions(result) {
                                     getStepsGroupedByDay(start, end, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                "getTodayStepsSinceLastSync" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val now = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getStepCount(start, now, result)
                                 }
                             }
                         }
@@ -193,7 +225,7 @@ class MainActivity : FlutterActivity() {
                         }
                     }
 
-                    val date = java.text.SimpleDateFormat("yyyy-MM-dd")
+                    val date = SimpleDateFormat("yyyy-MM-dd")
                         .apply { timeZone = TimeZone.getDefault() }
                         .format(startMillis)
 
@@ -207,7 +239,40 @@ class MainActivity : FlutterActivity() {
                     )
                 }
 
-                result.success(results)
+                val todayDate = SimpleDateFormat("yyyy-MM-dd")
+                    .apply { timeZone = TimeZone.getDefault() }
+                    .format(System.currentTimeMillis())
+
+                val hasToday = results.any { it["date"] == todayDate }
+
+                if (!hasToday) {
+                    val now = System.currentTimeMillis()
+                    val startOfToday = getStartOfDayMillis(now)
+
+                    getStepCount(startOfToday, now, object : MethodChannel.Result {
+                        override fun success(todaySteps: Any?) {
+                            val steps = (todaySteps as? Double) ?: 0.0
+                            val kilometers = steps / 1300.0
+                            results.add(
+                                mapOf(
+                                    "date" to todayDate,
+                                    "total_kilometers" to kilometers
+                                )
+                            )
+                            result.success(results)
+                        }
+
+                        override fun error(code: String, message: String?, details: Any?) {
+                            result.success(results)
+                        }
+
+                        override fun notImplemented() {
+                            result.success(results)
+                        }
+                    })
+                } else {
+                    result.success(results)
+                }
             }
             .addOnFailureListener { e ->
                 result.error("FITNESS_ERROR", "Failed to read grouped steps: ${e.localizedMessage}", null)
@@ -329,10 +394,36 @@ class MainActivity : FlutterActivity() {
             .build()
         val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions) ?: return
 
+        // reset akumulatora
+        stepsSinceLastEmit = 0
+        lastEmitAt = System.currentTimeMillis()
+
         stepListener = OnDataPointListener { dp ->
-            if (dp.originalDataSource.device != null) {
-                val delta = dp.getValue(Field.FIELD_STEPS).asInt().toDouble()
-                channel.invokeMethod("stepCountChanged", delta)
+            val deltaSteps = dp.getValue(Field.FIELD_STEPS).asInt()
+            if (deltaSteps <= 0) return@OnDataPointListener
+
+            stepsSinceLastEmit += deltaSteps
+
+            val now = System.currentTimeMillis()
+            val meters = stepsSinceLastEmit * METERS_PER_STEP
+            val reachedDistance = meters >= DIST_THRESHOLD_METERS
+            val intervalOk = (now - lastEmitAt) >= MIN_EMIT_INTERVAL_MS
+            val longSilence = (now - lastEmitAt) >= MAX_SILENCE_MS
+
+            if ((reachedDistance && intervalOk) || longSilence) {
+                // možeš proslediti i delta u km; tvoj Dart ga trenutno ne koristi, samo trigguje reload
+                val deltaKm = meters / 1000.0
+
+                // reset
+                stepsSinceLastEmit = 0
+                lastEmitAt = now
+
+                mainHandler.post {
+                    channel.invokeMethod("stepCountChanged", deltaKm)
+
+                    // Also update cache for background updates
+                    updateStepCache(deltaKm)
+                }
             }
         }
 
@@ -340,12 +431,12 @@ class MainActivity : FlutterActivity() {
             .add(
                 SensorRequest.Builder()
                     .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
-                    .setSamplingRate(1, TimeUnit.SECONDS)
+                    .setSamplingRate(3, TimeUnit.SECONDS)
                     .build(),
                 stepListener!!
             )
-            .addOnSuccessListener   { Log.d("MainActivity", "Sensor listener registered") }
-            .addOnFailureListener   { e ->
+            .addOnSuccessListener { Log.d("MainActivity", "Sensor listener registered") }
+            .addOnFailureListener { e ->
                 Log.e("MainActivity", "Failed to register sensor listener", e)
                 stepListener = null
             }
@@ -354,8 +445,7 @@ class MainActivity : FlutterActivity() {
     private fun unregisterStepSensor() {
         val account = GoogleSignIn.getLastSignedInAccount(this) ?: return
         stepListener?.let {
-            Fitness.getSensorsClient(this, account)
-                .remove(it)
+            Fitness.getSensorsClient(this, account).remove(it)
             stepListener = null
         }
     }
@@ -363,5 +453,26 @@ class MainActivity : FlutterActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterStepSensor()
+    }
+
+    /**
+     * Updates the cached step count for today in SharedPreferences.
+     * This is used to keep track of steps in the background.
+     */
+    private fun updateStepCache(deltaKm: Double) {
+        val prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+        val editor = prefs.edit()
+
+        // Safely read the current value
+        val currentKm = try {
+            prefs.getFloat("flutter.bg_pending_today_km", 0f)
+        } catch (e: ClassCastException) {
+            editor.remove("flutter.bg_pending_today_km")
+            editor.apply()
+            0f
+        }
+
+        val newTotal = currentKm + deltaKm.toFloat()
+        editor.putFloat("flutter.bg_pending_today_km", newTotal).apply()
     }
 }

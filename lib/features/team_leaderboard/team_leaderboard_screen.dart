@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/app_constants.dart';
-import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/domain/leaderboard/team_leaderboard_model.dart';
 import 'package:pruzi_korak/domain/leaderboard/top_three_leaderboard_model.dart';
 import 'package:pruzi_korak/features/team_leaderboard/bloc/team_leaderboard_bloc.dart';
@@ -98,7 +97,7 @@ class UserLeaderboardSection extends StatelessWidget {
                 isLastPage: true,
                 loadingEnabled: false,
                 fetchMore: () async {
-                  //_fetchMoreData();
+                  // No-op since all data is loaded at once
                 },
                 onRefresh: () async {
                   context.read<TeamLeaderboardBloc>().add(
@@ -138,9 +137,6 @@ class UserLeaderboardSection extends StatelessWidget {
             TeamLeaderboardHeader(
               topThreeLeaderboardModel: topThreeLeaderboardModel,
               onItemClick: (teamId, teamName) {
-                AppLogger.logWarning(
-                  "Navigating to team details for ID: $teamId",
-                );
                 context.pushNamed(
                   AppRoutes.teamLeaderboardDetails.name,
                   pathParameters: {'id': teamId},

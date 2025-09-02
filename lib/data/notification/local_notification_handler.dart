@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:pruzi_korak/app/app_config.dart';
 import 'package:pruzi_korak/app/navigation/app_routes.dart';
 import 'package:pruzi_korak/app/navigation/navigation_router.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
+import 'local_notification_service_impl.dart';
 import 'notification_type.dart';
 
 class LocalNotificationHandler {
@@ -15,8 +17,14 @@ class LocalNotificationHandler {
   Future<void> init(String? initialPayload) async {
     await _notificationService.init(onNotificationTap: _handleNotificationTap);
 
+    final backgroundPayload = _notificationService.getAndClearBackgroundPayload();
+
+    debugPrint("📱 Initial notification payload: $initialPayload");
+    debugPrint("📱 Background notification payload: $backgroundPayload");
+
     // Handle notification tap if the app was launched from a notification in cold start
-    if (initialPayload != null) {
+    final payload = initialPayload ?? backgroundPayload;
+    if (payload != null) {
       Future.microtask(() {
         _handleNotificationTap(initialPayload);
       });
@@ -49,7 +57,18 @@ class LocalNotificationHandler {
     );
   }
 
+  Future<void> showTestNotification() async {
+    await _notificationService.showTestNotification(
+      title: "Test Notification",
+      body: "This is a test notification sent on app start",
+      payload: "${NotificationType.instant.toString()}|5.0",
+    );
+    debugPrint("📱 Test notification sent on app start");
+  }
+
+
   void _handleNotificationTap(String? payload) async {
+    debugPrint("📱 handleNotificationTap payload: $payload");
     if (payload == null) return;
 
     final isLoggedIn = await _authRepository.isLoggedIn();

@@ -9,10 +9,12 @@ class UserSection extends StatelessWidget {
     super.key,
     required this.fullName,
     required this.badgeValue,
+    this.imageUrl,
   });
 
   final String fullName;
   final String? badgeValue;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,9 @@ class UserSection extends StatelessWidget {
       badgeValue: badgeValue!,
       badgeSize: BadgeSize.large,
       badgePosition: BadgePosition.topLeft,
-      child: InitialsAvatar(initial: initial, size: 66),
+      imageUrl: imageUrl,
+      initial: initial,
+      size: 66,
     );
   }
 }

@@ -6,9 +6,6 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   final SupabaseClient _client;
 
-  static const _pruziKorakId =
-      'd0b15828-1111-4dec-9db4-cd2129dbfc8f'; //HARDCODED ID PRUŽI KORAK
-
   @override
   Future<OrganizationData> fetchById(String organizationId) async {
     final json =

@@ -13,10 +13,14 @@ class UserModel {
   @JsonKey(name: 'team_name')
   final String teamName;
 
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
+
   const UserModel({
     required this.fistName,
     required this.lastName,
     required this.teamName,
+    this.imageUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

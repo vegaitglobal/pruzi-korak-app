@@ -71,7 +71,9 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
     return Theme.of(context).platform == TargetPlatform.iOS
         ? CustomScrollView(
             controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             slivers: [
               CupertinoSliverRefreshControl(
                 onRefresh: widget.onRefresh,
@@ -98,6 +100,7 @@ class _InfiniteScrollViewState extends State<InfiniteScrollView> {
             onRefresh: widget.onRefresh,
             child: ListView.builder(
               controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
               itemCount: widget.itemCount + (_isLoading ? 1 : 0),
               itemBuilder: (BuildContext context, int index) {
                 if (_shouldShowLoading(index)) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +16,8 @@ import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 import 'package:pruzi_korak/shared_ui/components/platform_specific_pull_to_refresh.dart';
 
+import '../../data/health_data/helth_native_sync.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,30 +25,41 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  StreamSubscription<double>? _sub;
+  Timer? _debounce;
+  AppLifecycleState _life = AppLifecycleState.resumed;
 
   @override
   void initState() {
     super.initState();
-    _listenToHealthKitCallbacks();
-    //_channel.invokeMethod('startStepListener');
+
+    WidgetsBinding.instance.addObserver(this);
+
+    _sub = HealthNativeEvents.instance.kmDeltas.listen((_) async {
+      if (_life == AppLifecycleState.resumed) {
+        _debounce?.cancel();
+        _debounce = Timer(const Duration(seconds: 3), () {
+          if (mounted) context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
+        });
+      } else {}
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _life = state;
+    if (state == AppLifecycleState.resumed) {
+      context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
+    }
   }
 
   @override
   void dispose() {
-    //_channel.invokeMethod('stopStepListener');
+    WidgetsBinding.instance.removeObserver(this);
+    _debounce?.cancel();
+    _sub?.cancel();
     super.dispose();
-  }
-
-  void _listenToHealthKitCallbacks() {
-    _channel.setMethodCallHandler((call) async {
-      if (call.method == 'stepCountChanged') {
-        if (mounted) {
-          context.read<HomeBloc>().add(const HomeLoadEvent());
-        }
-      }
-    });
   }
 
   @override
@@ -72,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     HomeError() => ErrorComponent(
                       errorMessage:
-                          AppLocalizations.of(context)!.unexpected_error_occurred,
+                          AppLocalizations.of(
+                            context,
+                          )!.unexpected_error_occurred,
                       onRetry: () {
                         context.read<HomeBloc>().add(const HomeLoadEvent());
                       },
@@ -104,12 +121,16 @@ class HomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate responsive spacing based on screen height
+    final screenHeight = MediaQuery.of(context).size.height;
+    final verticalSpacing = screenHeight * 0.025; // 2.5% of screen height
+
     return PlatformSpecificPullToRefresh(
       onRefresh: () async {
-        context.read<HomeBloc>().add(const HomeLoadEvent());
+        context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
       },
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -117,18 +138,21 @@ class HomeSection extends StatelessWidget {
             UserSection(
               fullName: '${userModel.fistName} ${userModel.lastName}',
               badgeValue: myRank > 0 ? myRank.toString() : null,
+              imageUrl: userModel.imageUrl,
             ),
-            SizedBox(height: 16),
+            SizedBox(height: verticalSpacing),
             HomeUserSection(stepsModel: userStepsModel),
-            SizedBox(height: 32),
+            SizedBox(height: verticalSpacing * 1.2),
             Text(
               userModel.teamName,
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textVariant),
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.textVariant,
+                fontSize: screenHeight * 0.022, // Make text size responsive
+              ),
             ),
-            SizedBox(height: 32),
-
+            SizedBox(height: verticalSpacing),
             HomeTeamSection(stepsModel: teamStepsModel),
-            SizedBox(height: 32),
+            SizedBox(height: verticalSpacing),
           ],
         ),
       ),

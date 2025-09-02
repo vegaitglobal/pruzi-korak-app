@@ -21,4 +21,12 @@ abstract class LocalNotificationService {
   });
 
   Future<void> cancelAll();
+
+  String? getAndClearBackgroundPayload();
+
+  Future<void> showTestNotification({
+    required String title,
+    required String body,
+    String? payload,
+  });
 }
