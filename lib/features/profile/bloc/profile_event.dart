@@ -24,4 +24,3 @@ final class ProfileDeleteAccount extends ProfileEvent {
   @override
   List<Object> get props => [];
 }
-

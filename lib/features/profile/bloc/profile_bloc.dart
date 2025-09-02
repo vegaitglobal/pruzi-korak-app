@@ -59,6 +59,5 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileDeleted());
     });
 
-    add(ProfileLoad());
   }
 }

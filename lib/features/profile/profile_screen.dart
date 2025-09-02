@@ -30,6 +30,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProfileBloc>().add(ProfileLoad());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileBloc, ProfileState>(
       listener: (context, state) {
@@ -43,26 +51,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return current is ProfileLoading || current is ProfileLoaded;
       },
       builder: (context, state) {
-        if (state is ProfileInitial) {
-          return const AppLoader();
-        } else if (state is ProfileLoading) {
-          return const AppLoader();
-        } else if (state is ProfileLoaded) {
-          return ProfileLoadedSection(
+        return switch (state) {
+          ProfileInitial() => const AppLoader(),
+          ProfileLoading() => const AppLoader(),
+          ProfileLoaded() => ProfileLoadedSection(
             userModel: state.userModel,
             userRankModel: state.userRankModel,
             onLogout: () => _showLogoutDialog(context),
             onDeleteAccount: () => _showDeleteAccountDialog(context),
-          );
-        } else {
-          return ErrorComponent(
+          ),
+          ProfileError() => ErrorComponent(
             errorMessage:
                 AppLocalizations.of(context)!.unexpected_error_occurred,
             onRetry: () {
               context.read<ProfileBloc>().add(ProfileLoad());
             },
-          );
-        }
+          ),
+          _ => const SizedBox.shrink(),
+        };
       },
     );
   }
@@ -140,9 +146,13 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: userModel.imageUrl != null && userModel.imageUrl!.isNotEmpty
-                    ? UserAvatarImage(imageUrl: userModel.imageUrl!, size: 124)
-                    : InitialsAvatar(initial: initial, size: 124),
+                child:
+                    userModel.imageUrl != null && userModel.imageUrl!.isNotEmpty
+                        ? UserAvatarImage(
+                          imageUrl: userModel.imageUrl!,
+                          size: 124,
+                        )
+                        : InitialsAvatar(initial: initial, size: 124),
               ),
               const SizedBox(height: 24),
               if (userRankModel != null)
@@ -151,7 +161,7 @@ class ProfileLoadedSection extends StatelessWidget {
                   teamRank: userRankModel!.teamRankGlobal,
                   userTeamRank: userRankModel!.userRankTeam,
                   userGlobalRank: userRankModel!.userRankGlobal,
-                )
+                ),
             ],
           ),
         ),
