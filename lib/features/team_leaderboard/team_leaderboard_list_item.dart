@@ -30,14 +30,9 @@ class TeamLeaderboardListItem extends StatelessWidget {
             badgePosition: BadgePosition.topLeft,
             badgeSize: BadgeSize.small,
             badgeValue: teamLeaderboardModel.rank,
-
-            child:
-                teamLeaderboardModel.imageUrl != null
-                    ? UserAvatarImage(
-                      imageUrl: teamLeaderboardModel.imageUrl!,
-                      size: 42,
-                    )
-                    : InitialsAvatar(initial: initial, size: 42),
+            imageUrl: teamLeaderboardModel.imageUrl,
+            initial: initial,
+            size: 42,
           ),
           const SizedBox(width: 16),
           Column(

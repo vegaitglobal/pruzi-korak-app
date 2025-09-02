@@ -138,6 +138,7 @@ class HomeSection extends StatelessWidget {
             UserSection(
               fullName: '${userModel.fistName} ${userModel.lastName}',
               badgeValue: myRank > 0 ? myRank.toString() : null,
+              imageUrl: userModel.imageUrl,
             ),
             SizedBox(height: verticalSpacing),
             HomeUserSection(stepsModel: userStepsModel),

@@ -12,6 +12,7 @@ import 'package:pruzi_korak/features/profile/bloc/profile_bloc.dart';
 import 'package:pruzi_korak/features/profile/team_ranking_card.dart';
 import 'package:pruzi_korak/shared_ui/components/app_header_gradient.dart';
 import 'package:pruzi_korak/shared_ui/components/buttons.dart';
+import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
 import 'package:pruzi_korak/shared_ui/components/clickable_text.dart';
 import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
@@ -139,7 +140,9 @@ class ProfileLoadedSection extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.backgroundPrimary,
                 ),
-                child: InitialsAvatar(initial: initial, size: 124),
+                child: userModel.imageUrl != null && userModel.imageUrl!.isNotEmpty
+                    ? UserAvatarImage(imageUrl: userModel.imageUrl!, size: 124)
+                    : InitialsAvatar(initial: initial, size: 124),
               ),
               const SizedBox(height: 24),
               if (userRankModel != null)

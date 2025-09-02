@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/domain/leaderboard/leaderboard_model.dart';
 import 'package:pruzi_korak/shared_ui/components/avatar_with_badge.dart';
-import 'package:pruzi_korak/shared_ui/components/cached_image.dart';
-import 'package:pruzi_korak/shared_ui/components/initials_avatar.dart';
 
 class UserLeaderboardListItem extends StatelessWidget {
   const UserLeaderboardListItem({super.key, required this.leaderboardModel});
@@ -23,13 +21,9 @@ class UserLeaderboardListItem extends StatelessWidget {
           badgePosition: BadgePosition.topLeft,
           badgeSize: BadgeSize.small,
           badgeValue: leaderboardModel.rank,
-          child:
-              leaderboardModel.imageUrl != null
-                  ? UserAvatarImage(
-                    imageUrl: leaderboardModel.imageUrl!,
-                    size: 42,
-                  )
-                  : InitialsAvatar(initial: initial, size: 42),
+          imageUrl: leaderboardModel.imageUrl,
+          initial: initial,
+          size: 42,
         ),
         const SizedBox(width: 16),
         Column(
