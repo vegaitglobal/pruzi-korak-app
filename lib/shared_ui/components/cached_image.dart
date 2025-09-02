@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
 import 'package:pruzi_korak/core/constants/icons.dart';
@@ -40,32 +37,15 @@ class UserAvatarImage extends StatelessWidget {
     }
 
     if (isSvg) {
-      return FutureBuilder<File>(
-        future: DefaultCacheManager().getSingleFile(
+      return _buildCircle(
+        SvgPicture.network(
           imageUrl,
+          fit: BoxFit.cover,
+          placeholderBuilder: (context) => Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
           headers: token != null ? {"Authorization": "Bearer $token"} : null,
         ),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            return _buildCircle(
-              SvgPicture.file(
-                snapshot.data!,
-                fit: BoxFit.cover,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return _buildCircle(
-              Image.asset(AppIcons.icStep, fit: BoxFit.cover),
-            );
-          } else {
-            return _buildCircle(
-              const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            );
-          }
-        },
       );
     } else {
       return CachedNetworkImage(

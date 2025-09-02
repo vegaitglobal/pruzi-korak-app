@@ -35,12 +35,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeBloc>().add(HomeLoadEvent());
+    });
 
     _sub = HealthNativeEvents.instance.kmDeltas.listen((_) async {
       if (_life == AppLifecycleState.resumed) {
         _debounce?.cancel();
         _debounce = Timer(const Duration(seconds: 3), () {
-          if (mounted) context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
+          if (mounted)
+            context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
         });
       } else {}
     });
