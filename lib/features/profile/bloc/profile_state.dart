@@ -33,3 +33,6 @@ final class ProfileDeleted extends ProfileState {
   const ProfileDeleted();
 }
 
+final class ProfileError extends ProfileState {
+  const ProfileError();
+}
