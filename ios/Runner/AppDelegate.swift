@@ -9,6 +9,7 @@ import flutter_local_notifications
     
     let healthStore = HKHealthStore()
     let stepCountType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+    let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)!
     var flutterChannel: FlutterMethodChannel?
     let includeManualSteps = false
 
@@ -74,6 +75,37 @@ import flutter_local_notifications
                     result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
                 }
 
+            case "getKilometersGroupedByDay":
+                if let timestamp = call.arguments as? Double {
+                    let startDate = Date(timeIntervalSince1970: timestamp)
+                    self.fetchKilometersGroupedByDay(from: startDate) { resultArray in
+                        result(resultArray)
+                    }
+                } else {
+                    result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
+                }
+
+            case "getTodayKilometersSinceLastSync":
+                if let timestamp = call.arguments as? Double {
+                    let sinceDate = Date(timeIntervalSince1970: timestamp)
+                    self.fetchDistance(from: sinceDate, to: Date()) { distance in
+                        let kilometers = distance / 1000.0
+                        result(kilometers)
+                    }
+                } else {
+                    result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
+                }
+
+            case "getKilometersFromCampaignStart":
+                if let timestamp = call.arguments as? Double {
+                    let campaignStart = Date(timeIntervalSince1970: timestamp)
+                    self.fetchKilometersFromCampaignStart(campaignStart) { kilometers in
+                        result(kilometers)
+                    }
+                } else {
+                    result(FlutterError(code: "invalid_argument", message: "Expected timestamp", details: nil))
+                }
+
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -88,7 +120,7 @@ import flutter_local_notifications
     }
 
     private func requestHealthKitAuthorization() {
-        healthStore.requestAuthorization(toShare: nil, read: [stepCountType]) { [weak self] success, error in
+        healthStore.requestAuthorization(toShare: nil, read: [stepCountType, distanceType]) { [weak self] success, error in
             DispatchQueue.main.async {
                 if success {
                     print("✅ HealthKit authorization granted")
@@ -188,6 +220,58 @@ import flutter_local_notifications
       }
     }
 
+    func fetchKilometersFromCampaignStart(_ campaignStart: Date, completion: @escaping (Double) -> Void) {
+        let now = Date()
+        fetchDistance(from: campaignStart, to: now) { distance in
+            let kilometers = distance / 1000.0
+            completion(kilometers)
+        }
+    }
+
+    func fetchKilometersGroupedByDay(from startDate: Date, completion: @escaping ([[String: Any]]) -> Void) {
+        let now = Date()
+        let calendar = Calendar.current
+        let startDay = calendar.startOfDay(for: startDate)
+        let endDay = calendar.startOfDay(for: now)
+
+        let dayCount = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
+
+        var results: [[String: Any]] = []
+        let group = DispatchGroup()
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = calendar.timeZone
+
+        for i in 0...dayCount {
+            guard let dayStart = calendar.date(byAdding: .day, value: i, to: startDay) else {
+                continue
+            }
+
+            let dayEnd: Date
+            if i == dayCount {
+                dayEnd = now
+            } else {
+                dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+            }
+
+            group.enter()
+            fetchDistance(from: dayStart, to: dayEnd) { distance in
+                let kilometers = distance / 1000.0
+                let dateString = dateFormatter.string(from: dayStart)
+                results.append([
+                    "date": dateString,
+                    "total_kilometers": kilometers
+                ])
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(results)
+        }
+    }
+
     private func fetchSteps(from startDate: Date, to endDate: Date, includeManual: Bool = false, completion: @escaping (Double) -> Void) {
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
         let query = HKSampleQuery(
@@ -207,6 +291,34 @@ import flutter_local_notifications
             }
             let totalSteps = filteredSamples.reduce(0.0) { total, step in total + step.quantity.doubleValue(for: .count()) }
             completion(totalSteps)
+        }
+        healthStore.execute(query)
+    }
+
+    private func fetchDistance(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
+        let query = HKSampleQuery(
+            sampleType: distanceType,
+            predicate: predicate,
+            limit: HKObjectQueryNoLimit,
+            sortDescriptors: nil
+        ) { _, results, error in
+            guard let distanceSamples = results as? [HKQuantitySample], error == nil else {
+                print("❌ Distance SampleQuery error: \(error?.localizedDescription ?? "unknown")")
+                completion(0)
+                return
+            }
+
+            // Filter out manual entries
+            let filteredSamples = distanceSamples.filter { distance in
+                let isUserEntered = distance.sourceRevision.source.name == "Health" || (distance.metadata?[HKMetadataKeyWasUserEntered] as? Bool ?? false)
+                return !isUserEntered
+            }
+
+            let totalDistance = filteredSamples.reduce(0.0) { total, distance in
+                total + distance.quantity.doubleValue(for: .meter())
+            }
+            completion(totalDistance)
         }
         healthStore.execute(query)
     }
