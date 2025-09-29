@@ -35,9 +35,9 @@ class MainActivity : FlutterActivity() {
         private const val EVENTS_NAME  = "org.pruziKorak.healthkit/step_events"
 
         private const val METERS_PER_STEP = 1000.0 / 1300.0    // ~0.769m po koraku (1300 steps = 1km)
-        private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 100m
+        private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 5m
         private const val MIN_EMIT_INTERVAL_MS = 30_000L       // minimalni razmak između emitovanja (anti-spam)
-        private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne “zamre”)
+        private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne "zamre")
     }
 
     private lateinit var channel: MethodChannel
@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
     private var stepListener: OnDataPointListener? = null
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    private var stepsSinceLastEmit = 0
+    private var distanceSinceLastEmit = 0.0
     private var lastEmitAt = 0L
 
     private var pendingStepCall: Pair<MethodChannel.Result, () -> Unit>? = null
@@ -561,34 +561,32 @@ class MainActivity : FlutterActivity() {
         val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions) ?: return
 
         // reset akumulatora
-        stepsSinceLastEmit = 0
+        distanceSinceLastEmit = 0.0
         lastEmitAt = System.currentTimeMillis()
 
         stepListener = OnDataPointListener { dp ->
-            val deltaSteps = dp.getValue(Field.FIELD_STEPS).asInt()
-            if (deltaSteps <= 0) return@OnDataPointListener
+            val deltaDistance = dp.getValue(Field.FIELD_DISTANCE).asFloat().toDouble()
+            if (deltaDistance <= 0) return@OnDataPointListener
 
-            stepsSinceLastEmit += deltaSteps
+            distanceSinceLastEmit += deltaDistance
 
             val now = System.currentTimeMillis()
-            val meters = stepsSinceLastEmit * METERS_PER_STEP
-            val reachedDistance = meters >= DIST_THRESHOLD_METERS
+            val reachedDistance = distanceSinceLastEmit >= DIST_THRESHOLD_METERS
             val intervalOk = (now - lastEmitAt) >= MIN_EMIT_INTERVAL_MS
             val longSilence = (now - lastEmitAt) >= MAX_SILENCE_MS
 
             if ((reachedDistance && intervalOk) || longSilence) {
-                // možeš proslediti i delta u km; tvoj Dart ga trenutno ne koristi, samo trigguje reload
-                val deltaKm = meters / 1000.0
+                val deltaKm = distanceSinceLastEmit / 1000.0
 
                 // reset
-                stepsSinceLastEmit = 0
+                distanceSinceLastEmit = 0.0
                 lastEmitAt = now
 
                 mainHandler.post {
                     channel.invokeMethod("stepCountChanged", deltaKm)
 
                     // Also update cache for background updates
-                    updateStepCache(deltaKm)
+                    updateDistanceCache(deltaKm)
                 }
             }
         }
@@ -596,14 +594,14 @@ class MainActivity : FlutterActivity() {
         Fitness.getSensorsClient(this, account)
             .add(
                 SensorRequest.Builder()
-                    .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                    .setDataType(DataType.TYPE_DISTANCE_DELTA)
                     .setSamplingRate(3, TimeUnit.SECONDS)
                     .build(),
                 stepListener!!
             )
-            .addOnSuccessListener { Log.d("MainActivity", "Sensor listener registered") }
+            .addOnSuccessListener { Log.d("MainActivity", "Distance sensor listener registered") }
             .addOnFailureListener { e ->
-                Log.e("MainActivity", "Failed to register sensor listener", e)
+                Log.e("MainActivity", "Failed to register distance sensor listener", e)
                 stepListener = null
             }
     }
@@ -622,10 +620,10 @@ class MainActivity : FlutterActivity() {
     }
 
     /**
-     * Updates the cached step count for today in SharedPreferences.
-     * This is used to keep track of steps in the background.
+     * Updates the cached distance for today in SharedPreferences.
+     * This is used to keep track of kilometers in the background.
      */
-    private fun updateStepCache(deltaKm: Double) {
+    private fun updateDistanceCache(deltaKm: Double) {
         val prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
         val editor = prefs.edit()
 
