@@ -11,7 +11,6 @@ import 'package:pruzi_korak/shared_ui/components/error_screen.dart';
 import 'package:pruzi_korak/shared_ui/components/loading_components.dart';
 import 'package:pruzi_korak/shared_ui/components/svg_icon.dart';
 import 'package:pruzi_korak/shared_ui/util/url_launcher.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AboutOrganizationScreen extends StatefulWidget {
   const AboutOrganizationScreen({super.key});

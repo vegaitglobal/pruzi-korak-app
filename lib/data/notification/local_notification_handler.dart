@@ -5,7 +5,6 @@ import 'package:pruzi_korak/app/navigation/navigation_router.dart';
 import 'package:pruzi_korak/data/notification/local_notification_service.dart';
 import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
-import 'local_notification_service_impl.dart';
 import 'notification_type.dart';
 
 class LocalNotificationHandler {

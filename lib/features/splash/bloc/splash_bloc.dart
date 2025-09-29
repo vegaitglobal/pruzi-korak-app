@@ -14,7 +14,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc(this._authRepository, this._permissionsService) : super(SplashInitial()) {
     on<CheckUserLoggedIn>((event, emit) async {
       // Request permissions at app start
-      final permissionsResult = await _permissionsService.requestAllPermissions();
+      await _permissionsService.requestAllPermissions();
 
       final isUserLoggedIn = await _authRepository.isLoggedIn();
       if (isUserLoggedIn) {

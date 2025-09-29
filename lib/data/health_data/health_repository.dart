@@ -54,7 +54,7 @@ class HealthRepository {
         }
 
         debugPrint(
-          '⏱️ Retrying fetchSyncInfo (${retryCount}/$maxRetries) after ${delay.inMilliseconds}ms',
+          '⏱️ Retrying fetchSyncInfo ($retryCount/$maxRetries) after ${delay.inMilliseconds}ms',
         );
         await Future.delayed(delay);
         // Exponential backoff: double the delay for next retry
