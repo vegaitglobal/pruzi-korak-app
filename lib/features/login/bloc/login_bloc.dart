@@ -38,7 +38,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       return LoginFailure(e);
     } on UnsupportedDeviceIdentifierException catch (e) {
       return LoginFailure(e);
-    } on Exception catch (e) {
+    } on Exception {
       return LoginFailure(null);
     }
   }

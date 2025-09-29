@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pruzi_korak/app/theme/app_text_styles.dart';
 import 'package:pruzi_korak/app/theme/colors.dart';
@@ -43,8 +42,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (_life == AppLifecycleState.resumed) {
         _debounce?.cancel();
         _debounce = Timer(const Duration(seconds: 3), () {
-          if (mounted)
+          if (mounted) {
             context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
+          }
         });
       } else {}
     });

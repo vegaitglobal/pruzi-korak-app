@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/data/health_data/health_repository.dart';
-import 'package:pruzi_korak/data/health_data/helth_native_sync.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/health/daily_distance.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
