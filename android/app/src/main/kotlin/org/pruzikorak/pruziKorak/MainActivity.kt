@@ -35,9 +35,9 @@ class MainActivity : FlutterActivity() {
         private const val EVENTS_NAME  = "org.pruziKorak.healthkit/step_events"
 
         private const val METERS_PER_STEP = 1000.0 / 1300.0    // ~0.769m po koraku (1300 steps = 1km)
-        private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 100m
+        private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 5m
         private const val MIN_EMIT_INTERVAL_MS = 30_000L       // minimalni razmak između emitovanja (anti-spam)
-        private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne “zamre”)
+        private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne "zamre")
     }
 
     private lateinit var channel: MethodChannel
@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
     private var stepListener: OnDataPointListener? = null
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    private var stepsSinceLastEmit = 0
+    private var distanceSinceLastEmit = 0.0
     private var lastEmitAt = 0L
 
     private var pendingStepCall: Pair<MethodChannel.Result, () -> Unit>? = null
@@ -58,18 +58,6 @@ class MainActivity : FlutterActivity() {
 
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "getStepsToday" -> {
-                    val now = System.currentTimeMillis()
-                    val startOfDay = getStartOfDayMillis(now)
-                    signInIfNeeded(result) {
-                        ensureActivityPermission(result) {
-                            withFitPermissions(result) {
-                                getStepCount(startOfDay, now, result)
-                            }
-                        }
-                    }
-                }
-
                 "getStepsGroupedByDay" -> {
                     val ts = call.arguments as? Double
                     if (ts == null) {
@@ -137,6 +125,57 @@ class MainActivity : FlutterActivity() {
                     result.success(null)
                 }
 
+                "getKilometersGroupedByDay" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val end = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getKilometersGroupedByDay(start, end, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                "getTodayKilometersSinceLastSync" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val now = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getKilometers(start, now, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                "getKilometersFromCampaignStart" -> {
+                    val ts = call.arguments as? Double
+                    if (ts == null) {
+                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
+                    } else {
+                        val start = (ts * 1000).toLong()
+                        val now = System.currentTimeMillis()
+                        signInIfNeeded(result) {
+                            ensureActivityPermission(result) {
+                                withFitPermissions(result) {
+                                    getKilometers(start, now, result)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 else -> result.notImplemented()
             }
         }
@@ -176,6 +215,7 @@ class MainActivity : FlutterActivity() {
     private fun withFitPermissions(result: MethodChannel.Result, onGranted: () -> Unit) {
         val fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
             .build()
         val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
         if (GoogleSignIn.hasPermissions(account, fitnessOptions)) {
@@ -316,6 +356,131 @@ class MainActivity : FlutterActivity() {
             }
     }
 
+    private fun getKilometersGroupedByDay(
+        startTime: Long,
+        endTime: Long,
+        result: MethodChannel.Result
+    ) {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account == null) {
+            result.error("NO_ACCOUNT", "Google account not signed in", null)
+            return
+        }
+
+        val readRequest = DataReadRequest.Builder()
+            .aggregate(DataType.TYPE_DISTANCE_DELTA)
+            .bucketByTime(1, TimeUnit.DAYS)
+            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .build()
+
+        Fitness.getHistoryClient(this, account)
+            .readData(readRequest)
+            .addOnSuccessListener { response ->
+                val results = mutableListOf<Map<String, Any>>()
+
+                response.buckets.forEach { bucket ->
+                    var distanceForDay = 0.0
+                    val startMillis = bucket.getStartTime(TimeUnit.MILLISECONDS)
+
+                    bucket.dataSets.forEach { ds ->
+                        ds.dataPoints.forEach { dp ->
+                            if (dp.originalDataSource.device != null) {
+                                distanceForDay += dp.getValue(Field.FIELD_DISTANCE).asFloat()
+                            }
+                        }
+                    }
+
+                    val date = SimpleDateFormat("yyyy-MM-dd")
+                        .apply { timeZone = TimeZone.getDefault() }
+                        .format(startMillis)
+
+                    val kilometers = distanceForDay / 1000.0
+
+                    results.add(
+                        mapOf(
+                            "date" to date,
+                            "total_kilometers" to kilometers
+                        )
+                    )
+                }
+
+                val todayDate = SimpleDateFormat("yyyy-MM-dd")
+                    .apply { timeZone = TimeZone.getDefault() }
+                    .format(System.currentTimeMillis())
+
+                val hasToday = results.any { it["date"] == todayDate }
+
+                if (!hasToday) {
+                    val now = System.currentTimeMillis()
+                    val startOfToday = getStartOfDayMillis(now)
+
+                    getKilometers(startOfToday, now, object : MethodChannel.Result {
+                        override fun success(todayKm: Any?) {
+                            val kilometers = (todayKm as? Double) ?: 0.0
+                            results.add(
+                                mapOf(
+                                    "date" to todayDate,
+                                    "total_kilometers" to kilometers
+                                )
+                            )
+                            result.success(results)
+                        }
+
+                        override fun error(code: String, message: String?, details: Any?) {
+                            result.success(results)
+                        }
+
+                        override fun notImplemented() {
+                            result.success(results)
+                        }
+                    })
+                } else {
+                    result.success(results)
+                }
+            }
+            .addOnFailureListener { e ->
+                result.error("FITNESS_ERROR", "Failed to read grouped distance: ${e.localizedMessage}", null)
+            }
+    }
+
+    private fun getKilometers(
+        startTime: Long,
+        endTime: Long,
+        result: MethodChannel.Result
+    ) {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        if (account == null) {
+            result.error("NO_ACCOUNT", "Google account not signed in", null)
+            return
+        }
+
+        val readRequest = DataReadRequest.Builder()
+            .aggregate(DataType.TYPE_DISTANCE_DELTA)
+            .bucketByTime(1, TimeUnit.DAYS)
+            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .build()
+
+        Fitness.getHistoryClient(this, account)
+            .readData(readRequest)
+            .addOnSuccessListener { response ->
+                var totalDistance = 0.0
+                response.buckets.forEach { bucket ->
+                    bucket.dataSets.forEach { ds ->
+                        ds.dataPoints.forEach { dp ->
+                            if (dp.originalDataSource.device != null) {
+                                totalDistance += dp.getValue(Field.FIELD_DISTANCE).asFloat()
+                            }
+                        }
+                    }
+                }
+                val kilometers = totalDistance / 1000.0
+                result.success(kilometers)
+            }
+            .addOnFailureListener { e ->
+                result.error("FITNESS_ERROR", "Failed to read distance: ${e.localizedMessage}", null)
+            }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -391,38 +556,37 @@ class MainActivity : FlutterActivity() {
 
         val fitnessOptions = FitnessOptions.builder()
             .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+            .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
             .build()
         val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions) ?: return
 
         // reset akumulatora
-        stepsSinceLastEmit = 0
+        distanceSinceLastEmit = 0.0
         lastEmitAt = System.currentTimeMillis()
 
         stepListener = OnDataPointListener { dp ->
-            val deltaSteps = dp.getValue(Field.FIELD_STEPS).asInt()
-            if (deltaSteps <= 0) return@OnDataPointListener
+            val deltaDistance = dp.getValue(Field.FIELD_DISTANCE).asFloat().toDouble()
+            if (deltaDistance <= 0) return@OnDataPointListener
 
-            stepsSinceLastEmit += deltaSteps
+            distanceSinceLastEmit += deltaDistance
 
             val now = System.currentTimeMillis()
-            val meters = stepsSinceLastEmit * METERS_PER_STEP
-            val reachedDistance = meters >= DIST_THRESHOLD_METERS
+            val reachedDistance = distanceSinceLastEmit >= DIST_THRESHOLD_METERS
             val intervalOk = (now - lastEmitAt) >= MIN_EMIT_INTERVAL_MS
             val longSilence = (now - lastEmitAt) >= MAX_SILENCE_MS
 
             if ((reachedDistance && intervalOk) || longSilence) {
-                // možeš proslediti i delta u km; tvoj Dart ga trenutno ne koristi, samo trigguje reload
-                val deltaKm = meters / 1000.0
+                val deltaKm = distanceSinceLastEmit / 1000.0
 
                 // reset
-                stepsSinceLastEmit = 0
+                distanceSinceLastEmit = 0.0
                 lastEmitAt = now
 
                 mainHandler.post {
                     channel.invokeMethod("stepCountChanged", deltaKm)
 
                     // Also update cache for background updates
-                    updateStepCache(deltaKm)
+                    updateDistanceCache(deltaKm)
                 }
             }
         }
@@ -430,14 +594,14 @@ class MainActivity : FlutterActivity() {
         Fitness.getSensorsClient(this, account)
             .add(
                 SensorRequest.Builder()
-                    .setDataType(DataType.TYPE_STEP_COUNT_DELTA)
+                    .setDataType(DataType.TYPE_DISTANCE_DELTA)
                     .setSamplingRate(3, TimeUnit.SECONDS)
                     .build(),
                 stepListener!!
             )
-            .addOnSuccessListener { Log.d("MainActivity", "Sensor listener registered") }
+            .addOnSuccessListener { Log.d("MainActivity", "Distance sensor listener registered") }
             .addOnFailureListener { e ->
-                Log.e("MainActivity", "Failed to register sensor listener", e)
+                Log.e("MainActivity", "Failed to register distance sensor listener", e)
                 stepListener = null
             }
     }
@@ -456,10 +620,10 @@ class MainActivity : FlutterActivity() {
     }
 
     /**
-     * Updates the cached step count for today in SharedPreferences.
-     * This is used to keep track of steps in the background.
+     * Updates the cached distance for today in SharedPreferences.
+     * This is used to keep track of kilometers in the background.
      */
-    private fun updateStepCache(deltaKm: Double) {
+    private fun updateDistanceCache(deltaKm: Double) {
         val prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
         val editor = prefs.edit()
 

@@ -85,12 +85,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _syncTodayData(DateTime syncStart) async {
-    final kilometers = await healthRepository.getTodayDistanceSinceLastSync(syncStart);
+    final kilometers = await healthRepository.getTodayKilometersSinceLastSync(syncStart);
     await healthRepository.sendTodayDistance(kilometers);
   }
 
   Future<void> _syncHistoricalData(DateTime syncStart) async {
-    final allDistances = await healthRepository.getDailyDistancesFromLastSync(syncStart);
+    final allDistances = await healthRepository.getDailyKilometersFromLastSync(syncStart);
     debugPrint('🏷️ allDistances: $allDistances');
 
     final lastSignInAtStr = (await healthRepository.fetchSyncInfo())['last_sign_in_at'];
