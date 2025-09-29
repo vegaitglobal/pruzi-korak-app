@@ -23,7 +23,7 @@ class AppButton extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          disabledBackgroundColor: AppColors.primary.withOpacity(0.5),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           elevation: 4,
           shadowColor: Colors.black26,
@@ -57,14 +57,14 @@ class AppButtonVariant extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryVariant,
-        disabledBackgroundColor: AppColors.primaryVariant.withOpacity(0.5),
+        disabledBackgroundColor: AppColors.primaryVariant.withValues(alpha: 0.5),
         padding: const EdgeInsets.all(15.0),
       ),
       child: Text(
         text,
         style: AppTextStyles.labelMedium.copyWith(
-          color: AppColors.textPrimary.withOpacity(
-            onPressed == null ? 0.5 : 1.0,
+          color: AppColors.textPrimary.withValues(
+            alpha: onPressed == null ? 0.5 : 1.0,
           ),
         ),
       ),
