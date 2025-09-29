@@ -185,4 +185,53 @@ class HealthRepository {
       return 0;
     }
   }
+
+  // New methods for raw kilometers
+  Future<double> getKilometersFromCampaignStart(DateTime campaignStart) async {
+    try {
+      final timestamp = campaignStart.millisecondsSinceEpoch / 1000;
+      final kilometers = await _channel.invokeMethod<double>(
+        'getKilometersFromCampaignStart',
+        timestamp,
+      );
+      return kilometers ?? 0;
+    } catch (e, stack) {
+      debugPrint('❌ Error in getKilometersFromCampaignStart: $e');
+      debugPrint('StackTrace: $stack');
+      return 0;
+    }
+  }
+
+  Future<List<DailyDistance>> getDailyKilometersFromLastSync(
+    DateTime lastSync,
+  ) async {
+    try {
+      final result = await _channel.invokeMethod<List<dynamic>>(
+        'getKilometersGroupedByDay',
+        lastSync.millisecondsSinceEpoch / 1000,
+      );
+
+      final rawData = result?.map((e) => Map<String, dynamic>.from(e)).toList() ?? [];
+      return rawData.map((data) => DailyDistance.fromJson(data)).toList();
+    } catch (e, stack) {
+      debugPrint('❌ Error in getDailyKilometersFromLastSync: $e');
+      debugPrint('$stack');
+      return [];
+    }
+  }
+
+  Future<double> getTodayKilometersSinceLastSync(DateTime timestamp) async {
+    try {
+      final seconds = timestamp.millisecondsSinceEpoch / 1000;
+      final kilometers = await _channel.invokeMethod<double>(
+        'getTodayKilometersSinceLastSync',
+        seconds,
+      );
+      return kilometers ?? 0;
+    } catch (e, stack) {
+      debugPrint('❌ Error in getTodayKilometersSinceLastSync: $e');
+      debugPrint('StackTrace: $stack');
+      return 0;
+    }
+  }
 }
