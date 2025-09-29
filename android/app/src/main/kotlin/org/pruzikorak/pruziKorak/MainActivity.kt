@@ -58,18 +58,6 @@ class MainActivity : FlutterActivity() {
 
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "getStepsToday" -> {
-                    val now = System.currentTimeMillis()
-                    val startOfDay = getStartOfDayMillis(now)
-                    signInIfNeeded(result) {
-                        ensureActivityPermission(result) {
-                            withFitPermissions(result) {
-                                getStepCount(startOfDay, now, result)
-                            }
-                        }
-                    }
-                }
-
                 "getStepsGroupedByDay" -> {
                     val ts = call.arguments as? Double
                     if (ts == null) {
