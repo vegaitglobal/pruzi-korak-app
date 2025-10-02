@@ -9,6 +9,7 @@ import 'bg_flush_cache.dart';
 
 class HealthRepository {
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
+  DateTime? _lastSyncTodayCall;
 
   Future<Map<String, String?>> fetchSyncInfo({int maxRetries = 3}) async {
     debugPrint('🔍 Calling sync-info...');
@@ -117,12 +118,22 @@ class HealthRepository {
       return;
     }
 
+    final now = DateTime.now();
+
+    // Throttle: skip if called again within 10 seconds
+    if (_lastSyncTodayCall != null &&
+        now.difference(_lastSyncTodayCall!).inSeconds < 10) {
+      debugPrint('⏳ Skipping sync-today-distances: called too soon');
+      return;
+    }
+    _lastSyncTodayCall = now;
+
     debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
     try {
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
-          .timeout(const Duration(seconds: 3));
+          .timeout(const Duration(seconds: 6));
 
       await BgFlushCache.clearToday();
 
