@@ -12,6 +12,9 @@ class HealthRepository {
   DateTime? _lastSyncTodayCall;
   bool _syncInFlight = false;
 
+  static const _kCooldown = Duration(seconds: 5);
+  static const _kTimeout = Duration(seconds: 5);
+
   Future<Map<String, String?>> fetchSyncInfo({int maxRetries = 3}) async {
     debugPrint('🔍 Calling sync-info...');
     int retryCount = 0;
@@ -79,7 +82,6 @@ class HealthRepository {
     for (final entry in validDistances) {
       debugPrint('📅 Sending: date=${entry.date}, km=${entry.totalKilometers}');
     }
-
     try {
       final response = await Supabase.instance.client.functions
           .invoke(
@@ -129,7 +131,7 @@ class HealthRepository {
 
     // Throttle: skip if called again within 10 seconds
     if (_lastSyncTodayCall != null &&
-        now.difference(_lastSyncTodayCall!).inSeconds < 10) {
+        now.difference(_lastSyncTodayCall!) < _kCooldown) {
       debugPrint('⏳ Skipping sync-today-distances: called too soon');
       return;
     }
@@ -141,7 +143,7 @@ class HealthRepository {
     try {
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
-          .timeout(const Duration(seconds: 6));
+          .timeout(_kTimeout);
 
       await BgFlushCache.clearToday();
 
