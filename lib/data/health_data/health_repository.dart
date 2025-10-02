@@ -10,6 +10,7 @@ import 'bg_flush_cache.dart';
 class HealthRepository {
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
   DateTime? _lastSyncTodayCall;
+  bool _syncInFlight = false;
 
   Future<Map<String, String?>> fetchSyncInfo({int maxRetries = 3}) async {
     debugPrint('🔍 Calling sync-info...');
@@ -118,6 +119,12 @@ class HealthRepository {
       return;
     }
 
+    // Skip if another sync is in flight
+    if (_syncInFlight) {
+      debugPrint('⏳ Skipping sync-today-distances: sync already in flight');
+      return;
+    }
+
     final now = DateTime.now();
 
     // Throttle: skip if called again within 10 seconds
@@ -130,6 +137,7 @@ class HealthRepository {
 
     debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
+    _syncInFlight = true;
     try {
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
@@ -148,6 +156,8 @@ class HealthRepository {
     } catch (e, stack) {
       debugPrint('❌ sendTodayDistance error: $e');
       debugPrint('🪵 $stack');
+    } finally {
+      _syncInFlight = false;
     }
   }
 
