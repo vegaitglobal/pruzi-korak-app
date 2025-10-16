@@ -131,7 +131,7 @@ class HomeSection extends StatelessWidget {
 
     return PlatformSpecificPullToRefresh(
       onRefresh: () async {
-        context.read<HomeBloc>().add(const HomeSilentUpdateEvent());
+        context.read<HomeBloc>().add(const HomeLoadEvent());
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
