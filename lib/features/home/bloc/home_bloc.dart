@@ -55,29 +55,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   DateTime _determineSyncStartDate(Map<String, dynamic> syncData, DateTime today) {
     final lastSyncAtStr = syncData['last_sync_at'];
-    final lastSignInAtStr = syncData['last_sign_in_at'];
-
     final lastSyncAt = lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
-    final lastSignInAt = lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
-    DateTime syncStart = today;
-    if (lastSyncAt != null && lastSignInAt != null) {
-      syncStart = lastSyncAt.isAfter(lastSignInAt) ? lastSyncAt : lastSignInAt;
-    } else if (lastSyncAt != null) {
-      syncStart = lastSyncAt;
-    } else if (lastSignInAt != null) {
-      syncStart = lastSignInAt;
+    // If no previous sync, start from today at midnight
+    if (lastSyncAt == null) {
+      return DateTime(today.year, today.month, today.day);
     }
 
-    return syncStart;
+    return lastSyncAt;
   }
 
   Future<void> _syncHealthData(DateTime syncStart, DateTime today) async {
-    final todayDate = DateTime(today.year, today.month, today.day);
+    final todayMidnight = DateTime(today.year, today.month, today.day);
     final syncStartDateOnly = DateTime(syncStart.year, syncStart.month, syncStart.day);
 
-    if (syncStartDateOnly == todayDate) {
-      await _syncTodayData(syncStart);
+    if (syncStartDateOnly == todayMidnight) {
+      await _syncTodayData(todayMidnight);
     } else {
       await _syncHistoricalData(syncStart);
     }

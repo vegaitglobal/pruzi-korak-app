@@ -122,7 +122,7 @@ class HealthRepository {
     try {
       final response = await Supabase.instance.client.functions
           .invoke('sync-today-distances', body: {'kilometers': kilometers})
-          .timeout(const Duration(seconds: 3));
+          .timeout(const Duration(seconds: 5));
 
       await BgFlushCache.clearToday();
 

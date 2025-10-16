@@ -36,7 +36,7 @@ class MainActivity : FlutterActivity() {
 
         private const val METERS_PER_STEP = 1000.0 / 1300.0    // ~0.769m po koraku (1300 steps = 1km)
         private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 5m
-        private const val MIN_EMIT_INTERVAL_MS = 30_000L       // minimalni razmak između emitovanja (anti-spam)
+        private const val MIN_EMIT_INTERVAL_MS = 10_000L       // minimalni razmak između emitovanja (anti-spam)
         private const val MAX_SILENCE_MS = 5 * 60_000L         // ipak emituje bar na 5 min (da UI ne "zamre")
     }
 
