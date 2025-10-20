@@ -12,7 +12,7 @@ class UiConstants {
 
   static BoxShadow boxShadow(Color color) {
     return BoxShadow(
-      color: color.withOpacity(0.15),
+      color: color.withValues(alpha: 0.15),
       spreadRadius: 1,
       blurRadius: 4,
       offset: const Offset(0, 2),

@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pruzi_korak/data/health_data/health_repository.dart';
-import 'package:pruzi_korak/data/health_data/helth_native_sync.dart';
 import 'package:pruzi_korak/data/home/home_repository.dart';
 import 'package:pruzi_korak/domain/health/daily_distance.dart';
 import 'package:pruzi_korak/domain/user/steps_model.dart';
@@ -56,41 +55,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   DateTime _determineSyncStartDate(Map<String, dynamic> syncData, DateTime today) {
     final lastSyncAtStr = syncData['last_sync_at'];
-    final lastSignInAtStr = syncData['last_sign_in_at'];
-
     final lastSyncAt = lastSyncAtStr != null ? DateTime.parse(lastSyncAtStr) : null;
-    final lastSignInAt = lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
-    DateTime syncStart = today;
-    if (lastSyncAt != null && lastSignInAt != null) {
-      syncStart = lastSyncAt.isAfter(lastSignInAt) ? lastSyncAt : lastSignInAt;
-    } else if (lastSyncAt != null) {
-      syncStart = lastSyncAt;
-    } else if (lastSignInAt != null) {
-      syncStart = lastSignInAt;
+    // If no previous sync, start from today at midnight
+    if (lastSyncAt == null) {
+      return DateTime(today.year, today.month, today.day);
     }
 
-    return syncStart;
+    return lastSyncAt;
   }
 
   Future<void> _syncHealthData(DateTime syncStart, DateTime today) async {
-    final todayDate = DateTime(today.year, today.month, today.day);
+    final todayMidnight = DateTime(today.year, today.month, today.day);
     final syncStartDateOnly = DateTime(syncStart.year, syncStart.month, syncStart.day);
 
-    if (syncStartDateOnly == todayDate) {
-      await _syncTodayData(syncStart);
+    if (syncStartDateOnly == todayMidnight) {
+      await _syncTodayData(todayMidnight);
     } else {
       await _syncHistoricalData(syncStart);
     }
   }
 
   Future<void> _syncTodayData(DateTime syncStart) async {
-    final kilometers = await healthRepository.getTodayDistanceSinceLastSync(syncStart);
+    final kilometers = await healthRepository.getTodayKilometersSinceLastSync(syncStart);
     await healthRepository.sendTodayDistance(kilometers);
   }
 
   Future<void> _syncHistoricalData(DateTime syncStart) async {
-    final allDistances = await healthRepository.getDailyDistancesFromLastSync(syncStart);
+    final allDistances = await healthRepository.getDailyKilometersFromLastSync(syncStart);
     debugPrint('🏷️ allDistances: $allDistances');
 
     final lastSignInAtStr = (await healthRepository.fetchSyncInfo())['last_sign_in_at'];
