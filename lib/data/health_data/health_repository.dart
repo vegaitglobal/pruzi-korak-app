@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+import '../../core/supabase/functions_client_x.dart';
 
 import '../../domain/health/daily_distance.dart';
 import 'bg_flush_cache.dart';
@@ -18,7 +19,7 @@ class HealthRepository {
     while (true) {
       try {
         final response = await Supabase.instance.client.functions
-            .invoke('sync-info')
+            .invokeSafe('sync-info')
             .timeout(
               const Duration(seconds: 5),
               onTimeout:
@@ -80,7 +81,7 @@ class HealthRepository {
 
     try {
       final response = await Supabase.instance.client.functions
-          .invoke(
+          .invokeSafe(
             'sync-daily-distances',
             body: {'distances': validDistances.map((d) => d.toJson()).toList()},
           )
@@ -121,7 +122,7 @@ class HealthRepository {
 
     try {
       final response = await Supabase.instance.client.functions
-          .invoke('sync-today-distances', body: {'kilometers': kilometers})
+          .invokeSafe('sync-today-distances', body: {'kilometers': kilometers})
           .timeout(const Duration(seconds: 5));
 
       await BgFlushCache.clearToday();
