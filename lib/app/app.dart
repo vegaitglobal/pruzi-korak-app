@@ -130,6 +130,7 @@ class _MyAppState extends State<MyApp> {
       // SessionListener will handle session expiration and logout, if not needed, we should remove it.
       child: SessionListener(
         router: router,
+        authRepository: getIt<AuthRepository>(),
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'Pruži korak',
@@ -193,4 +194,3 @@ class _MyAppState extends State<MyApp> {
     }
   }
 }
-
