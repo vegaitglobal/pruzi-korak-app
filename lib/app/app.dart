@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
           create:
               (context) => HomeBloc(
                 getIt<HomeRepository>(),
-                healthRepository: HealthRepository(),
+                healthRepository: getIt<HealthRepository>(),
               ),
         ),
         BlocProvider<ProfileBloc>(

@@ -1,14 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
 import '../../core/supabase/functions_client_x.dart';
 
 import '../../domain/health/daily_distance.dart';
 import 'bg_flush_cache.dart';
 
 class HealthRepository {
+  final SupabaseClient _client;
+  HealthRepository({required SupabaseClient client}) : _client = client;
+
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
 
   Future<Map<String, String?>> fetchSyncInfo({int maxRetries = 3}) async {
@@ -18,7 +20,7 @@ class HealthRepository {
 
     while (true) {
       try {
-        final response = await Supabase.instance.client.functions
+        final response = await _client.functions
             .invokeSafe('sync-info')
             .timeout(
               const Duration(seconds: 5),
@@ -42,25 +44,24 @@ class HealthRepository {
         debugPrint('✅ Last sign in: $lastSignInAt');
 
         return {'last_sync_at': lastSyncAt, 'last_sign_in_at': lastSignInAt};
-      } catch (e, stack) {
-        debugPrint('❌ fetchSyncInfo error: $e');
+      } on SessionExpiredException catch (e, stack) {
+        debugPrint('🔒 SessionExpiredException: $e');
         debugPrint('$stack');
-
-        retryCount++;
-        if (retryCount > maxRetries) {
-          debugPrint(
-            '❌ Maximum retries ($maxRetries) reached for fetchSyncInfo',
-          );
-          rethrow;
-        }
-
-        debugPrint(
-          '⏱️ Retrying fetchSyncInfo ($retryCount/$maxRetries) after ${delay.inMilliseconds}ms',
-        );
-        await Future.delayed(delay);
-        // Exponential backoff: double the delay for next retry
-        delay *= 2;
+        rethrow;
+      } catch (e, stack) {
+        debugPrint('❌ fetchSyncInfo error (generic, will retry if attempts left): $e');
+        debugPrint('$stack');
       }
+
+      retryCount++;
+      if (retryCount > maxRetries) {
+        debugPrint('❌ Maximum retries ($maxRetries) reached for fetchSyncInfo');
+        throw Exception('Failed after $maxRetries retries');
+      }
+
+      debugPrint('⏱️ Retrying fetchSyncInfo ($retryCount/$maxRetries) after ${delay.inMilliseconds}ms');
+      await Future.delayed(delay);
+      delay *= 2; // exponential backoff
     }
   }
 
@@ -80,7 +81,7 @@ class HealthRepository {
     }
 
     try {
-      final response = await Supabase.instance.client.functions
+      final response = await _client.functions
           .invokeSafe(
             'sync-daily-distances',
             body: {'distances': validDistances.map((d) => d.toJson()).toList()},
@@ -121,7 +122,7 @@ class HealthRepository {
     debugPrint('📤 Calling sync-today-distances with $kilometers km...');
 
     try {
-      final response = await Supabase.instance.client.functions
+      final response = await _client.functions
           .invokeSafe('sync-today-distances', body: {'kilometers': kilometers})
           .timeout(const Duration(seconds: 5));
 
