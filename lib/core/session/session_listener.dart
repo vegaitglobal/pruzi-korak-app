@@ -8,12 +8,10 @@ import 'package:pruzi_korak/core/session/session_stream.dart';
 import 'package:pruzi_korak/core/utils/app_logger.dart';
 import 'package:pruzi_korak/domain/auth/auth_repository.dart';
 
-
 class SessionListener extends StatefulWidget {
   final Widget child;
   final GoRouter router;
   final AuthRepository authRepository;
-  //final LocalLogoutUseCase logoutUseCase;
 
   const SessionListener({
     super.key,
@@ -36,11 +34,11 @@ class _SessionListenerState extends State<SessionListener> {
       if (event is SessionExpired) {
         AppLogger.logInfo("Session Expired - logging out.");
         try {
-          //await widget.authRepository.logout();
+          await widget.authRepository.logout();
         } catch (e, st) {
           AppLogger.logError("Logout failed after session expired", e, st);
         } finally {
-         // widget.router.go(AppRoutes.login.path());
+          widget.router.go(AppRoutes.login.path());
         }
       }
     });
