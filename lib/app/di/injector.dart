@@ -26,6 +26,7 @@ import 'package:pruzi_korak/data/user_content/user_content_repository_impl.dart'
 import 'package:pruzi_korak/features/motivational_message/motivational_message_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pruzi_korak/data/health_data/health_repository.dart';
 
 import 'mapper_setup.dart';
 
@@ -90,6 +91,9 @@ void setRepositories() {
   );
   getIt.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(getIt<SupabaseClient>()),
+  );
+  getIt.registerLazySingleton<HealthRepository>(
+    () => HealthRepository(client: getIt<SupabaseClient>()),
   );
   getIt.registerFactory<MotivationalMessageBloc>(
     () => MotivationalMessageBloc(getIt<UserContentRepository>()),

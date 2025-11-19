@@ -6,6 +6,7 @@ import 'package:workmanager/workmanager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
+import '../../core/supabase/functions_client_x.dart';
 
 import '../../data/health_data/bg_flush_cache.dart';
 import '../../core/utils/app_logger.dart';
@@ -84,7 +85,7 @@ void callbackDispatcher() {
 
         AppLogger.logInfo("BG Task: Invoking sync-today-distances function with $km kilometers");
         final resp = await supa.functions
-            .invoke('sync-today-distances', body: {'kilometers': km})
+            .invokeSafe('sync-today-distances', body: {'kilometers': km})
             .timeout(const Duration(seconds: 20));
 
         AppLogger.logInfo("BG Task: Function response status: ${resp.status}");

@@ -130,4 +130,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorUnsupportedDevice =>
       'Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo';
+
+  @override
+  String get sessionExpired => 'Vaša sesija je istekla. Kampanja je završena.';
 }
