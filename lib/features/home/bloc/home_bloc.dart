@@ -68,12 +68,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _syncHealthData(DateTime syncStart, DateTime today, {String? lastSignInAtStr}) async {
     final todayMidnight = DateTime(today.year, today.month, today.day);
-    final syncStartDateOnly = DateTime(syncStart.year, syncStart.month, syncStart.day);
 
-    if (syncStartDateOnly == todayMidnight) {
+    if (syncStart == todayMidnight) {
       await _syncTodayData(todayMidnight);
     } else {
-      await _syncHistoricalData(syncStartDateOnly, lastSignInAtStr: lastSignInAtStr);
+      await _syncHistoricalData(syncStart, lastSignInAtStr: lastSignInAtStr);
       // Then sync today separately from midnight to avoid mixing with historical
       await _syncTodayData(todayMidnight);
     }
@@ -99,6 +98,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final today = DateTime.now();
     final todayMidnight = DateTime(today.year, today.month, today.day);
 
+    // Normalize lastSignInAt to midnight to avoid excluding same-day entries due to time-of-day
+    final normalizedLastSignInAt = lastSignInAt == null
+        ? null
+        : DateTime(lastSignInAt.year, lastSignInAt.month, lastSignInAt.day);
+
     return distances.where((entry) {
       final dateStr = entry.date;
       final km = entry.totalKilometers;
@@ -106,8 +110,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final entryDate = DateTime.tryParse(dateStr);
       if (entryDate == null) return false;
 
-      // Exclude dates before last sign-in, exclude today from historical set, and require positive km
-      final isBeforeSignIn = lastSignInAt != null && entryDate.isBefore(lastSignInAt);
+      // Exclude dates before last sign-in day, exclude today from historical set, and require positive km
+      final isBeforeSignIn = normalizedLastSignInAt != null && entryDate.isBefore(normalizedLastSignInAt);
       final isToday = entryDate.year == todayMidnight.year && entryDate.month == todayMidnight.month && entryDate.day == todayMidnight.day;
 
       return !isBeforeSignIn && !isToday && km > 0;
