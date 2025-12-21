@@ -49,7 +49,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final today = DateTime.now();
 
     final syncStartDate = _determineSyncStartDate(syncData, today);
-    await _syncHealthData(syncStartDate, today);
+    await _syncHealthData(syncStartDate, today, lastSignInAtStr: syncData['last_sign_in_at']);
     await _loadAndEmitHomeData(emit);
   }
 
@@ -62,17 +62,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return DateTime(today.year, today.month, today.day);
     }
 
-    return lastSyncAt;
+    // Always fetch from the beginning of the last synced calendar day
+    return DateTime(lastSyncAt.year, lastSyncAt.month, lastSyncAt.day);
   }
 
-  Future<void> _syncHealthData(DateTime syncStart, DateTime today) async {
+  Future<void> _syncHealthData(DateTime syncStart, DateTime today, {String? lastSignInAtStr}) async {
     final todayMidnight = DateTime(today.year, today.month, today.day);
     final syncStartDateOnly = DateTime(syncStart.year, syncStart.month, syncStart.day);
 
     if (syncStartDateOnly == todayMidnight) {
       await _syncTodayData(todayMidnight);
     } else {
-      await _syncHistoricalData(syncStart);
+      await _syncHistoricalData(syncStartDateOnly, lastSignInAtStr: lastSignInAtStr);
+      // Then sync today separately from midnight to avoid mixing with historical
+      await _syncTodayData(todayMidnight);
     }
   }
 
@@ -81,11 +84,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     await healthRepository.sendTodayDistance(kilometers);
   }
 
-  Future<void> _syncHistoricalData(DateTime syncStart) async {
+  Future<void> _syncHistoricalData(DateTime syncStart, {String? lastSignInAtStr}) async {
     final allDistances = await healthRepository.getDailyKilometersFromLastSync(syncStart);
     debugPrint('🏷️ allDistances: $allDistances');
 
-    final lastSignInAtStr = (await healthRepository.fetchSyncInfo())['last_sign_in_at'];
     final lastSignInAt = lastSignInAtStr != null ? DateTime.parse(lastSignInAtStr) : null;
 
     final filteredDistances = _filterValidDistances(allDistances, lastSignInAt);
@@ -94,6 +96,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<DailyDistance> _filterValidDistances(
       List<DailyDistance> distances, DateTime? lastSignInAt) {
+    final today = DateTime.now();
+    final todayMidnight = DateTime(today.year, today.month, today.day);
+
     return distances.where((entry) {
       final dateStr = entry.date;
       final km = entry.totalKilometers;
@@ -101,7 +106,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final entryDate = DateTime.tryParse(dateStr);
       if (entryDate == null) return false;
 
-      return !(lastSignInAt != null && entryDate.isBefore(lastSignInAt)) && km > 0;
+      // Exclude dates before last sign-in, exclude today from historical set, and require positive km
+      final isBeforeSignIn = lastSignInAt != null && entryDate.isBefore(lastSignInAt);
+      final isToday = entryDate.year == todayMidnight.year && entryDate.month == todayMidnight.month && entryDate.day == todayMidnight.day;
+
+      return !isBeforeSignIn && !isToday && km > 0;
     }).toList();
   }
 
