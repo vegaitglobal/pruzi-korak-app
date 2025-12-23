@@ -242,10 +242,13 @@ class MainActivity : FlutterActivity() {
             return
         }
 
+        // Normalize to start of day to avoid partial buckets when sync starts late at night
+        val normalizedStart = getStartOfDayMillis(startTime)
+
         val readRequest = DataReadRequest.Builder()
             .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
             .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .setTimeRange(normalizedStart, endTime, TimeUnit.MILLISECONDS)
             .build()
 
         Fitness.getHistoryClient(this, account)
@@ -367,10 +370,13 @@ class MainActivity : FlutterActivity() {
             return
         }
 
+        // Normalize to start of day to avoid partial buckets when sync starts late at night
+        val normalizedStart = getStartOfDayMillis(startTime)
+
         val readRequest = DataReadRequest.Builder()
             .aggregate(DataType.TYPE_DISTANCE_DELTA)
             .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+            .setTimeRange(normalizedStart, endTime, TimeUnit.MILLISECONDS)
             .build()
 
         Fitness.getHistoryClient(this, account)
