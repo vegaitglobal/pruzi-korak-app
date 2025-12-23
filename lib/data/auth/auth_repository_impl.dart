@@ -32,6 +32,18 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // Mark: Force logout without RPC call
+  // Used when device is no longer authorized
+  @override
+  Future<void> forceLogout() async {
+    try {
+      await _client.auth.signOut();
+      await _localStorage.clearUserData();
+    } catch (e) {
+      throw Exception('Failed to forceLogout: $e');
+    }
+  }
+
   @override
   Future<void> deleteAccount() async {
     try {
@@ -89,7 +101,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
       final response = await _client.rpc(
         'log_in',
-        params: {'input_email': email, 'input_passcode': password, 'device_id': deviceId},
+        params: {
+          'input_email': email,
+          'input_passcode': password,
+          'device_id': deviceId,
+        },
       );
 
       if (response is Map<String, dynamic> && response['error'] != null) {

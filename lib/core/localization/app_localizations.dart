@@ -331,6 +331,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo'**
   String get errorUnsupportedDevice;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaša sesija je istekla. Kampanja je završena.'**
+  String get sessionExpired;
 }
 
 class _AppLocalizationsDelegate

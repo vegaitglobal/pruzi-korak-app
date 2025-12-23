@@ -57,5 +57,6 @@
   "user_team_rank_label": "Tvoj rang u timu:",
   "user_global_rank_label": "Tvoj globalni rang:",
   "errorEmailOrPassword": "Uneli ste neispravno korisničko ime ili lozinku",
-  "errorUnsupportedDevice": "Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo."
+  "errorUnsupportedDevice": "Već ste prijavljeni na drugom uređaju. Odjavite se sa tog uređaja i pokušajte ponovo.",
+  "sessionExpired": "Vaša sesija je istekla. Kampanja je završena."
 }
