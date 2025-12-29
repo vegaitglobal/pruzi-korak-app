@@ -32,7 +32,7 @@ class MainActivity : FlutterActivity() {
         private const val ACTIVITY_RECOGNITION_REQUEST_CODE = 1002
         private const val GOOGLE_FIT_PERMISSIONS_REQUEST_CODE = 1001
 
-        private const val EVENTS_NAME  = "org.pruziKorak.healthkit/step_events"
+        private const val EVENTS_NAME = "org.pruziKorak.healthkit/step_events"
 
         private const val METERS_PER_STEP = 1000.0 / 1300.0    // ~0.769m po koraku (1300 steps = 1km)
         private const val DIST_THRESHOLD_METERS = 5.0        // emituje tek kad pređeš 5m
@@ -58,57 +58,6 @@ class MainActivity : FlutterActivity() {
 
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "getStepsGroupedByDay" -> {
-                    val ts = call.arguments as? Double
-                    if (ts == null) {
-                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
-                    } else {
-                        val start = (ts * 1000).toLong()
-                        val end = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getStepsGroupedByDay(start, end, result)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                "getTodayStepsSinceLastSync" -> {
-                    val ts = call.arguments as? Double
-                    if (ts == null) {
-                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
-                    } else {
-                        val start = (ts * 1000).toLong()
-                        val now = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getStepCount(start, now, result)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                "getStepsFromCampaignStart" -> {
-                    val ts = call.arguments as? Double
-                    if (ts == null) {
-                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
-                    } else {
-                        val start = (ts * 1000).toLong()
-                        val now = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getStepCount(start, now, result)
-                                }
-                            }
-                        }
-                    }
-                }
-
                 "startStepListener" -> {
                     ensureSignedInThen {
                         ensureActivityPermissionThen {
@@ -229,134 +178,6 @@ class MainActivity : FlutterActivity() {
                 fitnessOptions
             )
         }
-    }
-
-    private fun getStepsGroupedByDay(
-        startTime: Long,
-        endTime: Long,
-        result: MethodChannel.Result
-    ) {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            result.error("NO_ACCOUNT", "Google account not signed in", null)
-            return
-        }
-
-        // Normalize to start of day to avoid partial buckets when sync starts late at night
-        val normalizedStart = getStartOfDayMillis(startTime)
-
-        val readRequest = DataReadRequest.Builder()
-            .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
-            .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(normalizedStart, endTime, TimeUnit.MILLISECONDS)
-            .build()
-
-        Fitness.getHistoryClient(this, account)
-            .readData(readRequest)
-            .addOnSuccessListener { response ->
-                val results = mutableListOf<Map<String, Any>>()
-
-                response.buckets.forEach { bucket ->
-                    var stepsForDay = 0
-                    val startMillis = bucket.getStartTime(TimeUnit.MILLISECONDS)
-
-                    bucket.dataSets.forEach { ds ->
-                        ds.dataPoints.forEach { dp ->
-                            if (dp.originalDataSource.device != null) {
-                                stepsForDay += dp.getValue(Field.FIELD_STEPS).asInt()
-                            }
-                        }
-                    }
-
-                    val date = SimpleDateFormat("yyyy-MM-dd")
-                        .apply { timeZone = TimeZone.getDefault() }
-                        .format(startMillis)
-
-                    val kilometers = stepsForDay / 1300.0
-
-                    results.add(
-                        mapOf(
-                            "date" to date,
-                            "total_kilometers" to kilometers
-                        )
-                    )
-                }
-
-                val todayDate = SimpleDateFormat("yyyy-MM-dd")
-                    .apply { timeZone = TimeZone.getDefault() }
-                    .format(System.currentTimeMillis())
-
-                val hasToday = results.any { it["date"] == todayDate }
-
-                if (!hasToday) {
-                    val now = System.currentTimeMillis()
-                    val startOfToday = getStartOfDayMillis(now)
-
-                    getStepCount(startOfToday, now, object : MethodChannel.Result {
-                        override fun success(todaySteps: Any?) {
-                            val steps = (todaySteps as? Double) ?: 0.0
-                            val kilometers = steps / 1300.0
-                            results.add(
-                                mapOf(
-                                    "date" to todayDate,
-                                    "total_kilometers" to kilometers
-                                )
-                            )
-                            result.success(results)
-                        }
-
-                        override fun error(code: String, message: String?, details: Any?) {
-                            result.success(results)
-                        }
-
-                        override fun notImplemented() {
-                            result.success(results)
-                        }
-                    })
-                } else {
-                    result.success(results)
-                }
-            }
-            .addOnFailureListener { e ->
-                result.error("FITNESS_ERROR", "Failed to read grouped steps: ${e.localizedMessage}", null)
-            }
-    }
-
-    private fun getStepCount(
-        startTime: Long,
-        endTime: Long,
-        result: MethodChannel.Result
-    ) {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            result.error("NO_ACCOUNT", "Google account not signed in", null)
-            return
-        }
-
-        val readRequest = DataReadRequest.Builder()
-            .aggregate(DataType.TYPE_STEP_COUNT_DELTA)
-            .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-            .build()
-
-        Fitness.getHistoryClient(this, account)
-            .readData(readRequest)
-            .addOnSuccessListener { response ->
-                var totalSteps = 0
-                response.buckets.forEach { bucket ->
-                    bucket.dataSets.forEach { ds ->
-                        ds.dataPoints.forEach { dp ->
-                            if (dp.originalDataSource.device != null) {
-                                totalSteps += dp.getValue(Field.FIELD_STEPS).asInt()
-                            }
-                        }
-                    }
-                }
-                result.success(totalSteps.toDouble())
-            }
-            .addOnFailureListener { e ->
-                result.error("FITNESS_ERROR", "Failed to read steps: ${e.localizedMessage}", null)
-            }
     }
 
     private fun getKilometersGroupedByDay(
@@ -501,6 +322,7 @@ class MainActivity : FlutterActivity() {
                     result.error("SIGN_IN_FAILED", "Google sign-in failed: ${e.message}", null)
                 }
             }
+
             GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> {
                 val (result, onGranted) = pendingFitPermissionCall ?: return
                 pendingFitPermissionCall = null
