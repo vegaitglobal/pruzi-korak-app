@@ -143,20 +143,20 @@ class HealthRepository {
   }
 
   // MARK: - Fetch raw kilometers
-  Future<double> getKilometersFromCampaignStart(DateTime campaignStart) async {
-    try {
-      final timestamp = campaignStart.millisecondsSinceEpoch / 1000;
-      final kilometers = await _channel.invokeMethod<double>(
-        'getKilometersFromCampaignStart',
-        timestamp,
-      );
-      return kilometers ?? 0;
-    } catch (e, stack) {
-      debugPrint('❌ Error in getKilometersFromCampaignStart: $e');
-      debugPrint('StackTrace: $stack');
-      return 0;
-    }
-  }
+  // Future<double> getKilometersFromCampaignStart(DateTime campaignStart) async {
+  //   try {
+  //     final timestamp = campaignStart.millisecondsSinceEpoch / 1000;
+  //     final kilometers = await _channel.invokeMethod<double>(
+  //       'getKilometersFromCampaignStart',
+  //       timestamp,
+  //     );
+  //     return kilometers ?? 0;
+  //   } catch (e, stack) {
+  //     debugPrint('❌ Error in getKilometersFromCampaignStart: $e');
+  //     debugPrint('StackTrace: $stack');
+  //     return 0;
+  //   }
+  // }
 
   Future<List<DailyDistance>> getDailyKilometersFromLastSync(
     DateTime lastSync,

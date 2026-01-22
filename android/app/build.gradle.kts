@@ -67,6 +67,6 @@ flutter {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
-    implementation("com.google.android.gms:play-services-fitness:21.1.0")
+    // Health Connect client library
+    implementation("androidx.health.connect:connect-client:1.1.0-alpha12")
 }

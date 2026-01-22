@@ -21,6 +21,22 @@ import com.google.android.gms.fitness.data.Field
 import com.google.android.gms.fitness.request.OnDataPointListener
 import com.google.android.gms.fitness.request.DataReadRequest
 import com.google.android.gms.fitness.request.SensorRequest
+
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
+import androidx.health.connect.client.time.TimeRangeFilter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.launch
+import java.time.Instant
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -81,14 +97,11 @@ class MainActivity : FlutterActivity() {
                     } else {
                         val start = (ts * 1000).toLong()
                         val end = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getKilometersGroupedByDay(start, end, result)
-                                }
-                            }
+                        ensureHealthConnectPermissions {
+                            getKilometersGroupedByDay(start, end, result)
                         }
                     }
+
                 }
 
                 "getTodayKilometersSinceLastSync" -> {
@@ -98,29 +111,9 @@ class MainActivity : FlutterActivity() {
                     } else {
                         val start = (ts * 1000).toLong()
                         val now = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getKilometers(start, now, result)
-                                }
-                            }
-                        }
-                    }
-                }
 
-                "getKilometersFromCampaignStart" -> {
-                    val ts = call.arguments as? Double
-                    if (ts == null) {
-                        result.error("INVALID_ARGUMENT", "Expected timestamp", null)
-                    } else {
-                        val start = (ts * 1000).toLong()
-                        val now = System.currentTimeMillis()
-                        signInIfNeeded(result) {
-                            ensureActivityPermission(result) {
-                                withFitPermissions(result) {
-                                    getKilometers(start, now, result)
-                                }
-                            }
+                        ensureHealthConnectPermissions(result) {
+                            getKilometers(start, now, result)
                         }
                     }
                 }
@@ -129,20 +122,221 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
+// New Code block:
 
-    private fun signInIfNeeded(result: MethodChannel.Result, onSignedIn: () -> Unit) {
-        val acct = GoogleSignIn.getLastSignedInAccount(this)
-        if (acct == null) {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build()
-            val client = GoogleSignIn.getClient(this, gso)
-            pendingStepCall = result to onSignedIn
-            startActivityForResult(client.signInIntent, SIGN_IN_REQUEST_CODE)
-        } else {
-            onSignedIn()
+    private const val HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE = 1101
+    private var pendingHealthConnectPermissionCall: Pair<MethodChannel.Result, () -> Unit>? = null
+
+    private fun ensureHealthConnectPermissions(
+        result: MethodChannel.Result,
+        onGranted: () -> Unit
+    ) {
+        if (!HealthConnectClient.isAvailable(this)) {
+            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
+            return
+        }
+
+        val client = HealthConnectClient.getOrCreate(this)
+        val required = setOf(
+            HealthPermission.getReadPermission(DistanceRecord::class)
+            // + StepsRecord ako ti treba kasnije
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val granted = client.permissionController.getGrantedPermissions()
+            if (granted.containsAll(required)) {
+                CoroutineScope(Dispatchers.Main).launch { onGranted() }
+            } else {
+                val intent = client.permissionController.createRequestPermissionIntent(required)
+                pendingHealthConnectPermissionCall = result to onGranted
+                startActivityForResult(intent, HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE)
+            }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE) {
+            val (res, onGranted) = pendingHealthConnectPermissionCall ?: return
+            pendingHealthConnectPermissionCall = null
+
+            ensureHealthConnectPermissions(res) { onGranted() }
+            return
+        }
+    }
+
+    private fun getKilometers(
+        startTime: Long,
+        endTime: Long,
+        result: MethodChannel.Result
+    ) {
+        // Health Connect availability check (optional but recommended)
+        if (!HealthConnectClient.isAvailable(this)) {
+            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
+            return
+        }
+
+        val healthConnectClient = HealthConnectClient.getOrCreate(this)
+
+        // Health Connect calls are suspend-based, so run in coroutine
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Optional: verify permissions here (or do it earlier in your flow)
+                // If you already do permission gating in your method chain, you can remove this block.
+                val requiredPermissions = setOf(
+                    HealthPermission.getReadPermission(DistanceRecord::class)
+                )
+                val granted = healthConnectClient.permissionController.getGrantedPermissions()
+                if (!granted.containsAll(requiredPermissions)) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        result.error("PERMISSION_DENIED", "Health Connect read permission not granted", null)
+                    }
+                    return@launch
+                }
+
+                val aggregateRequest = AggregateRequest(
+                    metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(
+                        Instant.ofEpochMilli(startTime),
+                        Instant.ofEpochMilli(endTime)
+                    )
+                )
+
+                val response: AggregationResult = healthConnectClient.aggregate(aggregateRequest)
+
+                // DISTANCE_TOTAL is returned as Length, typically in meters
+                val totalMeters = response[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
+                val kilometers = totalMeters / 1000.0
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    result.success(kilometers)
+                }
+            } catch (e: Exception) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    result.error("HC_ERROR", "Failed to read distance: ${e.localizedMessage}", null)
+                }
+            }
+        }
+    }
+
+    private fun getKilometersGroupedByDay(
+        startTime: Long,
+        endTime: Long,
+        result: MethodChannel.Result
+    ) {
+        if (!HealthConnectClient.isAvailable(this)) {
+            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
+            return
+        }
+
+        val healthConnectClient = HealthConnectClient.getOrCreate(this)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Optional: permission check (if you already gate before calling, you can remove)
+                val requiredPermissions = setOf(
+                    HealthPermission.getReadPermission(DistanceRecord::class)
+                )
+                val granted = healthConnectClient.permissionController.getGrantedPermissions()
+                if (!granted.containsAll(requiredPermissions)) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        result.error("PERMISSION_DENIED", "Health Connect read permission not granted", null)
+                    }
+                    return@launch
+                }
+
+                val zoneId = ZoneId.systemDefault()
+                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+                // Normalize to start of day in local timezone
+                val normalizedStartInstant = Instant.ofEpochMilli(startTime)
+                    .atZone(zoneId)
+                    .toLocalDate()
+                    .atStartOfDay(zoneId)
+                    .toInstant()
+
+                val request = AggregateGroupByDurationRequest(
+                    metrics = setOf(DistanceRecord.DISTANCE_TOTAL),
+                    timeRangeFilter = TimeRangeFilter.between(
+                        normalizedStartInstant,
+                        Instant.ofEpochMilli(endTime)
+                    ),
+                    timeRangeSlicer = Duration.ofDays(1)
+                )
+
+                val response = healthConnectClient.aggregateGroupByDuration(request)
+
+                val results = mutableListOf<Map<String, Any>>()
+
+                response.forEach { bucket ->
+                    // bucket.startTime is Instant
+                    val day: LocalDate = bucket.startTime.atZone(zoneId).toLocalDate()
+                    val date = day.format(dateFormatter)
+
+                    val totalMeters = bucket.result[DistanceRecord.DISTANCE_TOTAL]?.inMeters ?: 0.0
+                    val kilometers = totalMeters / 1000.0
+
+                    results.add(
+                        mapOf(
+                            "date" to date,
+                            "total_kilometers" to kilometers
+                        )
+                    )
+                }
+
+                // Keep your old behavior: ensure today exists in list (optional).
+                // With HC it *should* exist as 0 if there are no records in today's bucket,
+                // but depending on implementation it can omit empty buckets - so we keep your logic.
+                val todayDate = LocalDate.now(zoneId).format(dateFormatter)
+                val hasToday = results.any { it["date"] == todayDate }
+
+                if (!hasToday) {
+                    val now = System.currentTimeMillis()
+                    val startOfTodayInstant = LocalDate.now(zoneId)
+                        .atStartOfDay(zoneId)
+                        .toInstant()
+
+                    // Reuse HC getKilometers (your refactored one)
+                    getKilometers(
+                        startOfTodayInstant.toEpochMilli(),
+                        now,
+                        object : MethodChannel.Result {
+                            override fun success(todayKm: Any?) {
+                                val km = (todayKm as? Double) ?: 0.0
+                                results.add(
+                                    mapOf(
+                                        "date" to todayDate,
+                                        "total_kilometers" to km
+                                    )
+                                )
+                                result.success(results)
+                            }
+
+                            override fun error(code: String, message: String?, details: Any?) {
+                                result.success(results)
+                            }
+
+                            override fun notImplemented() {
+                                result.success(results)
+                            }
+                        }
+                    )
+                } else {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        result.success(results)
+                    }
+                }
+            } catch (e: Exception) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    result.error("HC_ERROR", "Failed to read grouped distance: ${e.localizedMessage}", null)
+                }
+            }
+        }
+    }
+
+//
+
 
     private fun ensureActivityPermission(result: MethodChannel.Result, onGranted: () -> Unit) {
         if (ContextCompat.checkSelfPermission(
@@ -161,176 +355,134 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun withFitPermissions(result: MethodChannel.Result, onGranted: () -> Unit) {
-        val fitnessOptions = FitnessOptions.builder()
-            .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-            .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-            .build()
-        val account = GoogleSignIn.getAccountForExtension(this, fitnessOptions)
-        if (GoogleSignIn.hasPermissions(account, fitnessOptions)) {
-            onGranted()
-        } else {
-            pendingFitPermissionCall = result to onGranted
-            GoogleSignIn.requestPermissions(
-                this,
-                GOOGLE_FIT_PERMISSIONS_REQUEST_CODE,
-                account,
-                fitnessOptions
-            )
-        }
-    }
+//    private fun getKilometersGroupedByDay(
+//        startTime: Long,
+//        endTime: Long,
+//        result: MethodChannel.Result
+//    ) {
+//        val account = GoogleSignIn.getLastSignedInAccount(this)
+//        if (account == null) {
+//            result.error("NO_ACCOUNT", "Google account not signed in", null)
+//            return
+//        }
+//
+//        // Normalize to start of day to avoid partial buckets when sync starts late at night
+//        val normalizedStart = getStartOfDayMillis(startTime)
+//
+//        val readRequest = DataReadRequest.Builder()
+//            .aggregate(DataType.TYPE_DISTANCE_DELTA)
+//            .bucketByTime(1, TimeUnit.DAYS)
+//            .setTimeRange(normalizedStart, endTime, TimeUnit.MILLISECONDS)
+//            .build()
+//
+//        Fitness.getHistoryClient(this, account)
+//            .readData(readRequest)
+//            .addOnSuccessListener { response ->
+//                val results = mutableListOf<Map<String, Any>>()
+//
+//                response.buckets.forEach { bucket ->
+//                    var distanceForDay = 0.0
+//                    val startMillis = bucket.getStartTime(TimeUnit.MILLISECONDS)
+//
+//                    bucket.dataSets.forEach { ds ->
+//                        ds.dataPoints.forEach { dp ->
+//                            if (dp.originalDataSource.device != null) {
+//                                distanceForDay += dp.getValue(Field.FIELD_DISTANCE).asFloat()
+//                            }
+//                        }
+//                    }
+//
+//                    val date = SimpleDateFormat("yyyy-MM-dd")
+//                        .apply { timeZone = TimeZone.getDefault() }
+//                        .format(startMillis)
+//
+//                    val kilometers = distanceForDay / 1000.0
+//
+//                    results.add(
+//                        mapOf(
+//                            "date" to date,
+//                            "total_kilometers" to kilometers
+//                        )
+//                    )
+//                }
+//
+//                val todayDate = SimpleDateFormat("yyyy-MM-dd")
+//                    .apply { timeZone = TimeZone.getDefault() }
+//                    .format(System.currentTimeMillis())
+//
+//                val hasToday = results.any { it["date"] == todayDate }
+//
+//                if (!hasToday) {
+//                    val now = System.currentTimeMillis()
+//                    val startOfToday = getStartOfDayMillis(now)
+//
+//                    getKilometers(startOfToday, now, object : MethodChannel.Result {
+//                        override fun success(todayKm: Any?) {
+//                            val kilometers = (todayKm as? Double) ?: 0.0
+//                            results.add(
+//                                mapOf(
+//                                    "date" to todayDate,
+//                                    "total_kilometers" to kilometers
+//                                )
+//                            )
+//                            result.success(results)
+//                        }
+//
+//                        override fun error(code: String, message: String?, details: Any?) {
+//                            result.success(results)
+//                        }
+//
+//                        override fun notImplemented() {
+//                            result.success(results)
+//                        }
+//                    })
+//                } else {
+//                    result.success(results)
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                result.error("FITNESS_ERROR", "Failed to read grouped distance: ${e.localizedMessage}", null)
+//            }
+//    }
 
-    private fun getKilometersGroupedByDay(
-        startTime: Long,
-        endTime: Long,
-        result: MethodChannel.Result
-    ) {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            result.error("NO_ACCOUNT", "Google account not signed in", null)
-            return
-        }
+//    private fun getKilometers(
+//        startTime: Long,
+//        endTime: Long,
+//        result: MethodChannel.Result
+//    ) {
+//        val account = GoogleSignIn.getLastSignedInAccount(this)
+//        if (account == null) {
+//            result.error("NO_ACCOUNT", "Google account not signed in", null)
+//            return
+//        }
+//
+//        val readRequest = DataReadRequest.Builder()
+//            .aggregate(DataType.TYPE_DISTANCE_DELTA)
+//            .bucketByTime(1, TimeUnit.DAYS)
+//            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+//            .build()
+//
+//        Fitness.getHistoryClient(this, account)
+//            .readData(readRequest)
+//            .addOnSuccessListener { response ->
+//                var totalDistance = 0.0
+//                response.buckets.forEach { bucket ->
+//                    bucket.dataSets.forEach { ds ->
+//                        ds.dataPoints.forEach { dp ->
+//                            if (dp.originalDataSource.device != null) {
+//                                totalDistance += dp.getValue(Field.FIELD_DISTANCE).asFloat()
+//                            }
+//                        }
+//                    }
+//                }
+//                val kilometers = totalDistance / 1000.0
+//                result.success(kilometers)
+//            }
+//            .addOnFailureListener { e ->
+//                result.error("FITNESS_ERROR", "Failed to read distance: ${e.localizedMessage}", null)
+//            }
+//    }
 
-        // Normalize to start of day to avoid partial buckets when sync starts late at night
-        val normalizedStart = getStartOfDayMillis(startTime)
-
-        val readRequest = DataReadRequest.Builder()
-            .aggregate(DataType.TYPE_DISTANCE_DELTA)
-            .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(normalizedStart, endTime, TimeUnit.MILLISECONDS)
-            .build()
-
-        Fitness.getHistoryClient(this, account)
-            .readData(readRequest)
-            .addOnSuccessListener { response ->
-                val results = mutableListOf<Map<String, Any>>()
-
-                response.buckets.forEach { bucket ->
-                    var distanceForDay = 0.0
-                    val startMillis = bucket.getStartTime(TimeUnit.MILLISECONDS)
-
-                    bucket.dataSets.forEach { ds ->
-                        ds.dataPoints.forEach { dp ->
-                            if (dp.originalDataSource.device != null) {
-                                distanceForDay += dp.getValue(Field.FIELD_DISTANCE).asFloat()
-                            }
-                        }
-                    }
-
-                    val date = SimpleDateFormat("yyyy-MM-dd")
-                        .apply { timeZone = TimeZone.getDefault() }
-                        .format(startMillis)
-
-                    val kilometers = distanceForDay / 1000.0
-
-                    results.add(
-                        mapOf(
-                            "date" to date,
-                            "total_kilometers" to kilometers
-                        )
-                    )
-                }
-
-                val todayDate = SimpleDateFormat("yyyy-MM-dd")
-                    .apply { timeZone = TimeZone.getDefault() }
-                    .format(System.currentTimeMillis())
-
-                val hasToday = results.any { it["date"] == todayDate }
-
-                if (!hasToday) {
-                    val now = System.currentTimeMillis()
-                    val startOfToday = getStartOfDayMillis(now)
-
-                    getKilometers(startOfToday, now, object : MethodChannel.Result {
-                        override fun success(todayKm: Any?) {
-                            val kilometers = (todayKm as? Double) ?: 0.0
-                            results.add(
-                                mapOf(
-                                    "date" to todayDate,
-                                    "total_kilometers" to kilometers
-                                )
-                            )
-                            result.success(results)
-                        }
-
-                        override fun error(code: String, message: String?, details: Any?) {
-                            result.success(results)
-                        }
-
-                        override fun notImplemented() {
-                            result.success(results)
-                        }
-                    })
-                } else {
-                    result.success(results)
-                }
-            }
-            .addOnFailureListener { e ->
-                result.error("FITNESS_ERROR", "Failed to read grouped distance: ${e.localizedMessage}", null)
-            }
-    }
-
-    private fun getKilometers(
-        startTime: Long,
-        endTime: Long,
-        result: MethodChannel.Result
-    ) {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account == null) {
-            result.error("NO_ACCOUNT", "Google account not signed in", null)
-            return
-        }
-
-        val readRequest = DataReadRequest.Builder()
-            .aggregate(DataType.TYPE_DISTANCE_DELTA)
-            .bucketByTime(1, TimeUnit.DAYS)
-            .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-            .build()
-
-        Fitness.getHistoryClient(this, account)
-            .readData(readRequest)
-            .addOnSuccessListener { response ->
-                var totalDistance = 0.0
-                response.buckets.forEach { bucket ->
-                    bucket.dataSets.forEach { ds ->
-                        ds.dataPoints.forEach { dp ->
-                            if (dp.originalDataSource.device != null) {
-                                totalDistance += dp.getValue(Field.FIELD_DISTANCE).asFloat()
-                            }
-                        }
-                    }
-                }
-                val kilometers = totalDistance / 1000.0
-                result.success(kilometers)
-            }
-            .addOnFailureListener { e ->
-                result.error("FITNESS_ERROR", "Failed to read distance: ${e.localizedMessage}", null)
-            }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            SIGN_IN_REQUEST_CODE -> {
-                val (result, onSignedIn) = pendingStepCall ?: return
-                pendingStepCall = null
-                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-                try {
-                    task.result
-                    onSignedIn()
-                } catch (e: Exception) {
-                    result.error("SIGN_IN_FAILED", "Google sign-in failed: ${e.message}", null)
-                }
-            }
-
-            GOOGLE_FIT_PERMISSIONS_REQUEST_CODE -> {
-                val (result, onGranted) = pendingFitPermissionCall ?: return
-                pendingFitPermissionCall = null
-                if (resultCode == Activity.RESULT_OK) onGranted()
-                else result.error("PERMISSION_DENIED", "Google Fit permission denied", null)
-            }
-        }
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -347,12 +499,6 @@ class MainActivity : FlutterActivity() {
                 result.error("PERMISSION_DENIED", "Activity recognition permission denied", null)
             }
         }
-    }
-
-    private fun getStartOfDayMillis(now: Long): Long {
-        val dayMillis = 24 * 60 * 60 * 1000L
-        val tzOffset = TimeZone.getDefault().getOffset(now)
-        return (now + tzOffset) / dayMillis * dayMillis - tzOffset
     }
 
     private fun ensureSignedInThen(onSignedIn: () -> Unit) {
