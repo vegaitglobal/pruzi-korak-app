@@ -25,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  StreamSubscription<double>? _sub;
+  StreamSubscription<void>? _sub;
   Timer? _debounce;
   AppLifecycleState _life = AppLifecycleState.resumed;
 
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context.read<HomeBloc>().add(HomeLoadEvent());
     });
 
-    _sub = HealthNativeEvents.instance.kmDeltas.listen((_) async {
+    _sub = HealthNativeEvents.instance.syncSignals.listen((_) async {
       if (_life == AppLifecycleState.resumed) {
         _debounce?.cancel();
         _debounce = Timer(const Duration(seconds: 3), () {
