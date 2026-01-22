@@ -1,26 +1,29 @@
 package org.pruziikorak.pruziKorak
 
 import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.aggregate.AggregationResult
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     companion object {
         private const val CHANNEL_NAME = "org.pruziKorak.healthkit/callback"
         private const val HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE = 1101
@@ -69,56 +72,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun ensureHealthConnectPermissions(
-        result: MethodChannel.Result,
-        onGranted: () -> Unit
-    ) {
-        if (!HealthConnectClient.isAvailable(this)) {
-            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
-            return
-        }
-
-        val client = HealthConnectClient.getOrCreate(this)
-        val required = setOf(
-            HealthPermission.getReadPermission(DistanceRecord::class)
-            // + StepsRecord ako ti treba kasnije
-        )
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val granted = client.permissionController.getGrantedPermissions()
-            if (granted.containsAll(required)) {
-                CoroutineScope(Dispatchers.Main).launch { onGranted() }
-            } else {
-                val intent = client.permissionController.createRequestPermissionIntent(required)
-                pendingHealthConnectPermissionCall = result to onGranted
-                startActivityForResult(intent, HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE)
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE) {
-            val (res, onGranted) = pendingHealthConnectPermissionCall ?: return
-            pendingHealthConnectPermissionCall = null
-
-            ensureHealthConnectPermissions(res) { onGranted() }
-            return
-        }
-    }
-
     private fun getKilometers(
         startTime: Long,
         endTime: Long,
         result: MethodChannel.Result
     ) {
-        // Health Connect availability check (optional but recommended)
-        if (!HealthConnectClient.isAvailable(this)) {
-            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
-            return
-        }
-
         val healthConnectClient = HealthConnectClient.getOrCreate(this)
 
         // Health Connect calls are suspend-based, so run in coroutine
@@ -167,11 +125,6 @@ class MainActivity : FlutterActivity() {
         endTime: Long,
         result: MethodChannel.Result
     ) {
-        if (!HealthConnectClient.isAvailable(this)) {
-            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
-            return
-        }
-
         val healthConnectClient = HealthConnectClient.getOrCreate(this)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -274,6 +227,71 @@ class MainActivity : FlutterActivity() {
                     result.error("HC_ERROR", "Failed to read grouped distance: ${e.localizedMessage}", null)
                 }
             }
+        }
+    }
+
+    // Mark: Health Connect Permissions
+
+    private fun ensureHealthConnectPermissions(
+        result: MethodChannel.Result,
+        onGranted: () -> Unit
+    ) {
+        if (!isHealthConnectAvailable()) {
+            result.error("HC_NOT_AVAILABLE", "Health Connect is not available on this device", null)
+            return
+        }
+
+        val client = HealthConnectClient.getOrCreate(this)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val granted = client.permissionController.getGrantedPermissions()
+
+                if (granted.containsAll(hcRequiredPermissions)) {
+                    withContext(Dispatchers.Main) { onGranted() }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        pendingHcCall = result to onGranted
+                        hcPermissionLauncher.launch(hcRequiredPermissions)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    result.error("HC_ERROR", "Failed to check/request permissions: ${e.localizedMessage}", null)
+                }
+            }
+        }
+    }
+
+
+    private val hcRequiredPermissions = setOf(
+        HealthPermission.getReadPermission(DistanceRecord::class),
+    )
+
+    private var pendingHcCall: Pair<MethodChannel.Result, () -> Unit>? = null
+
+    private val hcPermissionLauncher: ActivityResultLauncher<Set<String>> by lazy {
+        registerForActivityResult(
+            PermissionController.createRequestPermissionResultContract()
+        ) { granted: Set<String> ->
+            val pending = pendingHcCall ?: return@registerForActivityResult
+            val (result, onGranted) = pending
+            pendingHcCall = null
+
+            if (granted.containsAll(hcRequiredPermissions)) {
+                onGranted()
+            } else {
+                result.error("PERMISSION_DENIED", "Health Connect permission denied", null)
+            }
+        }
+    }
+
+    private fun isHealthConnectAvailable(): Boolean {
+        return when (HealthConnectClient.getSdkStatus(this)) {
+            HealthConnectClient.SDK_AVAILABLE -> true
+            HealthConnectClient.SDK_UNAVAILABLE -> false
+            HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED -> false
+            else -> false
         }
     }
 
