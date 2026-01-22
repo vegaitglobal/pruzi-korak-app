@@ -1,4 +1,4 @@
-package org.pruziikorak.pruziKorak
+package org.pruzikorak.pruziKorak
 
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
