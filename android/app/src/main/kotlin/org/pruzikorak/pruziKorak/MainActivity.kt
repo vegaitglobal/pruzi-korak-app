@@ -26,12 +26,31 @@ import java.time.format.DateTimeFormatter
 class MainActivity : FlutterFragmentActivity() {
     companion object {
         private const val CHANNEL_NAME = "org.pruziKorak.healthkit/callback"
-        private const val HEALTH_CONNECT_PERMISSIONS_REQUEST_CODE = 1101
     }
 
     private lateinit var channel: MethodChannel
 
     private var pendingHealthConnectPermissionCall: Pair<MethodChannel.Result, () -> Unit>? = null
+
+    private lateinit var hcPermissionLauncher: ActivityResultLauncher<Set<String>>
+
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        hcPermissionLauncher = registerForActivityResult(
+            PermissionController.createRequestPermissionResultContract()
+        ) { granted: Set<String> ->
+            val pending = pendingHcCall ?: return@registerForActivityResult
+            val (result, onGranted) = pending
+            pendingHcCall = null
+
+            if (granted.containsAll(hcRequiredPermissions)) {
+                onGranted()
+            } else {
+                result.error("PERMISSION_DENIED", "Health Connect permission denied", null)
+            }
+        }
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -269,22 +288,6 @@ class MainActivity : FlutterFragmentActivity() {
     )
 
     private var pendingHcCall: Pair<MethodChannel.Result, () -> Unit>? = null
-
-    private val hcPermissionLauncher: ActivityResultLauncher<Set<String>> by lazy {
-        registerForActivityResult(
-            PermissionController.createRequestPermissionResultContract()
-        ) { granted: Set<String> ->
-            val pending = pendingHcCall ?: return@registerForActivityResult
-            val (result, onGranted) = pending
-            pendingHcCall = null
-
-            if (granted.containsAll(hcRequiredPermissions)) {
-                onGranted()
-            } else {
-                result.error("PERMISSION_DENIED", "Health Connect permission denied", null)
-            }
-        }
-    }
 
     private fun isHealthConnectAvailable(): Boolean {
         return when (HealthConnectClient.getSdkStatus(this)) {

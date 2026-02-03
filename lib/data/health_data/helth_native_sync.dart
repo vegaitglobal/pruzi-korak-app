@@ -29,7 +29,7 @@ class HealthNativeEvents {
     _installed = true;
 
     _androidTicker = ForegroundSyncTicker(
-      interval: const Duration(seconds: 15), // TODO: Adjust interval as needed
+      interval: const Duration(seconds: 30),
       onTick: () {
         _controller.add(null);
       },
