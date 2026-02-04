@@ -35,7 +35,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -67,6 +67,6 @@ flutter {
 }
 
 dependencies {
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
-    implementation("com.google.android.gms:play-services-fitness:21.1.0")
+    // Health Connect client library
+    implementation("androidx.health.connect:connect-client:1.1.0")
 }

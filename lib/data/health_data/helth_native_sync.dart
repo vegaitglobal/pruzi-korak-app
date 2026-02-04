@@ -2,16 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
 
+import 'foreground_sync_ticker.dart';
+
 class HealthNativeEvents {
   HealthNativeEvents._();
   static final instance = HealthNativeEvents._();
 
   static const _channel = MethodChannel('org.pruziKorak.healthkit/callback');
 
-  final _controller = StreamController<double>.broadcast();
-  Stream<double> get kmDeltas => _controller.stream;
+  final _controller = StreamController<void>.broadcast();
+  Stream<void> get syncSignals => _controller.stream;
 
   bool _installed = false;
+  ForegroundSyncTicker? _androidTicker;
 
   Future<void> install() async {
      if(Platform.isAndroid) {
@@ -25,14 +28,13 @@ class HealthNativeEvents {
     if (_installed) return;
     _installed = true;
 
-    _channel.setMethodCallHandler((call) async {
-      if (call.method == 'stepCountChanged') {
-        final deltaKm = (call.arguments as num?)?.toDouble() ?? 0.0;
-        _controller.add(deltaKm);
-      }
-    });
-
-    await _channel.invokeMethod('startStepListener');
+    _androidTicker = ForegroundSyncTicker(
+      interval: const Duration(seconds: 30),
+      onTick: () {
+        _controller.add(null);
+      },
+      fireImmediately: false,
+    )..start();
   }
 
   Future<void> installIOS() async {
@@ -41,14 +43,14 @@ class HealthNativeEvents {
 
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'stepCountChanged') {
-        final deltaKm = (call.arguments as num?)?.toDouble() ?? 0.0;
-        _controller.add(deltaKm);
+        _controller.add(null);
       }
     });
   }
 
   Future<void> dispose() async {
-    await _channel.invokeMethod('stopStepListener');
+    _androidTicker?.dispose();
+    _androidTicker = null;
     await _controller.close();
   }
 }
